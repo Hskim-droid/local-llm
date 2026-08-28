@@ -29,6 +29,36 @@ func TestExtractPPTX(t *testing.T) {
 	}
 }
 
+func TestExtractVideoSidecar(t *testing.T) {
+	dir := t.TempDir()
+	vid := filepath.Join(dir, "회의.mp4")
+	if err := os.WriteFile(vid, []byte("not-a-video"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "회의.txt"), []byte("[00:12] 시드 7억원 논의함.\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	segs, err := extractVideo(vid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(segs) != 1 || segs[0].Source != "video" || !strings.Contains(segs[0].Text, "7억원") {
+		t.Fatalf("%#v", segs)
+	}
+}
+
+func TestExtractVideoNeedsWhisper(t *testing.T) {
+	dir := t.TempDir()
+	vid := filepath.Join(dir, "회의.mp4")
+	if err := os.WriteFile(vid, []byte("x"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	_, err := extractVideo(vid)
+	if _, ok := err.(needWhisperError); !ok {
+		t.Fatalf("want needWhisperError, got %v", err)
+	}
+}
+
 func TestWriteDocx(t *testing.T) {
 	dir := t.TempDir()
 	out := filepath.Join(dir, "보고서.docx")

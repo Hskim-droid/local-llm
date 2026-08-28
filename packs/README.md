@@ -11,7 +11,7 @@
 | 폴더 | 용도 | 결과 |
 |---|---|---|
 | `보고서` | 장표·PDF 보고 | `*_보고서/보고서.docx` |
-| `회의록` | 전사·녹취 | `*_회의록/회의록.docx` (whisper.cpp는 다음. 지금은 옆 `.txt`) |
+| `회의록` | 전사·녹취 | `*_회의록/회의록.docx` (옆 `.txt` 우선. 없으면 whisper.cpp `small`) |
 | `번역` | 일한 직번역 | `*_번역/한국어번역.docx` (munseo-translator에서 이식) |
 
 새 팩: `pack.json` + `chunk.txt` + `assemble.txt` 세 파일이면 됩니다.
