@@ -29,7 +29,7 @@ class ExtractTests(unittest.TestCase):
             blank = prs.slide_layouts[6]
             s1 = prs.slides.add_slide(blank)
             box = s1.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(8), Inches(1))
-            box.text_frame.paragraphs[0].text = "PartnerForum 2026 개요"
+            box.text_frame.paragraphs[0].text = "Partner Forum 2026 개요"
             box.text_frame.paragraphs[0].font.size = Pt(20)
             s2 = prs.slides.add_slide(blank)
             rows, cols = 2, 2
@@ -44,7 +44,7 @@ class ExtractTests(unittest.TestCase):
         blob = "\n".join(s.text for s in segs)
         self.assertIn("slide-1", locs)
         self.assertIn("slide-2", locs)
-        self.assertIn("PartnerForum 2026", blob)
+        self.assertIn("Partner Forum 2026", blob)
         self.assertIn("7억원", blob)
 
     def test_txt_split(self):
@@ -166,7 +166,7 @@ class StructureRenderTests(unittest.TestCase):
             self.assertNotIn("< 회 의 내 용 >", text)
 
     def test_default_title(self):
-        self.assertEqual(default_title([Path("/tmp/PartnerForum_GPDay.pptx")]), "PartnerForum GPDay")
+        self.assertEqual(default_title([Path("/tmp/Partner_Forum.pptx")]), "Partner Forum")
 
 
 class ProfileTests(unittest.TestCase):
