@@ -2,6 +2,8 @@
 
 그램에서 **더블클릭** 한 번으로, 영상·PPT·PDF를 **이 노트북에서만** 한글 워드로 만듭니다. Go로 만든 작은 실행 파일이라 파이썬·Ollama를 깔 필요가 없습니다.
 
+**엔진은 이 저장소 하나**입니다. 용도마다 앱을 새로 만들지 않습니다. 보고서·회의록·번역은 `packs/` 만 바꿉니다. 새 저장소·새 exe는 열지 마세요. 규약: [packs/README.md](packs/README.md)
+
 실행 파일은 하나입니다. 용도만 고릅니다.
 
 | 번호 | 팩 | 결과 폴더 |
@@ -96,4 +98,6 @@ go run . --pack 보고서 자료.pptx
 
 ## 양식 팩
 
-`gramapp/packs/` — `pack.json` + `chunk.txt` + `assemble.txt`. exe 안에 들어가고, exe 옆 `packs/`가 있으면 그게 우선입니다. 안내: [packs/README.md](packs/README.md)
+정본: `gramapp/packs/`. exe 안에 들어가고, **푼 ZIP 옆 `packs/`가 있으면 그게 우선**입니다. 고객·사내용 톤은 이 저장소에 올리지 말고 옆 폴더로만 씁니다.
+
+안내: [packs/README.md](packs/README.md)
