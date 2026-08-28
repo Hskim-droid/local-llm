@@ -6,7 +6,7 @@ New-Item -ItemType Directory -Force -Path $dest | Out-Null
 $files = @(
     "report.ps1", "report.cmd", "reportctl.py",
     "extract.py", "ollama_client.py", "structure.py", "render.py",
-    "config.json", "schema.json"
+    "hardware.py", "config.json", "schema.json"
 )
 foreach ($f in $files) {
     Copy-Item -Force (Join-Path $src $f) (Join-Path $dest $f)
