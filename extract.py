@@ -170,7 +170,7 @@ def _whisper(path: Path) -> list[str]:
 def _whisper_mlx(path: Path) -> list[str]:
     import mlx_whisper
 
-    print(f"  transcribing with mlx-whisper ({path.name})", flush=True)
+    print(f"  영상 전사 mlx-whisper ({path.name})", flush=True)
     audio = _load_audio(path)
     result = mlx_whisper.transcribe(
         audio,
@@ -193,7 +193,7 @@ def _whisper_mlx(path: Path) -> list[str]:
 def _whisper_faster(path: Path) -> list[str]:
     from faster_whisper import WhisperModel
 
-    print(f"  transcribing with faster-whisper ({path.name})", flush=True)
+    print(f"  영상 전사 faster-whisper ({path.name})", flush=True)
     model = WhisperModel("small", device="auto", compute_type="int8")
     segs, _info = model.transcribe(str(path), language=None, vad_filter=True)
     out = []

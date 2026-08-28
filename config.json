@@ -4,40 +4,43 @@
   "keep_alive": "5m",
   "profiles": {
     "gram16": {
-      "label": "LG gram 16 GB (typical Windows)",
+      "label": "LG 그램 16GB (윈도우)",
       "ram_min": 0,
       "ram_max": 20,
       "pull": "qwen3:8b",
+      "setup_models": ["qwen3:8b"],
       "model_pref": ["qwen3:8b", "exaone3.5:7.8b", "qwen2.5:7b", "qwen3:4b"],
       "num_ctx": 4096,
       "num_predict": 800,
       "chunk_chars": 1000,
       "timeout_sec": 240,
-      "notes": "Do not load 14B. One model only. Close Chrome before a long deck."
+      "notes_ko": "14B는 받지 않습니다. 긴 작업 전에 크롬·엣지를 닫아 주세요."
     },
     "gram32": {
-      "label": "LG gram / gram Pro 32 GB Windows",
+      "label": "LG 그램 32GB (윈도우)",
       "ram_min": 20,
       "ram_max": 40,
       "pull": "qwen3:8b",
+      "setup_models": ["qwen3:8b", "qwen3:14b"],
       "model_pref": ["qwen3:14b", "qwen3:8b", "exaone3.5:7.8b"],
       "num_ctx": 6144,
       "num_predict": 1100,
       "chunk_chars": 1400,
       "timeout_sec": 200,
-      "notes": "14B if already downloaded. First-run still pulls 8B so the machine stays usable."
+      "notes_ko": "8B를 먼저 받은 다음 14B를 받습니다. 14B가 느리면 report --model qwen3:8b"
     },
     "mac24": {
-      "label": "Mac 24 GB unified (Apple Silicon)",
+      "label": "맥 24GB 통합메모리",
       "ram_min": 20,
       "ram_max": 28,
       "pull": "qwen3:14b",
+      "setup_models": ["qwen3:14b"],
       "model_pref": ["qwen3:14b", "qwen3:8b", "exaone3.5:7.8b"],
       "num_ctx": 8192,
       "num_predict": 1400,
       "chunk_chars": 1600,
       "timeout_sec": 180,
-      "notes": "Metal. 14B Q4 is the ceiling for smooth runs."
+      "notes_ko": "통합메모리 24GB. 14B Q4가 원활한 상한입니다."
     }
   }
 }

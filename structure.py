@@ -61,7 +61,7 @@ def structure(
     batches = chunk_segments(segments, chunk_chars)
     for i, batch in enumerate(batches, 1):
         if progress:
-            progress(f"chunk {i}/{len(batches)}")
+            progress(f"묶음 {i}/{len(batches)}")
         blob = _batch_text(batch)
         if client is None:
             facts.append(_heuristic_chunk(blob, batch[0].location, translate=not already_ko))
