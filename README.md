@@ -19,7 +19,7 @@
 받는 법 자세히: **[docs/다운로드.md](docs/다운로드.md)**
 
 1. https://github.com/Hskim-droid/local-llm-report/releases/latest
-2. **Assets** 에서 `로컬LLM보고서-윈도우.zip` 받기 (`Source code` 아님)
+2. **Assets** 에서 `local-llm-report-windows.zip` 받기 (`Source code` 아님)
 3. **바탕화면에 압축을 풉니다.** 압축 파일 안에서 바로 실행하지 마세요.
 4. 푼 폴더에서 **`시작.bat` 더블클릭**
 5. Windows가 막으면 **추가 정보 → 실행**
