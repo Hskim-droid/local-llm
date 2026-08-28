@@ -7,5 +7,8 @@ venv/
 .pytest_cache/
 *_report/
 *_보고서/
+*_수확/
+*_회의록/
+*_번역/
 examples/output/
 .setup-ok.json

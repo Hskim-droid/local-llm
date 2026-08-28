@@ -39,7 +39,14 @@
 
 프로그램은 약 7MB. AI 모델은 첫 실행에 받습니다 (16GB 그램 약 5GB).
 
-파이썬 스크립트(`report.ps1`)는 아래 **개발용**입니다.
+모델 없이 원문 숫자만 보려면:
+
+```bash
+cd gramapp
+go run . --harvest ../examples/slides_jp.txt
+```
+
+파이썬 스크립트(`report.ps1`)는 아래 **개발용**이며, 아직 Ollama를 씁니다. 그램 사용자 경로가 아닙니다.
 
 > 예전에 쓰던 [Munseo Translator](https://github.com/Hskim-droid/munseo-translator) (문서번역기)는 이 저장소의 **번역** 팩으로 이어집니다. 그쪽은 보관 상태입니다.
 

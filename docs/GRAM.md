@@ -1,8 +1,8 @@
 # 로컬LLM보고서 — LG gram (Windows)
 
-This tool is tuned for **LG gram notebooks on Windows**, not gaming laptops. A gram is thin, cool, and usually has **no NVIDIA VRAM**. Local Ollama therefore runs from **system RAM** (plus a weak iGPU). That is slower than an Apple Silicon 24 GB Mac, and **smaller models win**.
+This tool is tuned for **LG gram notebooks on Windows**, not gaming laptops. A gram is thin, cool, and usually has **no NVIDIA VRAM**. The Go exe runs **llama.cpp** from system RAM (plus a weak iGPU). That is slower than an Apple Silicon 24 GB Mac, and **smaller models win**. **Ollama is not required.**
 
-`report --status` prints the profile this PC will use.
+The product is `시작.bat` / `로컬LLM보고서.exe`. Python `report.ps1` is leftover for developers.
 
 ## Which gram do you have?
 
@@ -19,34 +19,17 @@ RAM on gram is **on-board**. You cannot add a stick later. If you buy for this w
 
 Windows itself is fine. The limit is RAM + thermals, not “Windows vs Mac”.
 
-## Models (Ollama tags)
+## Models (GGUF via llama.cpp)
 
-Do **not** put two chat models in RAM at once. `OLLAMA_MAX_LOADED_MODELS=1`.
+Do **not** load chat, vision, and whisper at the same time. The exe unloads one before starting the next.
 
-| Tag | On-disk (Q4) | Korean | Japanese slides | gram 16 GB | gram 32 GB |
+| File | On-disk (Q4) | Korean | Japanese slides | gram 16 GB | gram 32 GB |
 |---|---|---|---|---|---|
-| **`qwen3:8b`** (default first download) | ~5 GB | Good | **Best of this size** | **Use this** | Fast daily driver |
-| **`exaone3.5:7.8b`** (LG) | ~4.8 GB | **Best Korean tone** | Weaker than Qwen | Optional polish | Optional |
-| `qwen3:14b` | ~9.3 GB | Strong | Strong | **No** (swap) | OK if you already pulled it |
-| `exaone3.5:32b` | ~19 GB | Strong Korean | Heavy | No | No |
-| Upstage **Solar Open 2** (250B MoE) | tens of GB | Excellent | n/a | **Cannot run** | Cannot run |
-| Ollama `solar` 10.7B | ~6 GB | Old, English-leaning | Weak | Skip | Skip |
+| **`Qwen3-8B-Q4_K_M.gguf`** | ~5 GB | Good | **Best of this size** | **Use this** | Fast daily driver |
+| `Qwen3-14B-Q4_K_M.gguf` | ~9 GB | Strong | Strong | **No** (swap) | Downloaded after 8B |
+| Qwen2.5-VL 3B + mmproj | ~2.7 GB | OCR/charts | Charts | On demand | On demand |
 
-**First run on a gram always downloads `qwen3:8b`**, even on 32 GB, so the machine stays usable. To use 14B later:
-
-```powershell
-ollama pull qwen3:14b
-report --model qwen3:14b
-```
-
-Korean-only minutes (no Japanese source):
-
-```powershell
-ollama pull exaone3.5:7.8b
-report --model exaone3.5:7.8b
-```
-
-Japanese deck + Korean report: keep **Qwen**. EXAONE is the Korean rewrite, not the JP translator.
+First run on a gram always downloads the **8B GGUF**, even on 32 GB. Japanese deck → Korean report: keep **Qwen**.
 
 ## Context and speed (what we change for gram)
 
@@ -195,12 +178,11 @@ report --no-pull                 # fail if the model is missing, do not download
 
 ## If it is slow or swapping
 
-1. `report --status` — if it picked `gram32` on a 16 GB machine, something is wrong with RAM read; force `--profile gram16`.
-2. `ollama ps` — only **one** model listed.
-3. Quit Edge/Chrome.
-4. Do not `ollama pull` 14B or 32B on 16 GB.
-5. Plug in AC power. gram will throttle on battery.
+1. If a 16 GB machine loaded 14B, something is wrong; it must stay on 8B.
+2. Quit Edge/Chrome.
+3. Do not keep 14B on 16 GB.
+4. Plug in AC power. gram will throttle on battery.
 
 ## Privacy
 
-Files never leave the PC. The only HTTP calls are `http://127.0.0.1:11434` (Ollama). The only optional download is `ollama pull`.
+Files never leave the PC. llama-server binds to localhost only and is killed after the job. Downloads (llama.cpp, GGUF, whisper) happen only when a tool is missing.
