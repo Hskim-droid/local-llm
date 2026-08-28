@@ -1,4 +1,4 @@
-# LG gram (Windows) — hardware, models, how to run
+# 로컬LLM보고서 — LG gram (Windows)
 
 This tool is tuned for **LG gram notebooks on Windows**, not gaming laptops. A gram is thin, cool, and usually has **no NVIDIA VRAM**. Local Ollama therefore runs from **system RAM** (plus a weak iGPU). That is slower than an Apple Silicon 24 GB Mac, and **smaller models win**.
 
@@ -100,8 +100,8 @@ https://www.gyan.dev/ffmpeg/builds/ — or `winget install Gyan.FFmpeg`
 
 ```powershell
 cd $HOME\Downloads
-git clone https://github.com/Hskim-droid/local-report.git
-cd local-report
+git clone https://github.com/Hskim-droid/local-llm-report.git
+cd local-llm-report
 
 py -3 -m pip install -r requirements.txt
 # first model (~5 GB). Stay on Wi-Fi.
@@ -132,7 +132,7 @@ You want to see `gram16` or `gram32` and `default qwen3:8b` (or 14B listed under
 Same thing from the repo folder, no PATH:
 
 ```powershell
-cd path\to\local-report
+cd path\to\local-llm-report
 .\report.ps1
 ```
 

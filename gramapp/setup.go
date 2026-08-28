@@ -15,7 +15,7 @@ func say(s string) { fmt.Println(s) }
 func setup(p profile) error {
 	say("")
 	say("════════════════════════════════════")
-	say("  로컬 보고서  ·  더블클릭")
+	say("  로컬LLM보고서  ·  더블클릭")
 	say("  영상·PPT·PDF → 한글 워드")
 	say("════════════════════════════════════")
 	say("")

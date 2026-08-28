@@ -1,6 +1,6 @@
-# LG 그램 (윈도우) — 스펙, 모델, 사용법
+# 로컬LLM보고서 — LG 그램 (윈도우)
 
-이 스크립트는 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. `.\report.ps1` 한 번이면 RAM을 보고 **받을 모델을 정해 순서대로 다운**합니다. 직접 `ollama pull` 할 필요 없습니다.
+이 프로그램은 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. `.\report.ps1` 한 번이면 RAM을 보고 **받을 모델을 정해 순서대로 다운**합니다. 직접 `ollama pull` 할 필요 없습니다.
 
 그램은 대개 **엔비디아 VRAM이 없고 RAM으로** 모델을 올립니다. 16GB에는 8B만 심습니다.
 
@@ -52,8 +52,8 @@ report --model qwen3:14b
 4. 이 저장소:
 
 ```powershell
-git clone https://github.com/Hskim-droid/local-report.git
-cd local-report
+git clone https://github.com/Hskim-droid/local-llm-report.git
+cd local-llm-report
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 .\report.ps1
 ```
