@@ -1,4 +1,4 @@
-# local-llm-report
+# local-llm
 
 **엔진**입니다. Go CLI + 이 노트북의 로컬 모델(llama.cpp GGUF). 파이썬·Ollama·클라우드 API 없음. 파일은 나가지 않습니다.
 
@@ -9,7 +9,7 @@
 채팅·그림·음성 모델은 한 번에 하나만
 ```
 
-지금 들어 있는 팩은 첫 SKU일 뿐입니다.
+지금 들어 있는 팩은 시작용입니다.
 
 | 번호 | 팩 | 결과 |
 |---|---|---|
@@ -17,15 +17,7 @@
 | 2 | 회의록 | `이름_회의록\회의록.docx` |
 | 3 | 일한 번역 | `이름_번역\한국어번역.docx` |
 
-그램용 더블클릭 이름은 `로컬LLM보고서` 입니다. 엔진과 같은 바이너리입니다.
-
-16GB는 8B만, 32GB는 8B 다음 14B. 숫자는 코드가 원문에서 걷고, 목록 밖은 〔원문 확인〕.
-
-| 번호 | 팩 | 결과 폴더 |
-|---|---|---|
-| 1 | 보고서 | `이름_보고서\보고서.docx` |
-| 2 | 회의록 | `이름_회의록\회의록.docx` |
-| 3 | 일한 번역 | `이름_번역\한국어번역.docx` |
+윈도우 실행 파일은 `로컬LLM.exe`. 16GB는 8B만, 32GB는 8B 다음 14B. 숫자는 코드가 원문에서 걷고, 목록 밖은 〔원문 확인〕.
 
 파일은 회사 밖·인터넷으로 올라가지 않습니다. [PRIVACY.md](PRIVACY.md)
 
@@ -37,8 +29,8 @@
 
 받는 법 자세히: **[docs/다운로드.md](docs/다운로드.md)**
 
-1. https://github.com/Hskim-droid/local-llm-report/releases/latest
-2. **Assets** 에서 `local-llm-report-windows.zip` 받기 (`Source code` 아님)
+1. https://github.com/Hskim-droid/local-llm/releases/latest
+2. **Assets** 에서 `local-llm-windows.zip` 받기 (`Source code` 아님)
 3. **바탕화면에 압축을 풉니다.** 압축 파일 안에서 바로 실행하지 마세요.
 4. 푼 폴더에서 **`시작.bat` 더블클릭**
 5. Windows가 막으면 **추가 정보 → 실행**

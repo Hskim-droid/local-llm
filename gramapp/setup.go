@@ -12,7 +12,7 @@ func say(s string) { fmt.Println(s) }
 func setup(p profile) error {
 	say("")
 	say("════════════════════════════════════════")
-	say("  로컬LLM보고서")
+	say("  로컬LLM")
 	say("  이 노트북에서만 돌아갑니다.")
 	say("  파일은 회사 밖·인터넷으로 안 올라갑니다.")
 	say("  Ollama는 필요 없습니다.")

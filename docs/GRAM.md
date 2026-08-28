@@ -1,8 +1,8 @@
-# 로컬LLM보고서 — LG gram (Windows)
+# 로컬LLM — LG gram (Windows)
 
 This tool is tuned for **LG gram notebooks on Windows**, not gaming laptops. A gram is thin, cool, and usually has **no NVIDIA VRAM**. The Go exe runs **llama.cpp** from system RAM (plus a weak iGPU). That is slower than an Apple Silicon 24 GB Mac, and **smaller models win**. **Ollama is not required.**
 
-The product is `시작.bat` / `로컬LLM보고서.exe`. Python `report.ps1` is leftover for developers.
+The product is `시작.bat` / `로컬LLM.exe`. Python `report.ps1` is leftover for developers.
 
 ## Which gram do you have?
 
@@ -83,8 +83,8 @@ https://www.gyan.dev/ffmpeg/builds/ — or `winget install Gyan.FFmpeg`
 
 ```powershell
 cd $HOME\Downloads
-git clone https://github.com/Hskim-droid/local-llm-report.git
-cd local-llm-report
+git clone https://github.com/Hskim-droid/local-llm.git
+cd local-llm
 
 py -3 -m pip install -r requirements.txt
 # first model (~5 GB). Stay on Wi-Fi.
@@ -115,7 +115,7 @@ You want to see `gram16` or `gram32` and `default qwen3:8b` (or 14B listed under
 Same thing from the repo folder, no PATH:
 
 ```powershell
-cd path\to\local-llm-report
+cd path\to\local-llm
 .\report.ps1
 ```
 

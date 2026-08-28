@@ -30,14 +30,24 @@ func (e needWhisperError) Error() string {
 }
 
 func toolsDir() string {
-	if d := os.Getenv("LOCALAPPDATA"); d != "" && runtime.GOOS == "windows" {
-		return filepath.Join(d, "로컬LLM보고서", "tools")
-	}
 	home, _ := os.UserHomeDir()
-	if runtime.GOOS == "darwin" {
-		return filepath.Join(home, "Library", "Application Support", "로컬LLM보고서", "tools")
+	var cands []string
+	if d := os.Getenv("LOCALAPPDATA"); d != "" && runtime.GOOS == "windows" {
+		cands = []string{filepath.Join(d, "로컬LLM", "tools"), filepath.Join(d, "로컬LLM보고서", "tools")}
+	} else if runtime.GOOS == "darwin" {
+		cands = []string{
+			filepath.Join(home, "Library", "Application Support", "로컬LLM", "tools"),
+			filepath.Join(home, "Library", "Application Support", "로컬LLM보고서", "tools"),
+		}
+	} else {
+		cands = []string{filepath.Join(home, ".local-llm", "tools"), filepath.Join(home, ".local-llm-report", "tools")}
 	}
-	return filepath.Join(home, ".local-llm-report", "tools")
+	for _, p := range cands {
+		if st, err := os.Stat(p); err == nil && st.IsDir() {
+			return p
+		}
+	}
+	return cands[0]
 }
 
 func transcribePending(paths []string, chatModel string) {
@@ -255,7 +265,7 @@ func downloadFile(url, dest string) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", "local-llm-report")
+	req.Header.Set("User-Agent", "local-llm")
 	req.Header.Set("Accept", "application/octet-stream")
 	resp, err := cli.Do(req)
 	if err != nil {
