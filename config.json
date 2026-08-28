@@ -1,0 +1,10 @@
+{
+  "host": "http://127.0.0.1:11434",
+  "model_pref": ["qwen3:14b", "qwen2.5:14b", "qwen3:8b", "qwen2.5:7b"],
+  "num_ctx": 8192,
+  "num_predict": 1400,
+  "chunk_chars": 1600,
+  "keep_alive": "10m",
+  "temperature": 0.1,
+  "timeout_sec": 180
+}
