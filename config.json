@@ -1,7 +1,7 @@
 {
   "host": "http://127.0.0.1:11434",
   "temperature": 0.1,
-  "keep_alive": "5m",
+  "keep_alive": "2m",
   "profiles": {
     "gram16": {
       "label": "LG 그램 16GB (윈도우)",

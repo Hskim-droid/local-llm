@@ -16,8 +16,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from extract import VIDEO, PPTX, extract_many
-from hardware import inspect
-from ollama_client import OllamaError, connect, load_config
+from hardware import inspect, memory_warning
+from ollama_client import OllamaError, connect, load_config, stop_model
 from render import write_outputs
 from structure import default_title, structure
 
@@ -44,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pdf", action="store_true", help="PDF도 저장")
     ap.add_argument("--extras", action="store_true", help="md/html도 저장")
     ap.add_argument("--dump", action="store_true", help="추출 JSON만 저장")
-    ap.add_argument("--no-open", action="store_true", help="끝나면 워드를 열지 않음")
+    ap.add_argument("--open", action="store_true", help="끝나면 워드로 열기 (기본은 폴더만 연다)")
     ap.add_argument("--no-pull", action="store_true", help="없는 모델을 받지 않음")
     args = ap.parse_args(argv)
 
@@ -84,9 +84,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     print(f"  세그먼트 {len(segs)}개", flush=True)
 
-    out_dir = args.out or (sources[0].parent / f"{sources[0].stem}_report")
+    out_dir = args.out or (sources[0].parent / f"{sources[0].stem}_보고서")
     out_dir = out_dir.expanduser().resolve()
-    stem = "report"
+    stem = "보고서"
 
     if args.dump:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -106,6 +106,9 @@ def main(argv: list[str] | None = None) -> int:
     title = args.title or default_title(sources)
 
     print(machine.summary(), flush=True)
+    warn = memory_warning(machine, args.model)
+    if warn:
+        print(warn, flush=True)
     client = None
     chunk_chars = int(machine.profile.get("chunk_chars") or 1000)
     if not args.no_llm:
@@ -132,16 +135,25 @@ def main(argv: list[str] | None = None) -> int:
     print("워드 작성 중…", flush=True)
     paths = write_outputs(packed, out_dir, stem, pdf=args.pdf, extras=args.extras)
 
+    if client is not None:
+        stop_model(client.model)
+        print("모델을 내려 메모리를 비웠습니다.", flush=True)
+
     dt = time.monotonic() - t0
     docx = paths.get("docx")
     if docx:
-        print(f"\n저장됨  {docx}", flush=True)
+        print("", flush=True)
+        print("저장 위치", flush=True)
+        print(f"  {docx}", flush=True)
+        print(f"  폴더  {docx.parent}", flush=True)
     for k, p in paths.items():
         if k != "docx":
             print(f"  {k}: {p}")
     print(f"완료 {dt:.1f}초")
-    if docx and not args.no_open:
-        spit_open(docx)
+    if docx:
+        reveal(docx)
+        if args.open:
+            spit_open(docx)
     return 0
 
 
@@ -164,6 +176,19 @@ def prompt_drop() -> list[Path]:
         print()
         return []
     return parse_drop_line(line)
+
+
+def reveal(path: Path) -> None:
+    path = Path(path)
+    try:
+        if sys.platform == "darwin":
+            subprocess.run(["open", "-R", str(path)], check=False)
+        elif sys.platform.startswith("win"):
+            subprocess.run(["explorer", "/select,", str(path)], check=False)
+        else:
+            subprocess.run(["xdg-open", str(path.parent)], check=False)
+    except OSError:
+        pass
 
 
 def spit_open(path: Path) -> None:
