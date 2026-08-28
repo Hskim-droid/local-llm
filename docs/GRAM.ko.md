@@ -1,6 +1,8 @@
 # 로컬LLM보고서 — LG 그램 (윈도우)
 
-이 프로그램은 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. `.\report.ps1` 한 번이면 RAM을 보고 **받을 모델을 정해 순서대로 다운**합니다. 직접 `ollama pull` 할 필요 없습니다.
+이 프로그램은 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. 그램은 **`시작.bat` / `로컬LLM보고서.exe`** 가 정본입니다. 아래 파이썬(`report.ps1`)은 개발용입니다.
+
+채팅 모델·그림 모델·음성 모델은 **한 번에 하나만** 올립니다. 영상은 옆 `.txt`가 있으면 그걸 쓰고, 없으면 whisper.cpp `small`을 그때 받습니다.
 
 그램은 대개 **엔비디아 VRAM이 없고 RAM으로** 모델을 올립니다. 16GB에는 8B만 심습니다.
 
@@ -48,7 +50,7 @@ report --model qwen3:14b
    **Add python.exe to PATH** 체크. `py -3 --version`
 2. Ollama https://ollama.com/download  
    트레이에 뜨면 됩니다. `ollama serve` 창을 띄워 둘 필요 없음.
-3. 영상 넣을 거면 FFmpeg (`winget install Gyan.FFmpeg`)
+3. 영상: 옆 `.txt`가 있으면 FFmpeg 필요 없음. 없으면 프로그램이 ffmpeg·whisper.cpp를 그때 받습니다.
 4. 이 저장소:
 
 ```powershell
