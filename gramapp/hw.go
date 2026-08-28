@@ -21,12 +21,12 @@ func ramGB() float64 {
 
 func pickProfile(gb float64) profile {
 	if runtime.GOOS == "darwin" && gb >= 20 && gb < 28 {
-		return profile{ID: "mac24", Label: "맥 24GB", Pull: []string{"qwen3:14b"}, Ctx: 8192, Chunk: 1600, Predict: 1400}
+		return profile{ID: "mac24", Label: "맥 24GB", Pull: []string{"qwen3-14b"}, Ctx: 8192, Chunk: 1600, Predict: 1400}
 	}
 	if gb >= 20 {
-		return profile{ID: "gram32", Label: "그램 32GB", Pull: []string{"qwen3:8b", "qwen3:14b"}, Ctx: 6144, Chunk: 1400, Predict: 1100}
+		return profile{ID: "gram32", Label: "그램 32GB", Pull: []string{"qwen3-8b", "qwen3-14b"}, Ctx: 6144, Chunk: 1400, Predict: 1100}
 	}
-	return profile{ID: "gram16", Label: "그램 16GB", Pull: []string{"qwen3:8b"}, Ctx: 4096, Chunk: 1000, Predict: 800}
+	return profile{ID: "gram16", Label: "그램 16GB", Pull: []string{"qwen3-8b"}, Ctx: 4096, Chunk: 1000, Predict: 800}
 }
 
 func gpuName() string {

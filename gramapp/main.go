@@ -63,21 +63,20 @@ func main() {
 		os.Exit(2)
 	}
 
-	names, _ := ollamaTags()
-	model := pickInstalled(p.Pull, names)
-	if model == "" {
-		say("모델이 아직 없습니다. 시작.bat을 다시 눌러 주세요. 창을 닫지 말고 받아 주세요.")
+	model, label, err := pickChatGGUF(p)
+	if err != nil {
+		say("오류: " + err.Error())
 		pause()
 		os.Exit(1)
 	}
-	say("지금 쓰는 모델: " + model)
+	say("지금 쓰는 모델: " + label)
 	if availGB() < 4 {
 		say("메모리가 빠듯합니다. Chrome·엣지를 닫으면 속도와 워드 저장이 안정됩니다.")
 	}
 
 	t0 := time.Now()
 	out, err := runFiles(files, p, model, pk)
-	ollamaStop(model)
+	llamaStop()
 	if err != nil {
 		say("실패: " + err.Error())
 		say("원본 파일은 그대로 있습니다.")

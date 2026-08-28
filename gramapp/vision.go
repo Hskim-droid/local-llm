@@ -19,8 +19,6 @@ import (
 	"unicode/utf8"
 )
 
-const vlTag = "qwen2.5vl:3b"
-
 const sysVL = "너는 스캔·차트 읽기다. 보이는 글과 숫자만 한국어 개조식으로. 창작 금지. 없는 수치를 만들지 말 것. JSON만. {\"facts\":[\"명사형\"],\"numbers\":[\"원문 그대로\"]}"
 
 type imgPart struct {
@@ -196,20 +194,19 @@ func readZipFile(f *zip.File) ([]byte, error) {
 	return io.ReadAll(rc)
 }
 
-func fillVision(segs []segment, imgs []imgPart, chatModel string) []segment {
+func fillVision(segs []segment, imgs []imgPart) []segment {
 	if len(imgs) == 0 {
 		return segs
 	}
 	say(fmt.Sprintf("글이 얇은 차트·스캔 %d장. 보고서 모델을 내리고 그림 모델을 올립니다. 동시에 안 올립니다.", len(imgs)))
+	llamaStop()
 	if err := ensureVL(); err != nil {
 		say("  그림 모델 없음: " + err.Error() + "  — 글만 있는 대로 진행합니다.")
 		return segs
 	}
-	ollamaStop(chatModel)
-	defer ollamaStop(vlTag)
 	for i, im := range imgs {
 		say(fmt.Sprintf("  그림 %d/%d (%s)", i+1, len(imgs), im.Location))
-		obj, err := ollamaChatVision(vlTag, sysVL, "보이는 숫자와 글만 JSON.", im.Bytes)
+		obj, err := llamaChatVision(sysVL, "보이는 숫자와 글만 JSON.", im.Bytes, im.Ext)
 		if err != nil {
 			say("    건너뜀: " + err.Error())
 			continue
@@ -232,14 +229,15 @@ func fillVision(segs []segment, imgs []imgPart, chatModel string) []segment {
 }
 
 func ensureVL() error {
-	names, _ := ollamaTags()
-	if hasModel(names, vlTag) {
-		return nil
+	if err := ensureLlamaBin(); err != nil {
+		return err
 	}
-	say("  그림 모델 qwen2.5vl:3b (약 3.2GB)를 받습니다. 창을 닫지 마세요.")
-	say("  스캔·차트에만 씁니다. 평소 보고서 모델과 같이 올리지 않습니다.")
-	if err := ollamaPull(vlTag); err != nil {
-		return fmt.Errorf("그림 모델 받기 실패. Wi-Fi를 확인하고 다시 눌러 주세요")
+	say("  스캔·차트용 그림 모델입니다. 보고서 모델과 같이 올리지 않습니다.")
+	if err := ensureGGUF(vlGGUF); err != nil {
+		return err
+	}
+	if err := ensureGGUF(vlProj); err != nil {
+		return err
 	}
 	return nil
 }

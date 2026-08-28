@@ -44,9 +44,9 @@ func transcribePending(paths []string, chatModel string) {
 	if len(paths) == 0 {
 		return
 	}
+	_ = chatModel
 	say(fmt.Sprintf("영상 %d개에 전사문이 없습니다. 음성 모델을 씁니다. 보고서 모델은 잠시 내립니다.", len(paths)))
-	ollamaStop(chatModel)
-	ollamaStop(vlTag)
+	llamaStop()
 	if err := ensureWhisper(); err != nil {
 		say("  음성 도구 준비 실패: " + err.Error())
 		say("  영상 옆에 같은 이름 .txt를 두면 됩니다.")
