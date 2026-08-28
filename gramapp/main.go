@@ -36,7 +36,9 @@ func main() {
 		files = pickFiles()
 	}
 	if len(files) == 0 {
-		say("파일이 없습니다. 이 프로그램 아이콘에 파일을 끌어다 놓거나, 창에서 고르세요.")
+		say("파일을 고르지 않았습니다.")
+		say("  · 시작.bat을 다시 눌러 창에서 고르거나")
+		say("  · 로컬LLM보고서 아이콘 위에 파일을 끌어다 놓으세요.")
 		pause()
 		os.Exit(2)
 	}
@@ -44,13 +46,13 @@ func main() {
 	names, _ := ollamaTags()
 	model := pickInstalled(p.Pull, names)
 	if model == "" {
-		say("모델이 없습니다. 창을 닫지 말고 다시 실행해 주세요.")
+		say("모델이 아직 없습니다. 시작.bat을 다시 눌러 주세요. 창을 닫지 말고 받아 주세요.")
 		pause()
 		os.Exit(1)
 	}
-	say("모델 " + model)
+	say("지금 쓰는 모델: " + model)
 	if availGB() < 4 {
-		say("메모리가 빠듯합니다. Chrome·엣지를 닫으면 더 잘 돌아갑니다.")
+		say("메모리가 빠듯합니다. Chrome·엣지를 닫으면 속도와 워드 저장이 안정됩니다.")
 	}
 
 	t0 := time.Now()
@@ -58,13 +60,15 @@ func main() {
 	ollamaStop(model)
 	if err != nil {
 		say("실패: " + err.Error())
+		say("원본 파일은 그대로 있습니다.")
 		pause()
 		os.Exit(1)
 	}
 	say("")
-	say("저장 위치")
+	say("끝났습니다. 원본은 그대로 두었습니다.")
+	say("저장 위치 (이 폴더가 곧 열립니다)")
 	say("  " + out)
-	say(fmt.Sprintf("완료 %s · 모델을 내려 메모리를 비웠습니다.", time.Since(t0).Round(time.Second)))
+	say(fmt.Sprintf("걸린 시간 %s · 모델은 내려서 메모리를 비웠습니다.", time.Since(t0).Round(time.Second)))
 	reveal(out)
 	pause()
 }
