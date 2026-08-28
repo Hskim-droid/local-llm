@@ -1,3 +1,3 @@
-module github.com/Hskim-droid/local-report/gramapp
+module github.com/Hskim-droid/local-llm-report/gramapp
 
 go 1.22
