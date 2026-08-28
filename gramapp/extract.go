@@ -130,10 +130,9 @@ func extractPDF(p string) ([]segment, error) {
 	if err != nil {
 		return nil, err
 	}
-	text := pdfPlain(b)
-	text = strings.TrimSpace(text)
+	text := strings.TrimSpace(pdfPlain(b))
 	if text == "" {
-		return nil, fmt.Errorf("PDF에서 글을 못 읽었습니다 (스캔본일 수 있음)")
+		return nil, nil
 	}
 	return []segment{{Text: text, Source: "pdf", Location: "page-1"}}, nil
 }

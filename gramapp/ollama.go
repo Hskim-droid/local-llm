@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -29,8 +30,9 @@ type chatOpt struct {
 }
 
 type chatMsg struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role    string   `json:"role"`
+	Content string   `json:"content"`
+	Images  []string `json:"images,omitempty"`
 }
 
 type chatResp struct {
@@ -108,6 +110,33 @@ func ollamaChatJSON(model, system, user string, ctx, predict int) (map[string]an
 	var cr chatResp
 	if err := json.Unmarshal(raw, &cr); err != nil {
 		return nil, fmt.Errorf("ollama 응답 오류")
+	}
+	return parseJSONObj(cr.Message.Content)
+}
+
+func ollamaChatVision(model, system, user string, img []byte) (map[string]any, error) {
+	b64 := base64.StdEncoding.EncodeToString(img)
+	body, _ := json.Marshal(chatReq{
+		Model:     model,
+		Stream:    false,
+		Format:    "json",
+		KeepAlive: "2m",
+		Options:   chatOpt{Temperature: 0.1, NumCtx: 2048, NumPredict: 400},
+		Messages: []chatMsg{
+			{Role: "system", Content: system},
+			{Role: "user", Content: user, Images: []string{b64}},
+		},
+	})
+	cli := &http.Client{Timeout: 180 * time.Second}
+	resp, err := cli.Post(ollamaHost+"/api/chat", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	raw, _ := io.ReadAll(resp.Body)
+	var cr chatResp
+	if err := json.Unmarshal(raw, &cr); err != nil {
+		return nil, fmt.Errorf("그림 모델 응답 오류")
 	}
 	return parseJSONObj(cr.Message.Content)
 }
