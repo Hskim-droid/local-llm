@@ -9,8 +9,13 @@ import (
 func runFiles(files []string, p profile, model string, pk pack) (string, error) {
 	var segs []segment
 	var imgs []imgPart
+	var pending []string
 	for _, f := range files {
 		ss, err := extractPath(f)
+		if _, ok := err.(needWhisperError); ok {
+			pending = append(pending, f)
+			continue
+		}
 		if err != nil {
 			say("  건너뜀 " + filepath.Base(f) + " — " + err.Error())
 			continue
@@ -23,6 +28,21 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		for _, im := range extractVisuals(f) {
 			im.Location = base + "/" + im.Location
 			imgs = append(imgs, im)
+		}
+	}
+	if len(pending) > 0 {
+		transcribePending(pending, model)
+		for _, f := range pending {
+			ss, err := extractPath(f)
+			if err != nil {
+				say("  건너뜀 " + filepath.Base(f) + " — " + err.Error())
+				continue
+			}
+			base := filepath.Base(f)
+			for _, s := range ss {
+				s.Location = base + "/" + s.Location
+				segs = append(segs, s)
+			}
 		}
 	}
 	if len(imgs) > 8 {

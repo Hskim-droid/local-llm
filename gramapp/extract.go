@@ -47,17 +47,17 @@ func extractPath(p string) ([]segment, error) {
 	}
 }
 
+func sidecarTxt(p string) string {
+	return strings.TrimSuffix(p, filepath.Ext(p)) + ".txt"
+}
+
 func extractVideo(p string) ([]segment, error) {
-	side := strings.TrimSuffix(p, filepath.Ext(p)) + ".txt"
+	side := sidecarTxt(p)
 	b, err := os.ReadFile(side)
-	if err != nil {
-		return nil, fmt.Errorf("영상은 같은 이름 .txt(전사문)를 옆에 두면 됩니다: %s", filepath.Base(side))
+	if err != nil || strings.TrimSpace(string(b)) == "" {
+		return nil, needWhisperError{Path: p}
 	}
-	t := strings.TrimSpace(string(b))
-	if t == "" {
-		return nil, nil
-	}
-	return []segment{{Text: t, Source: "video", Location: "transcript"}}, nil
+	return []segment{{Text: strings.TrimSpace(string(b)), Source: "video", Location: "transcript"}}, nil
 }
 
 func extractPPTX(p string) ([]segment, error) {
