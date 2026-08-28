@@ -1,0 +1,9 @@
+{
+  "id": "회의록",
+  "label": "회의록",
+  "blurb": "녹취·전사 중심. 말한 것만 남김",
+  "title_suffix": "회의록",
+  "out_suffix": "_회의록",
+  "out_name": "회의록.docx",
+  "body_heading": "회의 내용"
+}

@@ -14,12 +14,12 @@ import (
 const ollamaHost = "http://127.0.0.1:11434"
 
 type chatReq struct {
-	Model    string      `json:"model"`
-	Stream   bool        `json:"stream"`
-	Format   string      `json:"format"`
-	KeepAlive string     `json:"keep_alive"`
-	Options  chatOpt     `json:"options"`
-	Messages []chatMsg   `json:"messages"`
+	Model     string    `json:"model"`
+	Stream    bool      `json:"stream"`
+	Format    string    `json:"format"`
+	KeepAlive string    `json:"keep_alive"`
+	Options   chatOpt   `json:"options"`
+	Messages  []chatMsg `json:"messages"`
 }
 
 type chatOpt struct {

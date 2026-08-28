@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func writeDocx(path string, title string, header [][]string, sections []map[string]any) error {
+func writeDocx(path string, title string, bodyHeading string, header [][]string, sections []map[string]any) error {
 	var b strings.Builder
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`)
 	b.WriteString(`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">`)
@@ -22,7 +22,9 @@ func writeDocx(path string, title string, header [][]string, sections []map[stri
 			p(&b, row[2]+"  "+row[3], 21, false, "left")
 		}
 	}
-	p(&b, "회의 내용", 24, true, "left")
+	if strings.TrimSpace(bodyHeading) != "" {
+		p(&b, bodyHeading, 24, true, "left")
+	}
 	for _, sec := range sections {
 		h, _ := sec["heading"].(string)
 		if h != "" {

@@ -1,0 +1,9 @@
+{
+  "id": "번역",
+  "label": "일한 번역",
+  "blurb": "일본어·영어 자료를 한국어로. 레이아웃 복제는 하지 않음",
+  "title_suffix": "한국어번역",
+  "out_suffix": "_번역",
+  "out_name": "한국어번역.docx",
+  "body_heading": "번역문"
+}
