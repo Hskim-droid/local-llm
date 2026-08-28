@@ -8,6 +8,7 @@ import (
 
 func runFiles(files []string, p profile, model string, pk pack) (string, error) {
 	var segs []segment
+	var imgs []imgPart
 	for _, f := range files {
 		ss, err := extractPath(f)
 		if err != nil {
@@ -19,9 +20,19 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 			s.Location = base + "/" + s.Location
 			segs = append(segs, s)
 		}
+		for _, im := range extractVisuals(f) {
+			im.Location = base + "/" + im.Location
+			imgs = append(imgs, im)
+		}
+	}
+	if len(imgs) > 8 {
+		imgs = imgs[:8]
+	}
+	if len(imgs) > 0 {
+		segs = fillVision(segs, imgs, model)
 	}
 	if len(segs) == 0 {
-		return "", fmt.Errorf("꺼낼 글이 없습니다")
+		return "", fmt.Errorf("꺼낼 글이 없습니다 (스캔 PDF면 그림 모델을 못 받았을 수 있습니다)")
 	}
 	say(fmt.Sprintf("추출 %d개 파일 · 세그먼트 %d · 팩 %s", len(files), len(segs), pk.ID))
 	hv := harvestSegments(segs)
