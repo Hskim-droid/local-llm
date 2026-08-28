@@ -1,6 +1,6 @@
-# 로컬LLM보고서 — LG 그램 (윈도우)
+# 로컬LLM — LG 그램 (윈도우)
 
-이 프로그램은 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. 그램은 **`시작.bat` / `로컬LLM보고서.exe`** 가 정본입니다. **Ollama는 필요 없습니다.** llama.cpp가 GGUF를 받아 돌립니다. 아래 파이썬(`report.ps1`)은 개발용입니다.
+이 프로그램은 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. 그램은 **`시작.bat` / `로컬LLM.exe`** 가 정본입니다. **Ollama는 필요 없습니다.** llama.cpp가 GGUF를 받아 돌립니다. 아래 파이썬(`report.ps1`)은 개발용입니다.
 
 채팅 모델·그림 모델·음성 모델은 **한 번에 하나만** 올립니다. 영상은 옆 `.txt`가 있으면 그걸 쓰고, 없으면 whisper.cpp `small`을 그때 받습니다.
 
@@ -39,7 +39,7 @@
 
 ## 한 번만 설치 (정본)
 
-1. Releases에서 `local-llm-report-windows.zip` → 바탕화면에 풀기
+1. Releases에서 `local-llm-windows.zip` → 바탕화면에 풀기
 2. `시작.bat` 더블클릭. **Ollama·파이썬 없음.**
 3. 16GB는 8B(약 5GB), 32GB는 8B 다음 14B. 창을 닫지 마세요.
 
