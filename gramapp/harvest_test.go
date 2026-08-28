@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -42,6 +43,11 @@ func TestHarvestExamples(t *testing.T) {
 	}
 	if !h2.hours["15"] || !h2.hours["16"] {
 		t.Errorf("minutes hours 15/16 missing: raw=%v", h2.Raw)
+	}
+	for _, n := range h2.Raw {
+		if strings.Contains(n, ":") {
+			t.Errorf("timestamp should not enter prompt list: %s", n)
+		}
 	}
 }
 

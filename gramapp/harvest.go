@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -50,7 +53,6 @@ func harvestText(s string) harvest {
 			continue
 		}
 		seen[key] = true
-		h.Raw = append(h.Raw, key)
 		h.raws[foldNum(key)] = true
 		if tok.Time {
 			for _, hr := range timeHours(tok.Raw) {
@@ -58,6 +60,7 @@ func harvestText(s string) harvest {
 			}
 			continue
 		}
+		h.Raw = append(h.Raw, key)
 		if tok.Core != "" {
 			h.cores[tok.Core] = true
 		}
@@ -171,6 +174,48 @@ func foldNum(s string) string {
 	s = wideDigits(strings.TrimSpace(s))
 	s = strings.ReplaceAll(s, " ", "")
 	return strings.ToLower(s)
+}
+
+func runHarvestOnly(files []string) (string, error) {
+	var segs []segment
+	for _, f := range files {
+		ss, err := extractPath(f)
+		if _, ok := err.(needWhisperError); ok {
+			say("  건너뜀 " + filepath.Base(f) + " — 영상은 옆 .txt가 있을 때만 수확합니다")
+			continue
+		}
+		if err != nil {
+			say("  건너뜀 " + filepath.Base(f) + " — " + err.Error())
+			continue
+		}
+		base := filepath.Base(f)
+		for _, s := range ss {
+			s.Location = base + "/" + s.Location
+			segs = append(segs, s)
+		}
+	}
+	if len(segs) == 0 {
+		return "", fmt.Errorf("꺼낼 글이 없습니다")
+	}
+	hv := harvestSegments(segs)
+	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+"_수확")
+	if err := ensureDir(outDir); err != nil {
+		return "", err
+	}
+	var blob strings.Builder
+	for _, s := range segs {
+		blob.WriteString("[" + s.Location + "]\n" + s.Text + "\n\n")
+	}
+	_ = os.WriteFile(filepath.Join(outDir, "추출.txt"), []byte(blob.String()), 0644)
+	dumpJSON(filepath.Join(outDir, "수확.json"), map[string]any{
+		"count":   len(hv.Raw),
+		"numbers": hv.Raw,
+	})
+	say(fmt.Sprintf("세그먼트 %d · 수확 수치 %d", len(segs), len(hv.Raw)))
+	for _, n := range hv.Raw {
+		say("  · " + n)
+	}
+	return filepath.Join(outDir, "수확.json"), nil
 }
 
 func harvestPrompt(h harvest) string {

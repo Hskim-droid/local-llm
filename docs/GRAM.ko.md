@@ -35,32 +35,15 @@
 | `exaone3.5:32b` | 약 19GB | 좋음 | 무거움 | 불가 | 불가 |
 | 업스테이지 **Solar Open 2** | 초대형 | 좋음 | — | **로컬 불가** | 불가 |
 
-그램은 **처음엔 무조건 `qwen3:8b`** 를 받습니다. 32GB여도 첫 실행을 가볍게 하려는 것입니다. 14B를 쓰려면:
+그램은 **처음엔 무조건 8B GGUF**를 받습니다. 32GB여도 첫 실행을 가볍게 하려는 것입니다. 일본 장표 → 한글 보고서는 **Qwen**.
 
-```powershell
-ollama pull qwen3:14b
-report --model qwen3:14b
-```
+## 한 번만 설치 (정본)
 
-일본 장표 → 한글 보고서는 **Qwen**. 한글만 다듬을 때 EXAONE.
+1. Releases에서 `local-llm-report-windows.zip` → 바탕화면에 풀기
+2. `시작.bat` 더블클릭. **Ollama·파이썬 없음.**
+3. 16GB는 8B(약 5GB), 32GB는 8B 다음 14B. 창을 닫지 마세요.
 
-## 한 번만 설치
-
-1. Python 3.11+ https://www.python.org/downloads/windows/  
-   **Add python.exe to PATH** 체크. `py -3 --version`
-2. Ollama https://ollama.com/download  
-   트레이에 뜨면 됩니다. `ollama serve` 창을 띄워 둘 필요 없음.
-3. 영상: 옆 `.txt`가 있으면 FFmpeg 필요 없음. 없으면 프로그램이 ffmpeg·whisper.cpp를 그때 받습니다.
-4. 이 저장소:
-
-```powershell
-git clone https://github.com/Hskim-droid/local-llm-report.git
-cd local-llm-report
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-.\report.ps1
-```
-
-첫 실행이 pip · Ollama · 모델을 **한국어로 안내하며 순서대로** 받습니다. 16GB는 `qwen3:8b`(약 5GB), 32GB는 8B 다음 14B. 창을 닫지 마세요.
+개발용 파이썬(`report.ps1`)은 Ollama가 아직 남아 있습니다. 그램 사용자에게 시키지 마세요.
 
 ## 매번
 

@@ -13,10 +13,13 @@ func main() {
 	os.Setenv("PYTHONUTF8", "1")
 
 	packArg := ""
+	harvestOnly := false
 	var rawFiles []string
 	for i := 1; i < len(os.Args); i++ {
 		a := os.Args[i]
 		switch {
+		case a == "--harvest":
+			harvestOnly = true
 		case a == "--pack" && i+1 < len(os.Args):
 			packArg = os.Args[i+1]
 			i++
@@ -29,7 +32,31 @@ func main() {
 		}
 	}
 
+	var files []string
+	for _, f := range rawFiles {
+		if abs, err := filepath.Abs(f); err == nil {
+			if st, err := os.Stat(abs); err == nil && st.Mode().IsRegular() {
+				files = append(files, abs)
+			}
+		}
+	}
+
 	p := pickProfile(ramGB())
+	if harvestOnly {
+		if len(files) == 0 {
+			say("--harvest 뒤에 PPTX·PDF·TXT를 붙여 주세요. 모델은 안 받습니다.")
+			os.Exit(2)
+		}
+		out, err := runHarvestOnly(files)
+		if err != nil {
+			say("실패: " + err.Error())
+			os.Exit(1)
+		}
+		say("수확만 했습니다. 모델은 안 올렸습니다.")
+		say("  " + out)
+		return
+	}
+
 	if err := setup(p); err != nil {
 		say("오류: " + err.Error())
 		pause()
@@ -44,14 +71,6 @@ func main() {
 	}
 	say("용도: " + pk.Label)
 
-	var files []string
-	for _, f := range rawFiles {
-		if abs, err := filepath.Abs(f); err == nil {
-			if st, err := os.Stat(abs); err == nil && st.Mode().IsRegular() {
-				files = append(files, abs)
-			}
-		}
-	}
 	if len(files) == 0 {
 		files = pickFiles()
 	}
