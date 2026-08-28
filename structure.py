@@ -16,7 +16,8 @@ SYS_CHUNK = (
 )
 
 SYS_PACK = (
-    "너는 로컬 문서 편집기다. 주어진 사실 목록만 사용해 보고서 JSON을 채운다. "
+    "너는 로컬 문서 편집기다. 주어진 사실만 사용해 보고서를 주제별로 묶는다. "
+    "슬라이드/페이지 하나당 섹션 하나를 만들지 말 것. 중복 문장은 합친다. "
     "사실에 없는 내용을 보태지 말 것. 숫자는 그대로. 명사형 종결. JSON만 반환."
 )
 
@@ -147,10 +148,12 @@ def _pack(facts: list[dict], title: str, kind: str, client: Ollama | None, src: 
     if client is not None:
         user = (
             f"제목후보: {title}\n종류: {kind}\n"
-            "아래 사실만 사용해 회의록 JSON을 채워라. 헤더 값을 모르면 빈 칸 대신 "
-            "'(원문에 없음)'을 쓴다.\n"
+            "사실만 사용해 주제별 회의록 JSON을 채워라. 모르면 '(원문에 없음)'. "
+            "섹션은 최대 5개. 제목 예: 1. 개요  2. 핵심 내용  3. 수치·일정  4. 질의 및 논의.\n"
             '{"title":"","date":"","time":"","place":"","attendees":"","agenda":"",'
-            '"exec":["..."],"actions":["..."]}\n\n'
+            '"exec":["명사형 3~5개"],'
+            '"sections":[{"heading":"1. 개요","facts":["..."],"rows":[["구분","내용"]]}],'
+            '"actions":["..."]}\n\n'
             f"{compact}"
         )
         try:
@@ -189,26 +192,51 @@ def _from_meta(meta: dict, title: str, kind: str, facts: list[dict], src: str = 
     sections = [
         {"heading": "0. Executive Summary", "blocks": [{"bullets": exec_s[:6]}]},
     ]
-    for i, f in enumerate(facts, 1):
-        hint = f.get("heading_hint") or f.get("location") or f"항목 {i}"
-        heading = f"{i}. {hint}"
-        blocks = []
-        if f.get("facts"):
-            blocks.append({"bullets": f["facts"]})
-        if f.get("rows"):
-            blocks.append({
-                "table": {
-                    "headers": ["구분", "내용"],
-                    "widths": [22, 78],
-                    "firstcol_bold": True,
-                    "rows": f["rows"],
-                }
-            })
-        if blocks:
-            sections.append({"heading": heading, "blocks": blocks})
-    discuss = _discussion(facts)
-    if discuss:
-        sections.append({"heading": f"{len(sections)}. 주요 질의 및 논의", "blocks": [{"bullets": discuss}]})
+    grouped = _meta_sections(meta.get("sections") or [])
+    if grouped:
+        for i, g in enumerate(grouped[:5], 1):
+            heading = str(g.get("heading") or f"{i}. 항목").strip()
+            blocks = []
+            facts_g = [str(x).strip() for x in (g.get("facts") or []) if str(x).strip()]
+            if facts_g:
+                blocks.append({"bullets": facts_g[:10]})
+            rows_g = []
+            for r in g.get("rows") or []:
+                if isinstance(r, (list, tuple)) and len(r) >= 2:
+                    rows_g.append([str(r[0]).strip(), str(r[1]).strip()])
+            if rows_g:
+                blocks.append({
+                    "table": {
+                        "headers": ["구분", "내용"],
+                        "widths": [22, 78],
+                        "firstcol_bold": True,
+                        "rows": rows_g[:8],
+                    }
+                })
+            if blocks:
+                sections.append({"heading": heading, "blocks": blocks})
+    else:
+        for i, f in enumerate(facts, 1):
+            hint = f.get("heading_hint") or f.get("location") or f"항목 {i}"
+            heading = f"{i}. {hint}"
+            blocks = []
+            if f.get("facts"):
+                blocks.append({"bullets": f["facts"]})
+            if f.get("rows"):
+                blocks.append({
+                    "table": {
+                        "headers": ["구분", "내용"],
+                        "widths": [22, 78],
+                        "firstcol_bold": True,
+                        "rows": f["rows"],
+                    }
+                })
+            if blocks:
+                sections.append({"heading": heading, "blocks": blocks})
+    if not grouped:
+        discuss = _discussion(facts)
+        if discuss:
+            sections.append({"heading": f"{len(sections)}. 주요 질의 및 논의", "blocks": [{"bullets": discuss}]})
     if not actions:
         actions = ["원문 기준 후속 일정은 추가 확인이 필요함"]
     sections.append({
@@ -230,6 +258,16 @@ def _from_meta(meta: dict, title: str, kind: str, facts: list[dict], src: str = 
         "sections": sections,
         "closing": "끝.",
     }
+
+
+def _meta_sections(raw) -> list[dict]:
+    out = []
+    if not isinstance(raw, list):
+        return out
+    for g in raw:
+        if isinstance(g, dict) and (g.get("facts") or g.get("rows") or g.get("heading")):
+            out.append(g)
+    return out
 
 
 def _exec_from_facts(facts: list[dict]) -> list[str]:

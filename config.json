@@ -1,10 +1,43 @@
 {
   "host": "http://127.0.0.1:11434",
-  "model_pref": ["qwen3:14b", "qwen2.5:14b", "qwen3:8b", "qwen2.5:7b"],
-  "num_ctx": 8192,
-  "num_predict": 1400,
-  "chunk_chars": 1600,
-  "keep_alive": "10m",
   "temperature": 0.1,
-  "timeout_sec": 180
+  "keep_alive": "5m",
+  "profiles": {
+    "gram16": {
+      "label": "LG gram 16 GB (typical Windows)",
+      "ram_min": 0,
+      "ram_max": 20,
+      "pull": "qwen3:8b",
+      "model_pref": ["qwen3:8b", "exaone3.5:7.8b", "qwen2.5:7b", "qwen3:4b"],
+      "num_ctx": 4096,
+      "num_predict": 800,
+      "chunk_chars": 1000,
+      "timeout_sec": 240,
+      "notes": "Do not load 14B. One model only. Close Chrome before a long deck."
+    },
+    "gram32": {
+      "label": "LG gram / gram Pro 32 GB Windows",
+      "ram_min": 20,
+      "ram_max": 40,
+      "pull": "qwen3:8b",
+      "model_pref": ["qwen3:14b", "qwen3:8b", "exaone3.5:7.8b"],
+      "num_ctx": 6144,
+      "num_predict": 1100,
+      "chunk_chars": 1400,
+      "timeout_sec": 200,
+      "notes": "14B if already downloaded. First-run still pulls 8B so the machine stays usable."
+    },
+    "mac24": {
+      "label": "Mac 24 GB unified (Apple Silicon)",
+      "ram_min": 20,
+      "ram_max": 28,
+      "pull": "qwen3:14b",
+      "model_pref": ["qwen3:14b", "qwen3:8b", "exaone3.5:7.8b"],
+      "num_ctx": 8192,
+      "num_predict": 1400,
+      "chunk_chars": 1600,
+      "timeout_sec": 180,
+      "notes": "Metal. 14B Q4 is the ceiling for smooth runs."
+    }
+  }
 }

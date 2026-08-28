@@ -45,31 +45,38 @@ class Ollama:
         return _parse_json(raw)
 
 
-def connect(cfg: dict, model: str | None = None, pull: bool = True) -> Ollama:
+def connect(cfg: dict, model: str | None = None, pull: bool = True, profile: dict | None = None) -> Ollama:
     host = cfg["host"]
+    p = profile or {}
+    pref = list(p.get("model_pref") or cfg.get("model_pref") or ["qwen3:8b"])
     tags = ensure_server(host)
     names = [m.get("name", "") for m in tags.get("models", [])]
-    chosen = _pick_model(model, cfg.get("model_pref") or [], names)
+    chosen = _pick_model(model, pref, names)
     if not chosen:
-        want = model or (cfg.get("model_pref") or ["qwen3:14b"])[0]
+        want = model or p.get("pull") or pref[0]
         if not pull:
-            raise OllamaError(
-                f"no model installed. run once: ollama pull {want}"
-            )
+            raise OllamaError(f"no model installed. run once: ollama pull {want}")
         print(f"no model yet. downloading {want} (one-time, several GB)…", flush=True)
         pull_model(want)
         tags = _get(f"{host}/api/tags", 8)
         names = [m.get("name", "") for m in tags.get("models", [])]
-        chosen = _pick_model(model or want, cfg.get("model_pref") or [], names)
+        chosen = _pick_model(model or want, pref, names)
     if not chosen:
         raise OllamaError("model not found. check `ollama list`.")
     options = {
         "temperature": cfg.get("temperature", 0.1),
-        "num_ctx": cfg.get("num_ctx", 8192),
-        "num_predict": cfg.get("num_predict", 1400),
+        "num_ctx": int(p.get("num_ctx") or cfg.get("num_ctx") or 4096),
+        "num_predict": int(p.get("num_predict") or cfg.get("num_predict") or 800),
         "num_gpu": -1,
+        "num_thread": 0,
     }
-    return Ollama(host, chosen, options, int(cfg.get("timeout_sec", 180)), cfg.get("keep_alive", "10m"))
+    return Ollama(
+        host,
+        chosen,
+        options,
+        int(p.get("timeout_sec") or cfg.get("timeout_sec") or 180),
+        cfg.get("keep_alive", "5m"),
+    )
 
 
 def ensure_server(host: str) -> dict:
@@ -129,9 +136,12 @@ def _pick_model(explicit: str | None, pref: list[str], names: list[str]) -> str 
             if n.startswith(p):
                 return n
     for n in names:
-        if "14b" in n.lower() and "qwen" in n.lower():
+        low = n.lower()
+        if "qwen" in low and ("8b" in low or "7b" in low or "14b" in low):
             return n
-    return None
+        if "exaone" in low:
+            return n
+    return names[0] if names else None
 
 
 def qwen_user(text: str, model: str) -> str:

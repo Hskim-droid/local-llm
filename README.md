@@ -1,110 +1,65 @@
 # local-report
 
-Drop **a video, a PowerPoint, and a PDF** onto your terminal. A local Ollama model (14B) writes a clean Korean Word report. Nothing is uploaded.
+Drop **a video, a PowerPoint, and a PDF** on a terminal. A **local** Ollama model writes a Korean Word report. Nothing is uploaded.
+
+**Primary target: LG gram on Windows.** 16 GB machines stay on an 8B model. 32 GB may use 14B. A 24 GB Mac still works.
 
 ```
-mp4 / m4a  →  speech-to-text (Whisper; reuses a sibling .txt if present)
+mp4 / m4a  →  Whisper (or a sibling .txt)
 pptx       →  slide text
 pdf        →  page text
-           →  Ollama fills a minutes JSON
+           →  Ollama fills a minutes JSON (topics grouped, not one section per slide)
            →  report.docx
 ```
 
-This is a **dev script**, not an installer app. You need Python and [Ollama](https://ollama.com) on the same machine.
+Full gram spec, model table, and click-by-click Windows steps:
 
-## What you get
-
-Next to the **first** file you dropped:
-
-```text
-meeting_report/
-  report.docx    ← the deliverable, then it opens
-  report.json    ← regenerate later; not for sharing
-```
-
-The Word file is plain text: title, metadata, bullets, light tables. Korean body copy uses Malgun Gothic on Windows and Nanum Gothic / Apple SD Gothic on Mac.
-
-## macOS
-
-```bash
-# once
-brew install python ffmpeg
-pip3 install -r requirements.txt
-pip3 install mlx-whisper av          # fast transcription on Apple Silicon
-# install Ollama from https://ollama.com then:
-ollama pull qwen3:14b
-
-chmod +x install-macos.sh report
-./install-macos.sh
-```
-
-Then in a **new** Terminal window:
-
-1. Type `report` and a space
-2. Drag a video, a `.pptx`, and a `.pdf` from Finder onto the window
-3. Press Enter
-
-If you only type `report` and press Enter, the script waits for the drop.
-
-## Windows (PowerShell)
+- English: [docs/GRAM.md](docs/GRAM.md)
+- Korean: [docs/GRAM.ko.md](docs/GRAM.ko.md)
 
 ```powershell
-# once — Python 3.11+ from python.org, tick "Add python.exe to PATH"
-py -m pip install -r requirements.txt
-# install Ollama from https://ollama.com then:
-ollama pull qwen3:14b
+report --status          # which profile this PC is
+```
 
+## Install (Windows gram)
+
+```powershell
+py -3 -m pip install -r requirements.txt
+ollama pull qwen3:8b          # ~5 GB, correct default for 16 GB
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 .\install-windows.ps1
 ```
 
-Open a **new** PowerShell window:
+New PowerShell window → type `report` → space → drop three files → Enter.
 
-1. Type `report` and a space
-2. Drag a video, a `.pptx`, and a `.pdf` from Explorer onto the window
-3. Press Enter
+Output: `{first-file-name}_report\report.docx` next to the first dropped file.
 
-From the repo folder, without installing: `.\report.ps1` or `.\report.cmd`.
-
-## Hardware
-
-A 24 GB Apple Silicon Mac runs `qwen3:14b` comfortably. On 16 GB RAM use `qwen3:8b`:
+## Install (macOS)
 
 ```bash
-ollama pull qwen3:8b
-report --model qwen3:8b
+pip3 install -r requirements.txt
+pip3 install mlx-whisper av
+ollama pull qwen3:14b         # 24 GB unified
+./install-macos.sh
 ```
 
-The script starts `ollama serve` if it is not running, and downloads the preferred model if none is installed (several GB, once).
+## Models (short)
 
-## Inputs
+| RAM | Default pull | Optional | Do not pull |
+|---|---|---|---|
+| gram **16 GB** | `qwen3:8b` | `exaone3.5:7.8b` (Korean tone) | 14B / 32B |
+| gram **32 GB** | `qwen3:8b` first, then `qwen3:14b` if you want | EXAONE 7.8B | EXAONE 32B, Solar Open 2 |
+| Mac **24 GB** | `qwen3:14b` | 8B for speed | 32B Q4 |
 
-| Kind | Extensions | Notes |
-|---|---|---|
-| Video / audio | `.mp4` `.m4a` `.mov` `.wav` `.mp3` | If `meeting.txt` sits next to `meeting.mp4`, transcription is skipped |
-| Slides | `.pptx` | Old `.ppt` is not supported — save as PPTX |
-| Document | `.pdf` | Text PDFs work; scanned pages need extra OCR |
-
-About three files at a time is the intended use. Japanese and English are translated **directly into Korean** (no English pivot).
-
-## Useful flags
-
-```bash
-report meeting.mp4 deck.pptx brief.pdf
-report --out ~/Desktop/out
-report --no-llm          # extract + skeleton only, no model
-report --no-open         # write the docx but do not open it
-report --model qwen3:8b
-```
+Japanese slides → Korean report: **Qwen**. Korean-only polish: **EXAONE 7.8B**. Upstage Solar Open 2 does not fit a gram.
 
 ## Tests
 
 ```bash
 python3 test_reportctl.py
+python3 -c "from hardware import inspect; from ollama_client import load_config; print(inspect(load_config()).summary())"
 ```
-
-No Ollama required. Video tests use a sidecar `.txt`, so Whisper is not downloaded.
 
 ## Privacy
 
-Files stay on disk. The only network the script uses is `http://127.0.0.1:11434` (local Ollama). Optional one-time `ollama pull` is the only download.
+Disk only, plus `http://127.0.0.1:11434`. Optional `ollama pull`.

@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from extract import VIDEO, PPTX, extract_many
+from hardware import inspect
 from ollama_client import OllamaError, connect, load_config
 from render import write_outputs
 from structure import default_title, structure
@@ -30,11 +31,13 @@ def main(argv: list[str] | None = None) -> int:
             pass
     ap = argparse.ArgumentParser(
         prog="reportctl",
-        description="Turn a video, PPTX, and PDF into a Word report with local Ollama 14B",
+        description="Turn a video, PPTX, and PDF into a Word report. Tuned for LG gram Windows.",
     )
     ap.add_argument("input", nargs="*", type=Path, help="mp4/m4a, pptx, pdf — drop onto the terminal")
     ap.add_argument("--out", type=Path, help="output folder (default: next to the first file)")
-    ap.add_argument("--model", help="Ollama model tag (default: qwen3:14b if installed)")
+    ap.add_argument("--model", help="Ollama model tag (overrides the gram profile)")
+    ap.add_argument("--profile", choices=["gram16", "gram32", "mac24"], help="force a hardware profile")
+    ap.add_argument("--status", action="store_true", help="print RAM/GPU/model profile and exit")
     ap.add_argument("--kind", choices=["auto", "slides", "minutes"], default="auto")
     ap.add_argument("--title", help="report title")
     ap.add_argument("--no-llm", action="store_true", help="extract + skeleton only, skip the model")
@@ -44,6 +47,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-open", action="store_true", help="do not open the Word file when done")
     ap.add_argument("--no-pull", action="store_true", help="do not download a model if missing")
     args = ap.parse_args(argv)
+
+    cfg = load_config(ROOT)
+    machine = inspect(cfg, args.profile)
+    if args.status:
+        print(machine.summary())
+        print(f"profile={machine.profile_id}")
+        print(f"pull={machine.profile.get('pull')}")
+        print(f"prefer={', '.join(machine.profile.get('model_pref') or [])}")
+        print(f"num_ctx={machine.profile.get('num_ctx')} chunk={machine.profile.get('chunk_chars')}")
+        note = machine.profile.get("notes")
+        if note:
+            print(note)
+        return 0
 
     dropped = list(args.input)
     if not dropped:
@@ -89,19 +105,17 @@ def main(argv: list[str] | None = None) -> int:
         kind = "minutes" if mixed else ("slides" if exts & PPTX else "minutes")
     title = args.title or default_title(sources)
 
+    print(machine.summary(), flush=True)
     client = None
+    chunk_chars = int(machine.profile.get("chunk_chars") or 1000)
     if not args.no_llm:
-        cfg = load_config(ROOT)
         try:
-            client = connect(cfg, args.model, pull=not args.no_pull)
+            client = connect(cfg, args.model, pull=not args.no_pull, profile=machine.profile)
         except OllamaError as exc:
             print(str(exc), file=sys.stderr)
             return 1
-        print(f"model {client.model}  ctx={cfg.get('num_ctx')}", flush=True)
-        chunk_chars = int(cfg.get("chunk_chars", 1600))
+        print(f"model {client.model}  ctx={client.options.get('num_ctx')}", flush=True)
     else:
-        cfg = load_config(ROOT)
-        chunk_chars = int(cfg.get("chunk_chars", 1600))
         print("skeleton only (no model)", flush=True)
 
     def prog(msg: str) -> None:

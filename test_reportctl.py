@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 
 from extract import Segment, collect_numbers, extract, extract_many, hangul_ratio
+from hardware import pick_profile
+from ollama_client import load_config
 from reportctl import parse_drop_line
 from render import build_html, render_md, write_outputs
 from structure import default_title, structure
@@ -165,6 +167,26 @@ class StructureRenderTests(unittest.TestCase):
 
     def test_default_title(self):
         self.assertEqual(default_title([Path("/tmp/PartnerForum_GPDay.pptx")]), "PartnerForum GPDay")
+
+
+class ProfileTests(unittest.TestCase):
+    def setUp(self):
+        self.cfg = load_config(ROOT)
+
+    def test_gram16(self):
+        pid, p = pick_profile(self.cfg, ram=16, platform="win32")
+        self.assertEqual(pid, "gram16")
+        self.assertEqual(p["pull"], "qwen3:8b")
+        self.assertLessEqual(int(p["num_ctx"]), 4096)
+
+    def test_gram32(self):
+        pid, p = pick_profile(self.cfg, ram=32, platform="win32")
+        self.assertEqual(pid, "gram32")
+        self.assertIn("qwen3:14b", p["model_pref"])
+
+    def test_force(self):
+        pid, p = pick_profile(self.cfg, ram=32, explicit="gram16")
+        self.assertEqual(pid, "gram16")
 
 
 class DropLineTests(unittest.TestCase):
