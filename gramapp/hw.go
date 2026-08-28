@@ -7,11 +7,11 @@ import (
 )
 
 type profile struct {
-	ID     string
-	Label  string
-	Pull   []string
-	Ctx    int
-	Chunk  int
+	ID      string
+	Label   string
+	Pull    []string
+	Ctx     int
+	Chunk   int
 	Predict int
 }
 

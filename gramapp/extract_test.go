@@ -32,7 +32,7 @@ func TestExtractPPTX(t *testing.T) {
 func TestWriteDocx(t *testing.T) {
 	dir := t.TempDir()
 	out := filepath.Join(dir, "보고서.docx")
-	err := writeDocx(out, "제목", [][]string{{"일 시", "2026.1.1", "회의시간", "10:00 ~ 11:00"}}, []map[string]any{
+	err := writeDocx(out, "제목", "회의 내용", [][]string{{"일 시", "2026.1.1", "회의시간", "10:00 ~ 11:00"}}, []map[string]any{
 		{"heading": "0. Executive Summary", "blocks": []map[string]any{{"bullets": []string{"핵심임"}}}},
 	})
 	if err != nil {

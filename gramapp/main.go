@@ -12,6 +12,23 @@ func main() {
 	setUTF8Console()
 	os.Setenv("PYTHONUTF8", "1")
 
+	packArg := ""
+	var rawFiles []string
+	for i := 1; i < len(os.Args); i++ {
+		a := os.Args[i]
+		switch {
+		case a == "--pack" && i+1 < len(os.Args):
+			packArg = os.Args[i+1]
+			i++
+		case strings.HasPrefix(a, "--pack="):
+			packArg = strings.TrimPrefix(a, "--pack=")
+		case strings.HasPrefix(a, "-"):
+			continue
+		default:
+			rawFiles = append(rawFiles, a)
+		}
+	}
+
 	p := pickProfile(ramGB())
 	if err := setup(p); err != nil {
 		say("오류: " + err.Error())
@@ -19,19 +36,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	files := os.Args[1:]
-	var cleaned []string
-	for _, f := range files {
-		if strings.HasPrefix(f, "-") {
-			continue
-		}
+	pk, err := pickPack(packArg)
+	if err != nil {
+		say("오류: " + err.Error())
+		pause()
+		os.Exit(1)
+	}
+	say("용도: " + pk.Label)
+
+	var files []string
+	for _, f := range rawFiles {
 		if abs, err := filepath.Abs(f); err == nil {
 			if st, err := os.Stat(abs); err == nil && st.Mode().IsRegular() {
-				cleaned = append(cleaned, abs)
+				files = append(files, abs)
 			}
 		}
 	}
-	files = cleaned
 	if len(files) == 0 {
 		files = pickFiles()
 	}
@@ -56,7 +76,7 @@ func main() {
 	}
 
 	t0 := time.Now()
-	out, err := runFiles(files, p, model)
+	out, err := runFiles(files, p, model, pk)
 	ollamaStop(model)
 	if err != nil {
 		say("실패: " + err.Error())
@@ -74,9 +94,7 @@ func main() {
 }
 
 func pause() {
-	fmt.Print("\n창을 닫으려면 Enter > ")
-	var s string
-	_, _ = fmt.Scanln(&s)
+	_ = promptLine("\n창을 닫으려면 Enter > ")
 }
 
 func mkdirAll(p string) error {

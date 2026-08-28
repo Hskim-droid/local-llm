@@ -67,7 +67,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 3. 탐색기에서 세 파일을 끌어다 놓는다.
 4. Enter.
 
-끝나면 첫 파일 옆에 `이름_보고서\보고서.docx` 가 생기고 **폴더가 열립니다.** 원본은 안 건드립니다. 워드로 바로 열려면 `--open`. 작업이 끝나면 모델을 내려 RAM을 비웁니다.
+끝나면 첫 파일 옆에 용도 폴더가 생기고 **그 폴더가 열립니다.** (`이름_보고서\보고서.docx` / `이름_회의록\회의록.docx` / `이름_번역\한국어번역.docx`) 원본은 안 건드립니다. 워드로 바로 열려면 `--open`. 작업이 끝나면 모델을 내려 RAM을 비웁니다.
 
 ```powershell
 report --out $HOME\Desktop\out

@@ -6,10 +6,7 @@ import (
 	"strings"
 )
 
-const sysChunk = "너는 회의록 정리기다. 원문 사실만 한국어 개조식 JSON으로. 창작 금지. 숫자는 원문 그대로. 명사형 종결. 일본어·영어는 한국어로 직역. JSON만."
-const sysPack = "너는 회의록 편집기다. 사실만 주제별로 묶는다. 슬라이드마다 섹션을 만들지 말 것. 없는 내용 금지. 명사형 종결. JSON만."
-
-func runFiles(files []string, p profile, model string) (string, error) {
+func runFiles(files []string, p profile, model string, pk pack) (string, error) {
 	var segs []segment
 	for _, f := range files {
 		ss, err := extractPath(f)
@@ -26,7 +23,7 @@ func runFiles(files []string, p profile, model string) (string, error) {
 	if len(segs) == 0 {
 		return "", fmt.Errorf("꺼낼 글이 없습니다")
 	}
-	say(fmt.Sprintf("추출 %d개 파일 · 세그먼트 %d", len(files), len(segs)))
+	say(fmt.Sprintf("추출 %d개 파일 · 세그먼트 %d · 팩 %s", len(files), len(segs), pk.ID))
 
 	var facts []map[string]any
 	buf := ""
@@ -36,7 +33,7 @@ func runFiles(files []string, p profile, model string) (string, error) {
 			return
 		}
 		user := fmt.Sprintf("위치:%s\n다음 원문을 사실 JSON으로.\n{\"heading_hint\":\"\",\"facts\":[\"명사형\"],\"rows\":[]}\n\n%s", loc, buf)
-		obj, err := ollamaChatJSON(model, sysChunk, user, p.Ctx, p.Predict)
+		obj, err := ollamaChatJSON(model, pk.ChunkSys, user, p.Ctx, p.Predict)
 		if err != nil {
 			obj = map[string]any{"heading_hint": loc, "facts": []any{buf}}
 		}
@@ -59,20 +56,20 @@ func runFiles(files []string, p profile, model string) (string, error) {
 	flush()
 
 	title := strings.TrimSuffix(filepath.Base(files[0]), filepath.Ext(files[0]))
-	packUser := fmt.Sprintf("제목후보:%s\n사실만 주제별 회의록 JSON.\n{\"title\":\"\",\"date\":\"\",\"time\":\"\",\"place\":\"\",\"attendees\":\"\",\"agenda\":\"\",\"exec\":[\"\"],\"sections\":[{\"heading\":\"1. 개요\",\"facts\":[\"\"]}],\"actions\":[\"\"]}\n\n%v", title, facts)
-	meta, err := ollamaChatJSON(model, sysPack, packUser, p.Ctx, p.Predict)
+	packUser := fmt.Sprintf("제목후보:%s\n사실만 주제별 JSON.\n{\"title\":\"\",\"date\":\"\",\"time\":\"\",\"place\":\"\",\"attendees\":\"\",\"agenda\":\"\",\"exec\":[\"\"],\"sections\":[{\"heading\":\"1. 개요\",\"facts\":[\"\"]}],\"actions\":[\"\"]}\n\n%v", title, facts)
+	meta, err := ollamaChatJSON(model, pk.AssembleSys, packUser, p.Ctx, p.Predict)
 	if err != nil {
 		meta = map[string]any{"title": title, "exec": []any{"원문 정리"}, "actions": []any{"추가 확인 필요"}}
 	}
 
-	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+"_보고서")
+	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+pk.OutSuffix)
 	if err := ensureDir(outDir); err != nil {
 		return "", err
 	}
-	docx := filepath.Join(outDir, "보고서.docx")
+	docx := filepath.Join(outDir, pk.OutName)
 	titleOut, _ := meta["title"].(string)
 	if titleOut == "" {
-		titleOut = title + " 회의록"
+		titleOut = title + " " + pk.TitleSuffix
 	}
 	header := [][]string{
 		{"일 시", str(meta["date"]), "회의시간", str(meta["time"])},
@@ -106,10 +103,11 @@ func runFiles(files []string, p profile, model string) (string, error) {
 			"blocks":  []map[string]any{{"ordered": acts}},
 		})
 	}
-	if err := writeDocx(docx, titleOut, header, sections); err != nil {
+	if err := writeDocx(docx, titleOut, pk.BodyHeading, header, sections); err != nil {
 		return "", err
 	}
-	dumpJSON(filepath.Join(outDir, "보고서.json"), meta)
+	jsonName := strings.TrimSuffix(pk.OutName, filepath.Ext(pk.OutName)) + ".json"
+	dumpJSON(filepath.Join(outDir, jsonName), meta)
 	return docx, nil
 }
 

@@ -1,0 +1,9 @@
+{
+  "id": "보고서",
+  "label": "보고서",
+  "blurb": "장표·PDF·자료를 한글 보고서로",
+  "title_suffix": "보고서",
+  "out_suffix": "_보고서",
+  "out_name": "보고서.docx",
+  "body_heading": "내용"
+}
