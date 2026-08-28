@@ -4,7 +4,7 @@ place Seongnam business hub
 attendees Partner 3, Acme Pharma 5
 
 1. Overview
-The company introduced ApexBind, an AI drug-discovery platform.
+The company introduced ApexBind, a research software platform.
 Core tech is BindScore for binding affinity and BiasCheck for bias prediction.
 
 2. Launch
@@ -16,4 +16,4 @@ Seed round of 7 billion KRW at a pre-money of about 50 billion KRW.
 Two investors have already committed 4 billion KRW.
 
 4. Open questions
-IP and data policy must be clarified when two clients target the same GPCR.
+IP and data policy must be clarified when two clients target the same protein.
