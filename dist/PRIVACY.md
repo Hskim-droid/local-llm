@@ -8,4 +8,4 @@
 - 인터넷은 **도구를 받을 때**만 씁니다. llama.cpp, Qwen3 GGUF, 필요할 때만 그림 GGUF·whisper.cpp·ffmpeg. 작업 파일은 나가지 않습니다.
 - Windows SmartScreen 경고는 코드 서명이 없어서 뜹니다. 마이크로소프트에 파일을 보내지 않습니다.
 
-일한 번역은 예전 [Munseo Translator](https://github.com/Hskim-droid/munseo-translator) 앱 대신 이 프로그램의 **번역** 팩을 씁니다. 그쪽 저장소는 보관(archive)입니다.
+일한 번역은 이 프로그램의 **번역** 팩으로 처리합니다.
