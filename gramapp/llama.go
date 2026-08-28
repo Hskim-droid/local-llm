@@ -83,6 +83,15 @@ func pickChatGGUF(p profile) (path, label string, err error) {
 }
 
 func chatSpecs(p profile) []ggufSpec {
+	var out []ggufSpec
+	for _, id := range p.Pull {
+		if g, ok := specByID(id); ok {
+			out = append(out, g)
+		}
+	}
+	if len(out) > 0 {
+		return out
+	}
 	switch p.ID {
 	case "mac24":
 		return []ggufSpec{gguf14b}
@@ -335,12 +344,29 @@ func extractTarGz(src, dest string) error {
 		if err != nil || strings.HasPrefix(rel, "..") {
 			continue
 		}
-		if hdr.Typeflag == tar.TypeDir {
-			_ = os.MkdirAll(out, 0755)
-			continue
-		}
 		if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil {
 			return err
+		}
+		switch hdr.Typeflag {
+		case tar.TypeDir:
+			_ = os.MkdirAll(out, 0755)
+			continue
+		case tar.TypeSymlink:
+			_ = os.Remove(out)
+			if err := os.Symlink(hdr.Linkname, out); err != nil {
+				return err
+			}
+			continue
+		case tar.TypeLink:
+			_ = os.Remove(out)
+			target := hdr.Linkname
+			if !filepath.IsAbs(target) {
+				target = filepath.Join(dest, target)
+			}
+			if err := os.Link(target, out); err != nil {
+				return err
+			}
+			continue
 		}
 		w, err := os.Create(out)
 		if err != nil {

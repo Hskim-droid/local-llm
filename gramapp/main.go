@@ -14,12 +14,17 @@ func main() {
 
 	packArg := ""
 	harvestOnly := false
+	force8b := false
 	var rawFiles []string
 	for i := 1; i < len(os.Args); i++ {
 		a := os.Args[i]
 		switch {
 		case a == "--harvest":
 			harvestOnly = true
+		case a == "--8b":
+			force8b = true
+		case a == "--yes":
+			skipPause = true
 		case a == "--pack" && i+1 < len(os.Args):
 			packArg = os.Args[i+1]
 			i++
@@ -42,6 +47,9 @@ func main() {
 	}
 
 	p := pickProfile(ramGB())
+	if force8b {
+		p.Pull = []string{"qwen3-8b"}
+	}
 	if harvestOnly {
 		if len(files) == 0 {
 			say("--harvest 뒤에 PPTX·PDF·TXT를 붙여 주세요. 모델은 안 받습니다.")
@@ -112,6 +120,9 @@ func main() {
 }
 
 func pause() {
+	if skipPause {
+		return
+	}
 	_ = promptLine("\n창을 닫으려면 Enter > ")
 }
 

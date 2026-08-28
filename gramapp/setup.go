@@ -106,6 +106,11 @@ func lookPath(name string) string {
 	return p
 }
 
+var skipPause bool
+
 func waitEnter(prompt string) {
+	if skipPause {
+		return
+	}
 	_ = promptLine(prompt)
 }
