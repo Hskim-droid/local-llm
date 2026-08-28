@@ -1,0 +1,6 @@
+# The shipping product is the Go exe. Python/PowerShell are leftover developer scripts.
+*.py linguist-vendored
+*.ps1 linguist-vendored
+*.sh linguist-vendored
+*.cmd linguist-vendored
+*.bat linguist-vendored
