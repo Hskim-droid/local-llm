@@ -39,6 +39,15 @@ func TestUnzipTo(t *testing.T) {
 	}
 }
 
+func TestIsWhisperBin(t *testing.T) {
+	if !isWhisperBin("whisper-cli.exe") || !isWhisperBin("whisper-cpp-darwin-arm64") {
+		t.Fatal("should detect cli names")
+	}
+	if isWhisperBin("ggml.dll") || isWhisperBin("ggml-small.bin") {
+		t.Fatal("should skip libs/models")
+	}
+}
+
 func TestNeedWhisperError(t *testing.T) {
 	err := needWhisperError{Path: "/tmp/a.mp4"}
 	if !strings.Contains(err.Error(), "a.mp4") {

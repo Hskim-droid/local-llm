@@ -14,10 +14,13 @@ import (
 )
 
 const (
-	whisperZipURL   = "https://github.com/ggml-org/whisper.cpp/releases/download/b4938/whisper-bin-x64.zip"
-	whisperModelURL = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin"
-	ffmpegWinURL    = "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64"
-	ffmpegMacURL    = "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64"
+	whisperZipWinURL = "https://github.com/ggml-org/whisper.cpp/releases/download/b4938/whisper-bin-x64.zip"
+	whisperZipMacURL = "https://github.com/OpenWhispr/whisper.cpp/releases/download/0.0.9/whisper-cpp-darwin-arm64.zip"
+	whisperZipMacX64 = "https://github.com/OpenWhispr/whisper.cpp/releases/download/0.0.9/whisper-cpp-darwin-x64.zip"
+	whisperModelURL  = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin?download=true"
+	ffmpegWinURL     = "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64"
+	ffmpegMacURL     = "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64"
+	ffmpegMacX64URL  = "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64"
 )
 
 type needWhisperError struct{ Path string }
@@ -65,12 +68,13 @@ func ensureWhisper() error {
 		return err
 	}
 	if _, err := whisperCLI(); err != nil {
-		if runtime.GOOS != "windows" {
-			return fmt.Errorf("whisper-cli가 없습니다. 맥은 영상 옆 .txt를 두거나 whisper-cli를 PATH에 넣으세요")
+		url, zipName := whisperZipForOS()
+		if url == "" {
+			return fmt.Errorf("이 OS용 whisper.cpp를 자동으로 못 받습니다. 영상 옆에 같은 이름 .txt를 두세요")
 		}
-		say("  whisper.cpp (약 8MB)를 받습니다. 창을 닫지 마세요.")
-		zipPath := filepath.Join(toolsDir(), "whisper-bin-x64.zip")
-		if err := downloadFile(whisperZipURL, zipPath); err != nil {
+		say("  whisper.cpp를 받습니다. 창을 닫지 마세요.")
+		zipPath := filepath.Join(toolsDir(), zipName)
+		if err := downloadFile(url, zipPath); err != nil {
 			return err
 		}
 		dest := filepath.Join(toolsDir(), "whisper")
@@ -87,6 +91,9 @@ func ensureWhisper() error {
 		if err := downloadFile(whisperModelURL, model); err != nil {
 			return err
 		}
+		if st, err := os.Stat(model); err != nil || st.Size() < 100<<20 {
+			return fmt.Errorf("음성 모델이 덜 받았습니다. 다시 눌러 주세요")
+		}
 	}
 	return nil
 }
@@ -100,13 +107,8 @@ func ensureFFmpeg() error {
 		prependPath(filepath.Dir(local))
 		return nil
 	}
-	url := ""
-	switch {
-	case runtime.GOOS == "windows":
-		url = ffmpegWinURL
-	case runtime.GOOS == "darwin" && runtime.GOARCH == "arm64":
-		url = ffmpegMacURL
-	default:
+	url := ffmpegURLForOS()
+	if url == "" {
 		return fmt.Errorf("ffmpeg가 없습니다. 영상에서 소리를 뽑을 때 필요합니다")
 	}
 	say("  ffmpeg (영상 소리 뽑기)를 받습니다. 창을 닫지 마세요.")
@@ -130,9 +132,52 @@ func whisperModelPath() string {
 	return filepath.Join(toolsDir(), "whisper", "ggml-small.bin")
 }
 
+func whisperZipForOS() (url, name string) {
+	switch {
+	case runtime.GOOS == "windows":
+		return whisperZipWinURL, "whisper-bin-x64.zip"
+	case runtime.GOOS == "darwin" && runtime.GOARCH == "arm64":
+		return whisperZipMacURL, "whisper-cpp-darwin-arm64.zip"
+	case runtime.GOOS == "darwin":
+		return whisperZipMacX64, "whisper-cpp-darwin-x64.zip"
+	default:
+		return "", ""
+	}
+}
+
+func ffmpegURLForOS() string {
+	switch {
+	case runtime.GOOS == "windows":
+		return ffmpegWinURL
+	case runtime.GOOS == "darwin" && runtime.GOARCH == "arm64":
+		return ffmpegMacURL
+	case runtime.GOOS == "darwin":
+		return ffmpegMacX64URL
+	default:
+		return ""
+	}
+}
+
+func isWhisperBin(name string) bool {
+	n := strings.ToLower(name)
+	switch {
+	case strings.HasSuffix(n, ".dll"), strings.HasSuffix(n, ".so"), strings.HasSuffix(n, ".dylib"),
+		strings.HasSuffix(n, ".txt"), strings.HasSuffix(n, ".bin"), strings.HasSuffix(n, ".zip"):
+		return false
+	case n == "whisper-cli", n == "whisper-cli.exe", n == "whisper", n == "whisper.exe":
+		return true
+	case strings.HasPrefix(n, "whisper-cpp"):
+		return true
+	default:
+		return false
+	}
+}
+
 func whisperCLI() (string, error) {
-	if p := lookPath("whisper-cli"); p != "" {
-		return p, nil
+	for _, name := range []string{"whisper-cli", "whisper"} {
+		if p := lookPath(name); p != "" {
+			return p, nil
+		}
 	}
 	root := filepath.Join(toolsDir(), "whisper")
 	var found string
@@ -140,8 +185,7 @@ func whisperCLI() (string, error) {
 		if err != nil || info.IsDir() {
 			return nil
 		}
-		base := strings.ToLower(info.Name())
-		if base == "whisper-cli.exe" || base == "whisper-cli" {
+		if isWhisperBin(info.Name()) {
 			found = p
 			return io.EOF
 		}
@@ -149,6 +193,9 @@ func whisperCLI() (string, error) {
 	})
 	if found == "" {
 		return "", fmt.Errorf("whisper-cli를 못 찾았습니다")
+	}
+	if runtime.GOOS != "windows" {
+		_ = os.Chmod(found, 0755)
 	}
 	prependPath(filepath.Dir(found))
 	return found, nil
@@ -209,6 +256,7 @@ func downloadFile(url, dest string) error {
 		return err
 	}
 	req.Header.Set("User-Agent", "local-llm-report")
+	req.Header.Set("Accept", "application/octet-stream")
 	resp, err := cli.Do(req)
 	if err != nil {
 		return err
@@ -297,6 +345,9 @@ func unzipTo(zipPath, dest string) error {
 		rc.Close()
 		if err != nil {
 			return err
+		}
+		if runtime.GOOS != "windows" && isWhisperBin(filepath.Base(out)) {
+			_ = os.Chmod(out, 0755)
 		}
 	}
 	return nil

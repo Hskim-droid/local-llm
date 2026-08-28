@@ -60,7 +60,7 @@ Expect roughly:
 
 - **gram 16 GB, Qwen 8B:** several seconds per slide, a 20-slide deck in minutes, not seconds.
 - **gram 32 GB, Qwen 14B:** similar to a 24 GB Mac but **hotter and slower**; fan-up is normal.
-- **Whisper on video:** `faster-whisper` `small` on CPU. A 30-minute meeting can take longer than the LLM pass. If you already have `meeting.txt` next to `meeting.mp4`, transcription is skipped.
+- **Whisper on video:** the Go exe uses **whisper.cpp** `ggml-small` sequentially (speech down, then the 8B). A 30-minute meeting can take longer than the JSON pass. If `meeting.txt` sits next to `meeting.mp4`, transcription is skipped.
 
 Close Chrome / Edge / Teams before a long job. One 14B weights file plus a browser will swap on 16 GB.
 
@@ -189,7 +189,7 @@ report --no-pull                 # fail if the model is missing, do not download
 
 ## Video notes on gram
 
-- First time: `faster-whisper` `small` downloads a small CPU model.
+- First time without a sidecar `.txt`: whisper.cpp + `ggml-small` (~470 MB) download into the tools folder. The report model is unloaded first.
 - Prefer a **sidecar** `name.txt` if you already transcribed (Clova, Whisper, human notes). Same stem as the video.
 - Skip 1-hour recordings on 16 GB until you have a `.txt`. Use the PPTX + PDF only.
 
