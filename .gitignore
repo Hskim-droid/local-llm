@@ -6,5 +6,6 @@ venv/
 *.egg-info/
 .pytest_cache/
 *_report/
+*_보고서/
 examples/output/
 .setup-ok.json

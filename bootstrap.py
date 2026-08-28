@@ -127,7 +127,7 @@ def setup(profile_id: str | None = None, force: bool = False) -> int:
         if prev.get("profile") == machine.profile_id and all(
             model_present(m, have) for m in wanted
         ):
-            say("이전 설치가 그대로입니다. 준비 단계를 건너뜁니다.")
+            say(f"준비됨 · {machine.summary()}")
             say("")
             return 0
 
@@ -188,9 +188,8 @@ def setup(profile_id: str | None = None, force: bool = False) -> int:
         ),
         encoding="utf-8",
     )
-    say("준비됐습니다.")
-    say("  파워셸에  report  를 치고 스페이스,")
-    say("  탐색기에서 영상 · PPT · PDF 를 이 창으로 끌어다 놓고 Enter.")
+    say("준비됐습니다. 이어서 파일을 넣으면 보고서를 만듭니다.")
+    say("  영상 · PPT · PDF 를 이 창에 끌어다 놓고 Enter.")
     say("")
     return 0
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# macOS / Linux: type `report`, drop files, press Enter
-set -euo pipefail
+# 한 번 실행: 필요하면 모델 받기 → 파일 드롭
+set -e
 SOURCE="${BASH_SOURCE[0]}"
 while [ -L "$SOURCE" ]; do
   DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
@@ -8,7 +8,43 @@ while [ -L "$SOURCE" ]; do
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
 done
 ROOT="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-if command -v python3 >/dev/null 2>&1; then
-  exec python3 "$ROOT/reportctl.py" "$@"
+PY="python3"
+command -v python3 >/dev/null 2>&1 || PY="python"
+
+skip=0
+for a in "$@"; do
+  [ "$a" = "--status" ] && skip=1
+  [ "$a" = "--skip-setup" ] && skip=1
+done
+
+if [ "$skip" -eq 0 ]; then
+  boot=("$PY" "$ROOT/bootstrap.py")
+  for a in "$@"; do
+    [ "$a" = "--force" ] && boot+=(--force)
+  done
+  n=$#
+  i=1
+  while [ "$i" -le "$n" ]; do
+    eval "a=\${$i}"
+    if [ "$a" = "--profile" ]; then
+      i=$((i + 1))
+      eval "b=\${$i}"
+      boot+=(--profile "$b")
+    fi
+    i=$((i + 1))
+  done
+  "${boot[@]}"
 fi
-exec python "$ROOT/reportctl.py" "$@"
+
+# reportctl 에는 설치 전용 플래그를 넘기지 않는다
+set -- "$@"
+args=()
+skipnext=0
+for a in "$@"; do
+  if [ "$skipnext" = 1 ]; then skipnext=0; continue; fi
+  case "$a" in
+    --skip-setup|--force) ;;
+    *) args+=("$a") ;;
+  esac
+done
+exec "$PY" "$ROOT/reportctl.py" "${args[@]+"${args[@]}"}"

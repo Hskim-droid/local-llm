@@ -41,8 +41,6 @@ for ($i = 0; $i -lt $args.Count; $i++) {
 if ($ctlArgs -contains "--status") { $skipSetup = $true }
 
 if (-not $skipSetup) {
-    Write-Host ""
-    Write-Host "처음이면 모델 받기에 시간이 걸립니다. 창을 닫지 마세요." -ForegroundColor Cyan
     $boot = $pyPrefix + @((Join-Path $here "bootstrap.py"))
     for ($i = 0; $i -lt $args.Count; $i++) {
         if ($args[$i] -eq "--profile" -and ($i + 1) -lt $args.Count) {

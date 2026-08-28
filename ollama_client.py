@@ -108,6 +108,13 @@ def ensure_server(host: str) -> dict:
     raise OllamaError(f"could not start Ollama ({host}). {last}")
 
 
+def stop_model(name: str) -> None:
+    binary = shutil.which("ollama")
+    if not binary or not name:
+        return
+    subprocess.run([binary, "stop", name], capture_output=True, timeout=30)
+
+
 def pull_model(name: str) -> None:
     binary = shutil.which("ollama")
     if not binary:

@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from extract import Segment, collect_numbers, extract, extract_many, hangul_ratio
-from hardware import pick_profile
+from hardware import inspect, memory_warning, pick_profile
 from ollama_client import load_config
 from reportctl import parse_drop_line
 from render import build_html, render_md, write_outputs
@@ -188,6 +188,14 @@ class ProfileTests(unittest.TestCase):
     def test_force(self):
         pid, p = pick_profile(self.cfg, ram=32, explicit="gram16")
         self.assertEqual(pid, "gram16")
+
+    def test_inspect_has_avail(self):
+        m = inspect(self.cfg)
+        self.assertGreater(m.ram_gb, 0)
+        self.assertGreaterEqual(m.avail_gb, 0)
+        # 여유 있으면 경고 없음, 없어도 문자열
+        w = memory_warning(m, "qwen3:8b")
+        self.assertTrue(w is None or "메모리" in w)
 
 
 class DropLineTests(unittest.TestCase):
