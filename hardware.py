@@ -17,10 +17,11 @@ class Machine:
     profile: dict
 
     def summary(self) -> str:
+        gpu = self.gpu or "내장 그래픽"
         return (
             f"{self.profile.get('label', self.profile_id)}  "
-            f"RAM {self.ram_gb:.0f} GB  GPU {self.gpu or 'iGPU/CPU'}  "
-            f"default {self.profile.get('pull')}"
+            f"RAM {self.ram_gb:.0f} GB  GPU {gpu}  "
+            f"기본모델 {self.profile.get('pull')}"
         )
 
 

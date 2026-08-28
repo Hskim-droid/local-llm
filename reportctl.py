@@ -31,32 +31,32 @@ def main(argv: list[str] | None = None) -> int:
             pass
     ap = argparse.ArgumentParser(
         prog="reportctl",
-        description="Turn a video, PPTX, and PDF into a Word report. Tuned for LG gram Windows.",
+        description="영상·PPT·PDF를 로컬 모델로 한글 워드 보고서로. LG 그램 윈도우용.",
     )
-    ap.add_argument("input", nargs="*", type=Path, help="mp4/m4a, pptx, pdf — drop onto the terminal")
-    ap.add_argument("--out", type=Path, help="output folder (default: next to the first file)")
-    ap.add_argument("--model", help="Ollama model tag (overrides the gram profile)")
-    ap.add_argument("--profile", choices=["gram16", "gram32", "mac24"], help="force a hardware profile")
-    ap.add_argument("--status", action="store_true", help="print RAM/GPU/model profile and exit")
+    ap.add_argument("input", nargs="*", type=Path, help="mp4/m4a, pptx, pdf — 창에 끌어다 놓기")
+    ap.add_argument("--out", type=Path, help="출력 폴더 (기본: 첫 파일 옆)")
+    ap.add_argument("--model", help="Ollama 모델 태그 (프로필 기본값 대신)")
+    ap.add_argument("--profile", choices=["gram16", "gram32", "mac24"], help="사양 프로필 강제")
+    ap.add_argument("--status", action="store_true", help="RAM·GPU·모델 프로필만 출력하고 종료")
     ap.add_argument("--kind", choices=["auto", "slides", "minutes"], default="auto")
-    ap.add_argument("--title", help="report title")
-    ap.add_argument("--no-llm", action="store_true", help="extract + skeleton only, skip the model")
-    ap.add_argument("--pdf", action="store_true", help="also write PDF")
-    ap.add_argument("--extras", action="store_true", help="also write md/html")
-    ap.add_argument("--dump", action="store_true", help="write extract JSON only")
-    ap.add_argument("--no-open", action="store_true", help="do not open the Word file when done")
-    ap.add_argument("--no-pull", action="store_true", help="do not download a model if missing")
+    ap.add_argument("--title", help="보고서 제목")
+    ap.add_argument("--no-llm", action="store_true", help="모델 없이 추출·골격만")
+    ap.add_argument("--pdf", action="store_true", help="PDF도 저장")
+    ap.add_argument("--extras", action="store_true", help="md/html도 저장")
+    ap.add_argument("--dump", action="store_true", help="추출 JSON만 저장")
+    ap.add_argument("--no-open", action="store_true", help="끝나면 워드를 열지 않음")
+    ap.add_argument("--no-pull", action="store_true", help="없는 모델을 받지 않음")
     args = ap.parse_args(argv)
 
     cfg = load_config(ROOT)
     machine = inspect(cfg, args.profile)
     if args.status:
         print(machine.summary())
-        print(f"profile={machine.profile_id}")
-        print(f"pull={machine.profile.get('pull')}")
-        print(f"prefer={', '.join(machine.profile.get('model_pref') or [])}")
-        print(f"num_ctx={machine.profile.get('num_ctx')} chunk={machine.profile.get('chunk_chars')}")
-        note = machine.profile.get("notes")
+        print(f"프로필={machine.profile_id}")
+        print(f"받을 모델={', '.join(machine.profile.get('setup_models') or [machine.profile.get('pull') or ''])}")
+        print(f"선호 순서={', '.join(machine.profile.get('model_pref') or [])}")
+        print(f"컨텍스트={machine.profile.get('num_ctx')}  청크={machine.profile.get('chunk_chars')}자")
+        note = machine.profile.get("notes_ko") or machine.profile.get("notes")
         if note:
             print(note)
         return 0
@@ -65,24 +65,24 @@ def main(argv: list[str] | None = None) -> int:
     if not dropped:
         dropped = prompt_drop()
         if not dropped:
-            print("Drop files first. Example:  report   then drag a video, PPTX, and PDF, then Enter", file=sys.stderr)
+            print("파일을 먼저 놓아 주세요. 예:  report  친 다음 영상·PPT·PDF를 끌어다 놓고 Enter", file=sys.stderr)
             return 2
     sources = [p.expanduser().resolve() for p in dropped]
     missing = [str(p) for p in sources if not p.exists()]
     if missing:
-        print("file not found: " + ", ".join(missing), file=sys.stderr)
+        print("파일 없음: " + ", ".join(missing), file=sys.stderr)
         return 2
 
     if len(sources) > 3:
-        print("note: this script is meant for about 3 files (video + PPTX + PDF).", file=sys.stderr)
+        print("참고: 영상+PPT+PDF 세 개 정도가 적당합니다.", file=sys.stderr)
 
     t0 = time.monotonic()
-    print(f"extracting {len(sources)} file(s)…", flush=True)
+    print(f"추출 중… {len(sources)}개 파일", flush=True)
     segs = extract_many(sources)
     if not segs:
-        print("no text extracted.", file=sys.stderr)
+        print("꺼낼 텍스트가 없습니다.", file=sys.stderr)
         return 1
-    print(f"  {len(segs)} segment(s)", flush=True)
+    print(f"  세그먼트 {len(segs)}개", flush=True)
 
     out_dir = args.out or (sources[0].parent / f"{sources[0].stem}_report")
     out_dir = out_dir.expanduser().resolve()
@@ -114,9 +114,9 @@ def main(argv: list[str] | None = None) -> int:
         except OllamaError as exc:
             print(str(exc), file=sys.stderr)
             return 1
-        print(f"model {client.model}  ctx={client.options.get('num_ctx')}", flush=True)
+        print(f"모델 {client.model}  컨텍스트 {client.options.get('num_ctx')}", flush=True)
     else:
-        print("skeleton only (no model)", flush=True)
+        print("모델 없이 골격만 작성합니다.", flush=True)
 
     def prog(msg: str) -> None:
         print(f"  {msg}", flush=True)
@@ -129,17 +129,17 @@ def main(argv: list[str] | None = None) -> int:
         chunk_chars=chunk_chars,
         progress=prog,
     )
-    print("writing Word…", flush=True)
+    print("워드 작성 중…", flush=True)
     paths = write_outputs(packed, out_dir, stem, pdf=args.pdf, extras=args.extras)
 
     dt = time.monotonic() - t0
     docx = paths.get("docx")
     if docx:
-        print(f"\nwrote  {docx}", flush=True)
+        print(f"\n저장됨  {docx}", flush=True)
     for k, p in paths.items():
         if k != "docx":
             print(f"  {k}: {p}")
-    print(f"done {dt:.1f}s")
+    print(f"완료 {dt:.1f}초")
     if docx and not args.no_open:
         spit_open(docx)
     return 0
@@ -157,7 +157,7 @@ def parse_drop_line(line: str) -> list[Path]:
 def prompt_drop() -> list[Path]:
     if not sys.stdin.isatty():
         return []
-    print("Drop a video, PPTX, and PDF here, then press Enter", flush=True)
+    print("영상 · PPT · PDF 를 이 창에 끌어다 놓고 Enter", flush=True)
     try:
         line = sys.stdin.readline()
     except KeyboardInterrupt:
@@ -176,7 +176,7 @@ def spit_open(path: Path) -> None:
         else:
             subprocess.run(["xdg-open", str(path)], check=False)
     except OSError as exc:
-        print(f"could not open file: {exc}", file=sys.stderr)
+        print(f"파일을 열지 못했습니다: {exc}", file=sys.stderr)
 
 
 if __name__ == "__main__":

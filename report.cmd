@@ -2,14 +2,11 @@
 chcp 65001 >nul
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
+set PYTHONUNBUFFERED=1
 set "HERE=%~dp0"
-where py >nul 2>nul && (
-  py -3 "%HERE%reportctl.py" %*
+where powershell >nul 2>nul && (
+  powershell -NoProfile -ExecutionPolicy Bypass -File "%HERE%report.ps1" %*
   exit /b %ERRORLEVEL%
 )
-where python >nul 2>nul && (
-  python "%HERE%reportctl.py" %*
-  exit /b %ERRORLEVEL%
-)
-echo Python not found. Install 3.11+ from python.org and add it to PATH.
+echo 파워셸을 찾을 수 없습니다.
 exit /b 1

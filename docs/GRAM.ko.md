@@ -1,8 +1,10 @@
 # LG 그램 (윈도우) — 스펙, 모델, 사용법
 
-이 스크립트는 **윈도우 LG 그램** 기준으로 맞춰 두었습니다. 그램은 얇고, 대개 **엔비디아 VRAM이 없습니다.** Ollama는 **시스템 RAM**으로 돌아갑니다. 지금 쓰는 맥북 프로 M4 Pro 24GB보다 로컬 LLM은 약하고, **작은 모델이 정답**입니다.
+이 스크립트는 **윈도우 LG 그램** · **한국어 사용자** 기준입니다. `.\report.ps1` 한 번이면 RAM을 보고 **받을 모델을 정해 순서대로 다운**합니다. 직접 `ollama pull` 할 필요 없습니다.
 
-`report --status` 로 이 PC가 어떤 프로필인지 확인하세요.
+그램은 대개 **엔비디아 VRAM이 없고 RAM으로** 모델을 올립니다. 16GB에는 8B만 심습니다.
+
+`.\report.ps1 --status` 로 이 PC 프로필만 볼 수 있습니다 (다운로드 없음).
 
 ## 내 그램이 어디인가
 
@@ -52,19 +54,11 @@ report --model qwen3:14b
 ```powershell
 git clone https://github.com/Hskim-droid/local-report.git
 cd local-report
-py -3 -m pip install -r requirements.txt
-ollama pull qwen3:8b
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-.\install-windows.ps1
+.\report.ps1
 ```
 
-**새** 파워셸을 연 다음:
-
-```powershell
-report --status
-```
-
-`gram16` 또는 `gram32`, `default qwen3:8b` 가 보이면 됩니다.
+첫 실행이 pip · Ollama · 모델을 **한국어로 안내하며 순서대로** 받습니다. 16GB는 `qwen3:8b`(약 5GB), 32GB는 8B 다음 14B. 창을 닫지 마세요.
 
 ## 매번
 

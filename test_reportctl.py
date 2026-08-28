@@ -177,6 +177,7 @@ class ProfileTests(unittest.TestCase):
         pid, p = pick_profile(self.cfg, ram=16, platform="win32")
         self.assertEqual(pid, "gram16")
         self.assertEqual(p["pull"], "qwen3:8b")
+        self.assertEqual(p["setup_models"], ["qwen3:8b"])
         self.assertLessEqual(int(p["num_ctx"]), 4096)
 
     def test_gram32(self):
