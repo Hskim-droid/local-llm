@@ -150,7 +150,7 @@ model qwen3:8b  ctx=4096
   chunk 1/N
   ...
 writing Word…
-wrote  C:\Users\you\Desktop\meeting_report\report.docx
+  C:\Users\you\Desktop\meeting_보고서\보고서.docx
 ```
 
 Word opens. Original files are never overwritten.
@@ -161,8 +161,8 @@ Next to the **first** dropped file:
 
 ```text
 C:\Users\you\Desktop\kickoff.mp4
-C:\Users\you\Desktop\kickoff_report\report.docx   ← deliverable
-C:\Users\you\Desktop\kickoff_report\report.json
+C:\Users\you\Desktop\kickoff_보고서\보고서.docx   ← deliverable
+C:\Users\you\Desktop\kickoff_보고서\보고서.json
 ```
 
 Put the output somewhere else:
@@ -183,7 +183,7 @@ report --model qwen3:8b
 report --model exaone3.5:7.8b
 report --model qwen3:14b         # 32 GB only
 report --no-llm                  # extract + empty skeleton, no GPU/RAM hit
-report --no-open
+report --open                 # also open Word (default: reveal folder only)
 report --no-pull                 # fail if the model is missing, do not download
 ```
 
