@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestLoadEmbeddedPacks(t *testing.T) {
 	packs, err := loadPacksFromFS(embeddedPacks, "packs")
@@ -23,5 +26,18 @@ func TestLoadEmbeddedPacks(t *testing.T) {
 	}
 	if p, ok := matchPack(packs, "번역"); !ok || p.OutSuffix != "_번역" {
 		t.Fatalf("match 번역: %#v", p)
+	}
+}
+
+func TestIsQuit(t *testing.T) {
+	if !isQuit("끝") || !isQuit("QUIT") || isQuit("보고서") {
+		t.Fatal("quit parse")
+	}
+}
+
+func TestPackFileURL(t *testing.T) {
+	u := packFileURL("보고서", "pack.json")
+	if u == "" || !strings.Contains(u, "pack.json") {
+		t.Fatal(u)
 	}
 }
