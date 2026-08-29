@@ -12,14 +12,13 @@ one model at a time: chat / vision / whisper
 
 ## Windows (LG gram)
 
-1. https://github.com/Hskim-droid/local-llm/releases/latest
-2. Assets → **`local-llm-windows.zip`** (not Source code)
-3. Extract to the desktop. Do not run from inside the zip.
-4. Double-click **`시작.bat`**
-5. If Windows blocks it: **More info → Run anyway**
-6. First run downloads the model. Leave the window open.
-7. The program says **지금은 보고서, 회의록, 번역을 할 수 있습니다.** Pick 1 / 2 / 3.
-8. Choose PPTX, PDF, DOCX, XLSX, HWPX, HTML, XML, CSV, MD, TXT, or video.
+Send this link: **https://hskim-droid.github.io/local-llm/**
+
+The page is one screen. Copy the PowerShell, paste, then double-click `시작.bat` in the folder that opens. It does not run the program for you.
+
+If GitHub Pages is not on yet, zip: https://github.com/Hskim-droid/local-llm/releases/latest → Assets → **`local-llm-windows.zip`** (not Source code). Extract to the desktop. Do not run from inside the zip. Double-click **`시작.bat`**. If Windows blocks it: **More info → Run anyway**.
+
+First run downloads the model. Leave the window open. Then pick Report / Minutes / Translation (1 / 2 / 3).
 
 You can also drop files onto the exe, then pick the job.
 

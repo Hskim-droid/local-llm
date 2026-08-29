@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>local-llm</title>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; font: 17px/1.45 system-ui, "Segoe UI", "Apple SD Gothic Neo", sans-serif; color: #111; background: #fafafa; }
+    main { max-width: 40rem; margin: 0 auto; padding: 2.2rem 1.2rem 4rem; }
+    h1 { font-size: 1.6rem; margin: 0 0 .4rem; }
+    .sub { color: #444; margin: 0 0 1.6rem; }
+    ol.steps { padding-left: 1.2rem; margin: 0 0 1.2rem; }
+    ol.steps li { margin: 0 0 .7rem; }
+    pre { background: #111; color: #f3f3f3; padding: 1rem; overflow: auto; font: 12px/1.4 ui-monospace, Consolas, monospace; border-radius: 8px; white-space: pre-wrap; }
+    button, a.btn { display: inline-block; border: 0; background: #111; color: #fff; padding: .65rem 1rem; font: inherit; cursor: pointer; text-decoration: none; border-radius: 8px; }
+    button.ghost, a.ghost { background: #fff; color: #111; border: 1px solid #ccc; margin-left: .4rem; }
+    .row { margin: .8rem 0 1.6rem; }
+    .ok { color: #0a7; font-weight: 600; margin-left: .5rem; }
+    .note { background: #fff; border: 1px solid #e5e5e5; padding: 1rem 1.1rem; border-radius: 8px; margin: 1.2rem 0; }
+    .lang { float: right; font-size: 14px; }
+    .lang button { background: transparent; color: #111; border: 1px solid #ccc; padding: .25rem .55rem; font-size: 14px; }
+    [data-lang="en"] .ko { display: none; }
+    [data-lang="ko"] .en { display: none; }
+    footer { color: #666; font-size: 14px; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="lang">
+      <button type="button" id="to-en">EN</button>
+      <button type="button" id="to-ko">한</button>
+    </div>
+    <h1>local-llm</h1>
+    <p class="sub ko">이 노트북에서만 돌아갑니다. 파일은 나가지 않습니다.</p>
+    <p class="sub en">Runs only on this PC. Files do not leave the machine.</p>
+
+    <ol class="steps ko">
+      <li>아래 <strong>복사</strong>를 누릅니다.</li>
+      <li>시작 메뉴에서 <strong>PowerShell</strong>을 열어 붙입니다. 관리자일 필요 없습니다.</li>
+      <li>끝나면 바탕화면 <strong>local-llm</strong> 폴더가 열립니다. <strong>시작.bat</strong>을 더블클릭합니다.</li>
+    </ol>
+    <ol class="steps en">
+      <li>Click <strong>Copy</strong> below.</li>
+      <li>Open <strong>PowerShell</strong> from the Start menu and paste. Admin is not required.</li>
+      <li>A <strong>local-llm</strong> folder opens on the Desktop. Double-click <strong>시작.bat</strong>.</li>
+    </ol>
+
+    <pre id="ps"></pre>
+    <div class="row">
+      <button type="button" id="copy"><span class="ko">복사</span><span class="en">Copy</span></button>
+      <span class="ok" id="copied" hidden><span class="ko">복사됨</span><span class="en">Copied</span></span>
+    </div>
+
+    <div class="note ko">
+      Windows가 “보호를 위해 실행을 차단”하면 <strong>추가 정보 → 실행</strong>.
+      검은 창을 닫지 마세요. 첫 실행은 모델을 받습니다 (16GB는 약 5GB).
+      파워셸이 막히면 <a href="https://github.com/Hskim-droid/local-llm/releases/latest">zip을 받아</a> 바탕화면에 푸세요. Source code가 아닙니다.
+    </div>
+    <div class="note en">
+      If Windows blocks it: <strong>More info → Run anyway</strong>.
+      Do not close the black window. First run downloads the model (about 5GB on 16GB PCs).
+      If PowerShell is blocked, <a href="https://github.com/Hskim-droid/local-llm/releases/latest">download the zip</a> and extract it on the Desktop. Not Source code.
+    </div>
+
+    <p class="ko">오류 신고는 <a href="https://github.com/Hskim-droid/local-llm/issues">GitHub Issues</a>로. 원문은 보내지 말고 오류.txt만.</p>
+    <p class="en">Send errors to <a href="https://github.com/Hskim-droid/local-llm/issues">GitHub Issues</a>. Attach error.txt only, never source files.</p>
+    <footer>github.com/Hskim-droid/local-llm</footer>
+  </main>
+  <script>
+    const ps = `[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ErrorActionPreference = 'Stop'
+$ko = ([System.Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ko')
+$dest = Join-Path ([Environment]::GetFolderPath('Desktop')) 'local-llm'
+New-Item -ItemType Directory -Force -Path $dest | Out-Null
+$zip = Join-Path $env:TEMP ('local-llm-' + [guid]::NewGuid().ToString() + '.zip')
+if ($ko) { Write-Host '받는 중… 창을 닫지 마세요.' } else { Write-Host 'Downloading. Do not close this window.' }
+Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/Hskim-droid/local-llm/releases/latest/download/local-llm-windows.zip' -OutFile $zip
+if ($ko) { Write-Host '압축 푸는 중…' } else { Write-Host 'Extracting…' }
+Expand-Archive -LiteralPath $zip -DestinationPath $dest -Force
+Remove-Item $zip -ErrorAction SilentlyContinue
+Start-Process explorer.exe $dest
+Write-Host ''
+if ($ko) {
+  Write-Host '폴더가 열립니다. 시작.bat 을 더블클릭하세요.'
+  Write-Host 'Windows가 막으면: 추가 정보 → 실행'
+  Write-Host '검은 창을 닫지 마세요. 첫 실행은 모델을 받습니다.'
+} else {
+  Write-Host 'The folder is open. Double-click 시작.bat'
+  Write-Host 'If Windows blocks it: More info → Run anyway'
+  Write-Host 'Do not close the black window. First run downloads the model.'
+}
+`;
+    document.getElementById('ps').textContent = ps.trim() + '\n';
+    const setLang = (l) => {
+      document.body.setAttribute('data-lang', l);
+      document.documentElement.lang = l;
+    };
+    setLang((navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en');
+    document.getElementById('to-en').onclick = () => setLang('en');
+    document.getElementById('to-ko').onclick = () => setLang('ko');
+    document.getElementById('copy').onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(ps.trim() + '\n');
+      } catch {
+        const r = document.createRange();
+        r.selectNodeContents(document.getElementById('ps'));
+        const s = getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+        document.execCommand('copy');
+      }
+      document.getElementById('copied').hidden = false;
+    };
+  </script>
+</body>
+</html>
