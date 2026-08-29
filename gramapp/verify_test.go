@@ -11,7 +11,7 @@ func TestPatchStripsInventedMoney(t *testing.T) {
 	if kept < 1 {
 		t.Fatalf("kept 7억원, got kept=%d inv=%v text=%s", kept, inv, got)
 	}
-	if !strings.Contains(got, unverifiedMark) {
+	if !strings.Contains(got, unverifiedMark()) {
 		t.Fatalf("expected mark, got %q", got)
 	}
 	if strings.Contains(got, "80억원") {

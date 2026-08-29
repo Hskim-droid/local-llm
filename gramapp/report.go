@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	appVersion      = "0.8.8"
+	appVersion      = "0.8.9"
 	reportIssuesURL = "https://github.com/Hskim-droid/local-llm/issues"
 )
 
@@ -18,7 +18,7 @@ func appDir() string {
 }
 
 func errorNotePath() string {
-	return filepath.Join(appDir(), "오류.txt")
+	return filepath.Join(appDir(), T("out.error.file"))
 }
 
 func inputExts(files []string) []string {

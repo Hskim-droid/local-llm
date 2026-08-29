@@ -1,8 +1,8 @@
-local-llm 0.8.8
+local-llm 0.8.9
 
 Double-click 시작.bat. Do not close the window.
 
-The UI is English by default. If Windows is in Korean, the program speaks Korean.
+The UI and the Word file are English by default. If Windows is in Korean, both are Korean.
 Pin the language: 로컬LLM.exe --lang ko   or   --lang en
 
 Files never leave this PC.

@@ -15,10 +15,11 @@ func writeDocx(path string, title string, bodyHeading string, header [][]string,
 	b.WriteString(`<w:body>`)
 	p(&b, title, 32, true, "center")
 	for _, row := range header {
-		if len(row) >= 2 && strings.TrimSpace(row[1]) != "" && row[1] != "(원문에 없음)" {
+		miss := T("out.missing")
+		if len(row) >= 2 && strings.TrimSpace(row[1]) != "" && row[1] != miss {
 			p(&b, row[0]+"  "+row[1], 21, false, "left")
 		}
-		if len(row) == 4 && strings.TrimSpace(row[3]) != "" && row[3] != "(원문에 없음)" {
+		if len(row) == 4 && strings.TrimSpace(row[3]) != "" && row[3] != miss {
 			p(&b, row[2]+"  "+row[3], 21, false, "left")
 		}
 	}

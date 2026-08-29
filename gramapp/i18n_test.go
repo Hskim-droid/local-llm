@@ -52,6 +52,21 @@ func TestPackAliasMatch(t *testing.T) {
 	}
 }
 
+func TestPackOutputsFollowLang(t *testing.T) {
+	p := pack{ID: "보고서", OutSuffix: "_보고서", OutName: "보고서.docx", TitleSuffix: "보고서", BodyHeading: "내용"}
+	setUILang("en")
+	suf, name, title, body := packOutputs(p)
+	if suf != "_report" || name != "report.docx" || title != "report" || body != "Contents" {
+		t.Fatalf("%s %s %s %s", suf, name, title, body)
+	}
+	setUILang("ko")
+	suf, name, title, body = packOutputs(p)
+	if suf != "_보고서" || name != "보고서.docx" {
+		t.Fatalf("ko %s %s", suf, name)
+	}
+	setUILang("en")
+}
+
 func TestResolveLangEnv(t *testing.T) {
 	t.Setenv("LOCAL_LLM_LANG", "ko")
 	if resolveLang("") != "ko" {

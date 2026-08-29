@@ -19,8 +19,6 @@ import (
 	"unicode/utf8"
 )
 
-const sysVL = "너는 스캔·차트 읽기다. 보이는 글과 숫자만 한국어 개조식으로. 창작 금지. 없는 수치를 만들지 말 것. JSON만. {\"facts\":[\"명사형\"],\"numbers\":[\"원문 그대로\"]}"
-
 type imgPart struct {
 	Location string
 	Ext      string
@@ -206,7 +204,7 @@ func fillVision(segs []segment, imgs []imgPart) []segment {
 	}
 	for i, im := range imgs {
 		say(T("vision.one", i+1, len(imgs), im.Location))
-		obj, err := llamaChatVision(sysVL, "보이는 숫자와 글만 JSON.", im.Bytes, im.Ext)
+		obj, err := llamaChatVision(withLang(T("llm.vision")), T("llm.vision.user"), im.Bytes, im.Ext)
 		if err != nil {
 			say(T("vision.skip", err.Error()))
 			continue
