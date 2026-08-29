@@ -14,6 +14,8 @@ one model at a time: chat / vision / whisper
 
 Send this link: **https://hskim-droid.github.io/local-llm/**
 
+The page shows the folder, the black window, a finished run, and the Word file, then a PowerShell copy box.
+
 The page is one screen. Copy the PowerShell, paste, then double-click `시작.bat` in the folder that opens. It does not run the program for you.
 
 If GitHub Pages is not on yet, zip: https://github.com/Hskim-droid/local-llm/releases/latest → Assets → **`local-llm-windows.zip`** (not Source code). Extract to the desktop. Do not run from inside the zip. Double-click **`시작.bat`**. If Windows blocks it: **More info → Run anyway**.

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" width="720" height="280">
+  <rect width="720" height="280" rx="10" fill="#f3f3f3" stroke="#d0d0d0"/>
+  <rect width="720" height="36" rx="10" fill="#fff"/>
+  <rect y="26" width="720" height="10" fill="#fff"/>
+  <text x="16" y="24" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#333">Desktop \ local-llm</text>
+  <rect x="12" y="48" width="696" height="220" fill="#fff" stroke="#e6e6e6"/>
+  <text x="28" y="78" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="12" fill="#666">Name</text>
+  <line x1="28" y1="88" x2="680" y2="88" stroke="#eee"/>
+  <text x="28" y="118" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="15" fill="#111">시작.bat</text>
+  <text x="420" y="118" font-family="Segoe UI, sans-serif" font-size="13" fill="#666">Start</text>
+  <text x="28" y="148" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="15" fill="#111">로컬LLM.exe</text>
+  <text x="420" y="148" font-family="Segoe UI, sans-serif" font-size="13" fill="#666">local-llm.exe</text>
+  <text x="28" y="178" font-family="Segoe UI, sans-serif" font-size="15" fill="#111">README.txt</text>
+  <text x="28" y="208" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="15" fill="#111">읽어주세요.txt</text>
+  <text x="28" y="238" font-family="Segoe UI, sans-serif" font-size="15" fill="#111">packs</text>
+</svg>

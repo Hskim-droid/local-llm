@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" width="720" height="340">
+  <rect width="720" height="340" rx="10" fill="#0c0c0c"/>
+  <rect width="720" height="32" rx="10" fill="#1f1f1f"/>
+  <rect y="22" width="720" height="10" fill="#1f1f1f"/>
+  <circle cx="18" cy="16" r="5" fill="#c42b1c"/>
+  <text x="36" y="21" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="12" fill="#ddd">local-llm</text>
+  <text x="16" y="58" font-family="Consolas, Menlo, monospace" font-size="13" fill="#c8c8c8">════════════════════════════════════════</text>
+  <text x="16" y="78" font-family="Consolas, Menlo, monospace" font-size="13" fill="#eee">  local-llm  0.8.9</text>
+  <text x="16" y="98" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#c8c8c8">  이 노트북에서만 돌아갑니다. 파일은 나가지 않습니다.</text>
+  <text x="16" y="118" font-family="Consolas, Menlo, monospace" font-size="13" fill="#c8c8c8">════════════════════════════════════════</text>
+  <text x="16" y="150" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="14" fill="#fff">지금은 보고서, 회의록, 번역을 할 수 있습니다.</text>
+  <text x="16" y="178" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">  1) 보고서  — 장표·엑셀·워드·HWPX·웹·영상</text>
+  <text x="16" y="200" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">  2) 회의록  — 영상·전사·장표·엑셀·웹</text>
+  <text x="16" y="222" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">  3) 번역    — 자료를 한국어로. 목표 언어를 말하면 그쪽으로</text>
+  <text x="16" y="250" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#9ad">  끝 이라고 쓰면 종료합니다.</text>
+  <text x="16" y="286" font-family="Consolas, Menlo, monospace" font-size="14" fill="#7f7">&gt; _</text>
+</svg>

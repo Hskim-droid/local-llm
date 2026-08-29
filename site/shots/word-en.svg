@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300">
+  <rect width="720" height="300" rx="10" fill="#e8e8e8"/>
+  <rect x="48" y="16" width="624" height="268" fill="#fff" stroke="#d5d5d5"/>
+  <text x="360" y="52" text-anchor="middle" font-family="Calibri, Segoe UI, sans-serif" font-size="18" font-weight="700" fill="#111">Seed round report</text>
+  <text x="72" y="88" font-family="Calibri, Segoe UI, sans-serif" font-size="13" fill="#333">Date  2026.08.20</text>
+  <text x="72" y="112" font-family="Calibri, Segoe UI, sans-serif" font-size="13" fill="#333">Attendees  (not in source)</text>
+  <text x="72" y="148" font-family="Calibri, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#111">0. Executive Summary</text>
+  <text x="72" y="174" font-family="Calibri, Segoe UI, sans-serif" font-size="13" fill="#222">• Seed round of KRW 700 million closed</text>
+  <text x="72" y="196" font-family="Calibri, Segoe UI, sans-serif" font-size="13" fill="#222">• Conflicting figures are appended, not guessed</text>
+  <text x="72" y="230" font-family="Calibri, Segoe UI, sans-serif" font-size="13" fill="#888">Original files stay put · report.docx in a new folder</text>
+</svg>
