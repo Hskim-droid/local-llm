@@ -11,8 +11,16 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	var imgs []imgPart
 	var pending []string
 	for _, f := range files {
+		if !packAccepts(pk, f) {
+			say("  건너뜀 " + filepath.Base(f) + " — 이 팩이 받는 형식이 아님")
+			continue
+		}
 		ss, err := extractPath(f)
 		if _, ok := err.(needWhisperError); ok {
+			if !pk.Whisper {
+				say("  건너뜀 " + filepath.Base(f) + " — 이 팩은 영상을 안 합니다")
+				continue
+			}
 			pending = append(pending, f)
 			continue
 		}
@@ -25,9 +33,11 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 			s.Location = base + "/" + s.Location
 			segs = append(segs, s)
 		}
-		for _, im := range extractVisuals(f) {
-			im.Location = base + "/" + im.Location
-			imgs = append(imgs, im)
+		if pk.Vision {
+			for _, im := range extractVisuals(f) {
+				im.Location = base + "/" + im.Location
+				imgs = append(imgs, im)
+			}
 		}
 	}
 	if len(pending) > 0 {
@@ -48,7 +58,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	if len(imgs) > 8 {
 		imgs = imgs[:8]
 	}
-	if len(imgs) > 0 {
+	if pk.Vision && len(imgs) > 0 {
 		segs = fillVision(segs, imgs)
 	}
 	if len(segs) == 0 {

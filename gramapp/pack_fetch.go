@@ -33,8 +33,9 @@ func catalogPacks() ([]pack, error) {
 	for _, p := range local {
 		seen[p.ID] = true
 	}
+	allow := pinnedIDs()
 	for _, r := range remote {
-		if seen[r.ID] {
+		if seen[r.ID] || !allow[r.ID] {
 			continue
 		}
 		if r.Label == "" {
@@ -72,7 +73,28 @@ func packFileURL(id, file string) string {
 	return packsRawBase + "/" + url.PathEscape(id) + "/" + file
 }
 
+func pinnedIDs() map[string]bool {
+	m := map[string]bool{}
+	b, err := embeddedPacks.ReadFile("packs/index.json")
+	if err != nil {
+		return map[string]bool{"보고서": true, "회의록": true, "번역": true}
+	}
+	var idx packIndex
+	if json.Unmarshal(b, &idx) != nil {
+		return map[string]bool{"보고서": true, "회의록": true, "번역": true}
+	}
+	for _, p := range idx.Packs {
+		if p.ID != "" {
+			m[p.ID] = true
+		}
+	}
+	return m
+}
+
 func fetchPack(id string) error {
+	if !pinnedIDs()[id] {
+		return fmt.Errorf("허용 목록에 없는 팩")
+	}
 	dest := filepath.Join(toolsDir(), "packs", id)
 	if err := os.MkdirAll(dest, 0755); err != nil {
 		return err
