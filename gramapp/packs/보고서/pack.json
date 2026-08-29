@@ -1,12 +1,12 @@
 {
   "id": "보고서",
   "label": "보고서",
-  "blurb": "장표·PDF·영상·전사를 한글 보고서로",
+  "blurb": "장표·엑셀·워드·HWPX·웹·영상·전사를 한글 보고서로",
   "title_suffix": "보고서",
   "out_suffix": "_보고서",
   "out_name": "보고서.docx",
   "body_heading": "내용",
-  "inputs": ["pptx", "pdf", "txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
+  "inputs": ["pptx", "pdf", "txt", "md", "csv", "tsv", "json", "html", "htm", "xml", "docx", "xlsx", "hwpx", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
   "vision": true,
   "whisper": true
 }

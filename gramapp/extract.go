@@ -30,16 +30,22 @@ func extractPath(p string) ([]segment, error) {
 		return nil, fmt.Errorf("구형 .ppt는 안 됩니다. PPTX로 저장하세요")
 	case ".pdf":
 		return extractPDF(p)
-	case ".txt", ".md":
-		b, err := os.ReadFile(p)
-		if err != nil {
-			return nil, err
-		}
-		t := strings.TrimSpace(string(b))
-		if t == "" {
-			return nil, nil
-		}
-		return []segment{{Text: t, Source: "txt", Location: "part-1"}}, nil
+	case ".txt", ".md", ".csv", ".tsv", ".json":
+		return extractPlain(p, strings.TrimPrefix(ext, "."))
+	case ".html", ".htm":
+		return extractHTML(p)
+	case ".xml":
+		return extractXMLFile(p)
+	case ".docx":
+		return extractDOCX(p)
+	case ".xlsx":
+		return extractXLSX(p)
+	case ".xls":
+		return nil, fmt.Errorf("구형 .xls는 XLSX로 저장하세요")
+	case ".hwpx":
+		return extractHWPX(p)
+	case ".hwp":
+		return nil, fmt.Errorf("구형 .hwp는 HWPX로 저장하세요")
 	case ".mp4", ".m4a", ".mov", ".wav", ".mp3", ".webm":
 		return extractVideo(p)
 	default:

@@ -49,11 +49,13 @@ func TestPackAccepts(t *testing.T) {
 	}
 	rep, _ := matchPack(packs, "보고서")
 	min, _ := matchPack(packs, "회의록")
-	if !packAccepts(rep, "a.pptx") || !packAccepts(rep, "a.mp4") {
-		t.Fatalf("보고서 should take pptx and mp4 %+v", rep.Inputs)
+	for _, name := range []string{"a.pptx", "a.mp4", "a.xlsx", "a.csv", "a.md", "a.html", "a.xml", "a.hwpx", "a.docx"} {
+		if !packAccepts(rep, name) || !packAccepts(min, name) {
+			t.Fatalf("should take %s %+v", name, rep.Inputs)
+		}
 	}
-	if !packAccepts(min, "a.mp4") || !packAccepts(min, "a.pptx") {
-		t.Fatalf("회의록 should take mp4 and pptx %+v", min.Inputs)
+	if packAccepts(rep, "a.hwp") || packAccepts(rep, "a.xls") || packAccepts(rep, "a.ppt") {
+		t.Fatal("old binary office formats stay convert-first")
 	}
 	if !rep.Vision || !rep.Whisper || !min.Vision || !min.Whisper {
 		t.Fatalf("all packs get vision+whisper")
