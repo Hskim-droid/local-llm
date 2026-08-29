@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - site/**
+      - site/shots/**
       - .github/workflows/pages.yml
   workflow_dispatch:
 permissions:

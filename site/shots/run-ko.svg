@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300">
+  <rect width="720" height="300" rx="10" fill="#0c0c0c"/>
+  <rect width="720" height="32" rx="10" fill="#1f1f1f"/>
+  <rect y="22" width="720" height="10" fill="#1f1f1f"/>
+  <circle cx="18" cy="16" r="5" fill="#c42b1c"/>
+  <text x="36" y="21" font-family="Segoe UI, Apple SD Gothic Neo, sans-serif" font-size="12" fill="#ddd">local-llm</text>
+  <text x="16" y="60" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">용도: 보고서</text>
+  <text x="16" y="86" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">지금 쓰는 모델: Qwen3 8B (약 5GB)</text>
+  <text x="16" y="112" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">추출 2개 파일 · 세그먼트 14 · 팩 보고서</text>
+  <text x="16" y="138" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#ddd">수확 수치 11개 (코드). 모델은 이 목록 밖 숫자를 쓰면 검수에서 지웁니다.</text>
+  <text x="16" y="164" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#9d9">검수: 원문에 없는 숫자 없음</text>
+  <text x="16" y="196" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#fff">끝났습니다. 원본은 그대로 두었습니다.</text>
+  <text x="16" y="222" font-family="Consolas, Menlo, monospace" font-size="13" fill="#9ad">  C:\Users\you\Desktop\deck_보고서\보고서.docx</text>
+  <text x="16" y="254" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#aaa">걸린 시간 3m17s · 모델은 내려서 메모리를 비웠습니다.</text>
+</svg>

@@ -4,22 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>local-llm</title>
+  <meta name="description" content="Local Word reports, minutes, and translation. Files stay on this PC.">
   <style>
-    :root { color-scheme: light; }
-    body { margin: 0; font: 17px/1.45 system-ui, "Segoe UI", "Apple SD Gothic Neo", sans-serif; color: #111; background: #fafafa; }
-    main { max-width: 40rem; margin: 0 auto; padding: 2.2rem 1.2rem 4rem; }
-    h1 { font-size: 1.6rem; margin: 0 0 .4rem; }
-    .sub { color: #444; margin: 0 0 1.6rem; }
-    ol.steps { padding-left: 1.2rem; margin: 0 0 1.2rem; }
-    ol.steps li { margin: 0 0 .7rem; }
+    body { margin: 0; font: 17px/1.45 system-ui, "Segoe UI", "Apple SD Gothic Neo", sans-serif; color: #111; background: #f6f6f4; }
+    main { max-width: 46rem; margin: 0 auto; padding: 2rem 1.1rem 4rem; }
+    h1 { font-size: 1.85rem; margin: 0 0 .35rem; letter-spacing: -.02em; }
+    h2 { font-size: 1.15rem; margin: 2rem 0 .7rem; }
+    .sub { color: #444; margin: 0 0 1.4rem; max-width: 36rem; }
+    .pills { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 1.6rem; }
+    .pills span { background: #fff; border: 1px solid #ddd; padding: .28rem .6rem; border-radius: 999px; font-size: 14px; }
+    figure { margin: 0 0 1.2rem; }
+    figure img { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    figcaption { font-size: 13px; color: #666; margin-top: .45rem; }
+    ol.steps { padding-left: 1.2rem; margin: 0 0 1rem; }
+    ol.steps li { margin: 0 0 .55rem; }
     pre { background: #111; color: #f3f3f3; padding: 1rem; overflow: auto; font: 12px/1.4 ui-monospace, Consolas, monospace; border-radius: 8px; white-space: pre-wrap; }
     button, a.btn { display: inline-block; border: 0; background: #111; color: #fff; padding: .65rem 1rem; font: inherit; cursor: pointer; text-decoration: none; border-radius: 8px; }
-    button.ghost, a.ghost { background: #fff; color: #111; border: 1px solid #ccc; margin-left: .4rem; }
-    .row { margin: .8rem 0 1.6rem; }
+    .row { margin: .8rem 0 1.2rem; }
     .ok { color: #0a7; font-weight: 600; margin-left: .5rem; }
     .note { background: #fff; border: 1px solid #e5e5e5; padding: 1rem 1.1rem; border-radius: 8px; margin: 1.2rem 0; }
     .lang { float: right; font-size: 14px; }
-    .lang button { background: transparent; color: #111; border: 1px solid #ccc; padding: .25rem .55rem; font-size: 14px; }
+    .lang button { background: #fff; color: #111; border: 1px solid #ccc; padding: .25rem .55rem; font-size: 14px; border-radius: 6px; }
     [data-lang="en"] .ko { display: none; }
     [data-lang="ko"] .en { display: none; }
     footer { color: #666; font-size: 14px; margin-top: 2rem; }
@@ -32,18 +37,53 @@
       <button type="button" id="to-ko">한</button>
     </div>
     <h1>local-llm</h1>
-    <p class="sub ko">이 노트북에서만 돌아갑니다. 파일은 나가지 않습니다.</p>
-    <p class="sub en">Runs only on this PC. Files do not leave the machine.</p>
+    <p class="sub ko">장표·엑셀·한글·영상에서 워드를 만듭니다. 이 노트북에서만 돌아갑니다. 클라우드 API 없음.</p>
+    <p class="sub en">Turns slides, sheets, Hangul files, and video into Word. Runs only on this PC. No cloud API.</p>
+    <div class="pills ko">
+      <span>1 보고서</span><span>2 회의록</span><span>3 번역</span><span>원본은 그대로</span>
+    </div>
+    <div class="pills en">
+      <span>1 Report</span><span>2 Minutes</span><span>3 Translation</span><span>Originals untouched</span>
+    </div>
 
+    <h2 class="ko">이렇게 돌아갑니다</h2>
+    <h2 class="en">What you see</h2>
+
+    <figure>
+      <img src="shots/folder.svg" alt="Desktop folder with 시작.bat">
+      <figcaption class="ko">1. 바탕화면 local-llm 폴더. 시작.bat을 더블클릭합니다.</figcaption>
+      <figcaption class="en">1. Desktop folder local-llm. Double-click 시작.bat.</figcaption>
+    </figure>
+    <figure>
+      <img class="ko" src="shots/menu-ko.svg" alt="Korean menu">
+      <img class="en" src="shots/menu-en.svg" alt="English menu">
+      <figcaption class="ko">2. 검은 창. 1 보고서 / 2 회의록 / 3 번역. 윈도우가 한국어면 한국어입니다.</figcaption>
+      <figcaption class="en">2. The black window. 1 Report / 2 Minutes / 3 Translation. Korean Windows gets Korean.</figcaption>
+    </figure>
+    <figure>
+      <img class="ko" src="shots/run-ko.svg" alt="Korean run">
+      <img class="en" src="shots/run-en.svg" alt="English run">
+      <figcaption class="ko">3. 파일을 고르면 추출·수확·검수 후 워드 경로를 찍고 모델을 내립니다.</figcaption>
+      <figcaption class="en">3. After you pick files it extracts, harvests numbers, writes Word, and unloads the model.</figcaption>
+    </figure>
+    <figure>
+      <img class="ko" src="shots/word-ko.svg" alt="Korean Word">
+      <img class="en" src="shots/word-en.svg" alt="English Word">
+      <figcaption class="ko">4. 결과는 원본 옆 폴더의 워드. 숫자는 원문에 있는 것만.</figcaption>
+      <figcaption class="en">4. Word lands in a new folder beside the source. Numbers must exist in the source.</figcaption>
+    </figure>
+
+    <h2 class="ko">받는 법</h2>
+    <h2 class="en">Get it</h2>
     <ol class="steps ko">
       <li>아래 <strong>복사</strong>를 누릅니다.</li>
       <li>시작 메뉴에서 <strong>PowerShell</strong>을 열어 붙입니다. 관리자일 필요 없습니다.</li>
-      <li>끝나면 바탕화면 <strong>local-llm</strong> 폴더가 열립니다. <strong>시작.bat</strong>을 더블클릭합니다.</li>
+      <li>바탕화면 <strong>local-llm</strong> 폴더가 열리면 <strong>시작.bat</strong>을 더블클릭합니다.</li>
     </ol>
     <ol class="steps en">
-      <li>Click <strong>Copy</strong> below.</li>
-      <li>Open <strong>PowerShell</strong> from the Start menu and paste. Admin is not required.</li>
-      <li>A <strong>local-llm</strong> folder opens on the Desktop. Double-click <strong>시작.bat</strong>.</li>
+      <li>Click <strong>Copy</strong>.</li>
+      <li>Open <strong>PowerShell</strong> from Start and paste. Admin is not required.</li>
+      <li>When the Desktop folder opens, double-click <strong>시작.bat</strong>.</li>
     </ol>
 
     <pre id="ps"></pre>
@@ -53,18 +93,20 @@
     </div>
 
     <div class="note ko">
-      Windows가 “보호를 위해 실행을 차단”하면 <strong>추가 정보 → 실행</strong>.
+      Windows가 막으면 <strong>추가 정보 → 실행</strong>.
       검은 창을 닫지 마세요. 첫 실행은 모델을 받습니다 (16GB는 약 5GB).
-      파워셸이 막히면 <a href="https://github.com/Hskim-droid/local-llm/releases/latest">zip을 받아</a> 바탕화면에 푸세요. Source code가 아닙니다.
+      파워셸이 막히면 <a href="https://github.com/Hskim-droid/local-llm/releases/latest">zip</a>을 바탕화면에 푸세요. Source code가 아닙니다.
+      PPT·XLS·HWP 구형은 PPTX·XLSX·HWPX로 저장한 뒤 넣습니다.
     </div>
     <div class="note en">
       If Windows blocks it: <strong>More info → Run anyway</strong>.
-      Do not close the black window. First run downloads the model (about 5GB on 16GB PCs).
-      If PowerShell is blocked, <a href="https://github.com/Hskim-droid/local-llm/releases/latest">download the zip</a> and extract it on the Desktop. Not Source code.
+      Do not close the black window. First run downloads the model (~5GB on 16GB PCs).
+      If PowerShell is blocked, extract the <a href="https://github.com/Hskim-droid/local-llm/releases/latest">zip</a> on the Desktop. Not Source code.
+      Old PPT / XLS / HWP: save as PPTX / XLSX / HWPX first.
     </div>
 
-    <p class="ko">오류 신고는 <a href="https://github.com/Hskim-droid/local-llm/issues">GitHub Issues</a>로. 원문은 보내지 말고 오류.txt만.</p>
-    <p class="en">Send errors to <a href="https://github.com/Hskim-droid/local-llm/issues">GitHub Issues</a>. Attach error.txt only, never source files.</p>
+    <p class="ko">오류 신고는 <a href="https://github.com/Hskim-droid/local-llm/issues">GitHub Issues</a>. 원문은 보내지 말고 오류.txt만.</p>
+    <p class="en">Errors: <a href="https://github.com/Hskim-droid/local-llm/issues">GitHub Issues</a>. Attach error.txt only, never source files.</p>
     <footer>github.com/Hskim-droid/local-llm</footer>
   </main>
   <script>
