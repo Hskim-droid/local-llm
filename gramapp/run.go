@@ -97,8 +97,35 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	}
 	flush()
 
+	nFiles := 0
+	seenF := map[string]bool{}
+	for _, s := range segs {
+		f := sourceFile(s.Location)
+		if f == "" || seenF[f] {
+			continue
+		}
+		seenF[f] = true
+		nFiles++
+	}
+	engineBundle := mergeFacts(flattenChunkFacts(facts), nFiles)
+	say(fmt.Sprintf("병합 공유 %d · 고유 %d · 충돌 %d", len(engineBundle.Shared), len(engineBundle.Unique), len(engineBundle.Conflict)))
+	uniqueSidecar := pk.ID != "번역"
+	assembleBundle := engineBundle
+	limit := p.Chunk * 3
+	if limit < 2400 {
+		limit = 2400
+	}
+	if mergePayloadSize(assembleBundle, uniqueSidecar) > limit {
+		say("원문이 커서 중간묶음을 합니다.")
+		assembleBundle = compactBundleForAssemble(engineBundle, p, model, allow)
+	}
+
 	title := strings.TrimSuffix(filepath.Base(files[0]), filepath.Ext(files[0]))
-	packUser := fmt.Sprintf("제목후보:%s\n%s\n사실만 주제별 JSON.\n{\"title\":\"\",\"date\":\"\",\"time\":\"\",\"place\":\"\",\"attendees\":\"\",\"agenda\":\"\",\"exec\":[\"\"],\"sections\":[{\"heading\":\"1. 개요\",\"facts\":[\"\"]}],\"actions\":[\"\"]}\n\n%v", title, allow, facts)
+	payload := formatMergePayload(assembleBundle, uniqueSidecar)
+	if strings.TrimSpace(payload) == "" {
+		payload = fmt.Sprintf("%v", facts)
+	}
+	packUser := fmt.Sprintf("제목후보:%s\n%s\n사실만 주제별 JSON.\n{\"title\":\"\",\"date\":\"\",\"time\":\"\",\"place\":\"\",\"attendees\":\"\",\"agenda\":\"\",\"exec\":[\"\"],\"sections\":[{\"heading\":\"1. 개요\",\"facts\":[\"\"]}],\"actions\":[\"\"]}\n\n%s", title, allow, payload)
 	meta, err := ollamaChatJSON(model, pk.AssembleSys, packUser, p.Ctx, p.Predict)
 	if err != nil {
 		meta = map[string]any{"title": title, "exec": []any{"원문 정리"}, "actions": []any{"추가 확인 필요"}}
@@ -152,6 +179,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 			"blocks":  []map[string]any{{"ordered": acts}},
 		})
 	}
+	sections = appendMergeSections(sections, engineBundle, uniqueSidecar)
 	if err := writeDocx(docx, titleOut, pk.BodyHeading, header, sections); err != nil {
 		return "", err
 	}
@@ -159,6 +187,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	dumpJSON(filepath.Join(outDir, stem+".json"), meta)
 	dumpJSON(filepath.Join(outDir, "수확.json"), map[string]any{"numbers": hv.Raw})
 	dumpJSON(filepath.Join(outDir, "검수.json"), rep)
+	dumpJSON(filepath.Join(outDir, "병합.json"), bundleDump(engineBundle))
 	return docx, nil
 }
 
