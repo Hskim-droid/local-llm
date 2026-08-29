@@ -16,13 +16,16 @@ import (
 var embeddedPacks embed.FS
 
 type pack struct {
-	ID          string `json:"id"`
-	Label       string `json:"label"`
-	Blurb       string `json:"blurb"`
-	TitleSuffix string `json:"title_suffix"`
-	OutSuffix   string `json:"out_suffix"`
-	OutName     string `json:"out_name"`
-	BodyHeading string `json:"body_heading"`
+	ID          string   `json:"id"`
+	Label       string   `json:"label"`
+	Blurb       string   `json:"blurb"`
+	TitleSuffix string   `json:"title_suffix"`
+	OutSuffix   string   `json:"out_suffix"`
+	OutName     string   `json:"out_name"`
+	BodyHeading string   `json:"body_heading"`
+	Inputs      []string `json:"inputs"`
+	Vision      bool     `json:"vision"`
+	Whisper     bool     `json:"whisper"`
 	ChunkSys    string
 	AssembleSys string
 }
@@ -147,6 +150,7 @@ func readPackFiles(read func(string) ([]byte, error), fallbackID string) (pack, 
 	if p.BodyHeading == "" {
 		p.BodyHeading = "내용"
 	}
+	tightenPack(&p)
 	ch, err := read("chunk.txt")
 	if err != nil {
 		return pack{}, err
@@ -205,6 +209,35 @@ func pickPack(arg string) (pack, error) {
 	}
 	say("지금은 목록에 있는 것만 할 수 있습니다.")
 	return ensurePackLoaded(packs[0])
+}
+
+func tightenPack(p *pack) {
+	if len(p.Inputs) > 0 {
+		return
+	}
+	switch p.ID {
+	case "보고서":
+		p.Inputs = []string{"pptx", "pdf", "txt", "md"}
+		p.Vision = true
+	case "회의록":
+		p.Inputs = []string{"txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"}
+		p.Whisper = true
+	case "번역":
+		p.Inputs = []string{"pptx", "pdf", "txt", "md"}
+		p.Vision = true
+	default:
+		p.Inputs = []string{"txt", "md"}
+	}
+}
+
+func packAccepts(pk pack, path string) bool {
+	ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(path)), ".")
+	for _, a := range pk.Inputs {
+		if a == ext {
+			return true
+		}
+	}
+	return false
 }
 
 func isQuit(s string) bool {

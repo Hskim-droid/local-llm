@@ -1,9 +1,12 @@
 {
   "id": "회의록",
   "label": "회의록",
-  "blurb": "녹취·전사 중심. 말한 것만 남김",
+  "blurb": "전사 txt·영상만. 장표 차트 없음",
   "title_suffix": "회의록",
   "out_suffix": "_회의록",
   "out_name": "회의록.docx",
-  "body_heading": "회의 내용"
+  "body_heading": "회의 내용",
+  "inputs": ["txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
+  "vision": false,
+  "whisper": true
 }
