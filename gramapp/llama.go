@@ -102,8 +102,21 @@ func chatSpecs(p profile) []ggufSpec {
 	}
 }
 
+func llamaReady() bool {
+	_, err := findLlama("llama-server", "llama-server.exe")
+	return err == nil
+}
+
+func chatModelReady(p profile) bool {
+	specs := chatSpecs(p)
+	if len(specs) == 0 || !ggufReady(specs[0]) {
+		return false
+	}
+	return llamaReady()
+}
+
 func ensureLlamaBin() error {
-	if _, err := findLlama("llama-server", "llama-server.exe"); err == nil {
+	if llamaReady() {
 		return nil
 	}
 	url, name := llamaArchiveForOS()
