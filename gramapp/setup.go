@@ -16,6 +16,7 @@ func setup(p profile) error {
 	say("  이 노트북에서만 돌아갑니다.")
 	say("  파일은 회사 밖·인터넷으로 안 올라갑니다.")
 	say("  Ollama는 필요 없습니다.")
+	say("  오류 신고는 " + reportIssuesURL + " 로 주세요.")
 	say("════════════════════════════════════════")
 	say("")
 	say("잠깐 읽어 주세요")
