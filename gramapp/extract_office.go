@@ -113,7 +113,7 @@ func extractZipXML(p, source string, want func(name string) bool) ([]segment, er
 	}
 	blob := strings.TrimSpace(strings.Join(parts, "\n"))
 	if blob == "" {
-		return nil, fmt.Errorf("%s에서 글을 못 읽었습니다", strings.ToUpper(source))
+		return nil, fmt.Errorf("%s", T("err.zip.text", strings.ToUpper(source)))
 	}
 	return []segment{{Text: blob, Source: source, Location: "part-1"}}, nil
 }

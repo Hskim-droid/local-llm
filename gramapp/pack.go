@@ -67,7 +67,7 @@ func loadPacks() ([]pack, error) {
 	}
 	sortPacks(merged)
 	if len(merged) == 0 {
-		return nil, fmt.Errorf("양식 팩을 못 찾았습니다")
+		return nil, fmt.Errorf("%s", T("err.pack.none"))
 	}
 	return merged, nil
 }
@@ -188,18 +188,18 @@ func sortPacks(ps []pack) {
 func pickPack(arg string) (pack, error) {
 	packs, err := catalogPacks()
 	if err != nil || len(packs) == 0 {
-		return pack{}, fmt.Errorf("양식 팩을 못 찾았습니다")
+		return pack{}, fmt.Errorf("%s", T("err.pack.none"))
 	}
 	if arg != "" {
 		if p, ok := matchPack(packs, arg); ok {
 			return ensurePackLoaded(p)
 		}
-		return pack{}, fmt.Errorf("알 수 없는 용도: " + arg)
+		return pack{}, fmt.Errorf("%s", T("err.pack.unk", arg))
 	}
 	sayCanDo(packs)
 	choice := strings.TrimSpace(promptLine("> "))
 	if isQuit(choice) {
-		return pack{}, fmt.Errorf("종료")
+		return pack{}, fmt.Errorf("%s", T("err.quit"))
 	}
 	if choice == "" {
 		choice = "1"
@@ -207,7 +207,7 @@ func pickPack(arg string) (pack, error) {
 	if p, ok := matchPack(packs, choice); ok {
 		return ensurePackLoaded(p)
 	}
-	say("지금은 목록에 있는 것만 할 수 있습니다.")
+	say(T("cando.only"))
 	return ensurePackLoaded(packs[0])
 }
 
@@ -245,14 +245,14 @@ func isQuit(s string) bool {
 func sayCanDo(packs []pack) {
 	var names []string
 	for _, p := range packs {
-		names = append(names, p.Label)
+		names = append(names, packLabel(p))
 	}
 	say("")
-	say("지금은 " + strings.Join(names, ", ") + "을 할 수 있습니다.")
+	say(T("cando.now", strings.Join(names, ", ")))
 	for i, p := range packs {
-		say(fmt.Sprintf("  %d) %s  — %s", i+1, p.Label, p.Blurb))
+		say(fmt.Sprintf("  %d) %s  — %s", i+1, packLabel(p), packBlurb(p)))
 	}
-	say("  끝 이라고 쓰면 종료합니다.")
+	say(T("cando.quit"))
 }
 
 func matchPack(packs []pack, s string) (pack, bool) {
@@ -260,9 +260,15 @@ func matchPack(packs []pack, s string) (pack, bool) {
 	if n, err := strconv.Atoi(s); err == nil && n >= 1 && n <= len(packs) {
 		return packs[n-1], true
 	}
+	low := strings.ToLower(s)
 	for _, p := range packs {
 		if p.ID == s || p.Label == s {
 			return p, true
+		}
+		for _, a := range packAlias(p.ID) {
+			if a == s || strings.ToLower(a) == low {
+				return p, true
+			}
 		}
 	}
 	return pack{}, false

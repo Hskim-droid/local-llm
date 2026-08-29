@@ -12,7 +12,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	var pending []string
 	for _, f := range files {
 		if !packAccepts(pk, f) {
-			say("  건너뜀 " + filepath.Base(f) + " — 이 팩이 받는 형식이 아님")
+			say(T("run.skip.kind", filepath.Base(f)))
 			continue
 		}
 		ss, err := extractPath(f)
@@ -21,7 +21,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 			continue
 		}
 		if err != nil {
-			say("  건너뜀 " + filepath.Base(f) + " — " + err.Error())
+			say(T("run.skip", filepath.Base(f), err.Error()))
 			continue
 		}
 		base := filepath.Base(f)
@@ -39,7 +39,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		for _, f := range pending {
 			ss, err := extractPath(f)
 			if err != nil {
-				say("  건너뜀 " + filepath.Base(f) + " — " + err.Error())
+				say(T("run.skip", filepath.Base(f), err.Error()))
 				continue
 			}
 			base := filepath.Base(f)
@@ -56,15 +56,15 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		segs = fillVision(segs, imgs)
 	}
 	if len(segs) == 0 {
-		return "", fmt.Errorf("꺼낼 글이 없습니다 (스캔 PDF면 그림 모델을 못 받았을 수 있습니다)")
+		return "", fmt.Errorf("%s", T("run.empty"))
 	}
 	if err := llamaStart(model, p); err != nil {
 		return "", err
 	}
 	defer llamaStop()
-	say(fmt.Sprintf("추출 %d개 파일 · 세그먼트 %d · 팩 %s", len(files), len(segs), pk.ID))
+	say(T("run.extract", len(files), len(segs), pk.ID))
 	hv := harvestSegments(segs)
-	say(fmt.Sprintf("수확 수치 %d개 (코드). 모델은 이 목록 밖 숫자를 쓰면 검수에서 지웁니다.", len(hv.Raw)))
+	say(T("run.harvest", len(hv.Raw)))
 	allow := harvestPrompt(hv)
 
 	var facts []map[string]any
@@ -108,7 +108,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		nFiles++
 	}
 	engineBundle := mergeFacts(flattenChunkFacts(facts), nFiles)
-	say(fmt.Sprintf("병합 공유 %d · 고유 %d · 충돌 %d", len(engineBundle.Shared), len(engineBundle.Unique), len(engineBundle.Conflict)))
+	say(T("run.merge", len(engineBundle.Shared), len(engineBundle.Unique), len(engineBundle.Conflict)))
 	uniqueSidecar := pk.ID != "번역"
 	assembleBundle := engineBundle
 	limit := p.Chunk * 3
@@ -116,7 +116,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		limit = 2400
 	}
 	if mergePayloadSize(assembleBundle, uniqueSidecar) > limit {
-		say("원문이 커서 중간묶음을 합니다.")
+		say(T("run.fold"))
 		assembleBundle = compactBundleForAssemble(engineBundle, p, model, allow)
 	}
 
@@ -133,9 +133,9 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	var rep verifyReport
 	meta, rep = verifyMeta(meta, hv)
 	if rep.Stripped > 0 {
-		say(fmt.Sprintf("검수: 원문에 없는 숫자 %d개를 〔원문 확인〕으로 바꿨습니다.", rep.Stripped))
+		say(T("run.verify.n", rep.Stripped))
 	} else {
-		say("검수: 원문에 없는 숫자 없음")
+		say(T("run.verify.ok"))
 	}
 
 	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+pk.OutSuffix)

@@ -13,6 +13,7 @@ func main() {
 	os.Setenv("PYTHONUTF8", "1")
 
 	packArg := ""
+	langArg := ""
 	harvestOnly := false
 	force8b := false
 	var rawFiles []string
@@ -25,6 +26,11 @@ func main() {
 			force8b = true
 		case a == "--yes":
 			skipPause = true
+		case a == "--lang" && i+1 < len(os.Args):
+			langArg = os.Args[i+1]
+			i++
+		case strings.HasPrefix(a, "--lang="):
+			langArg = strings.TrimPrefix(a, "--lang=")
 		case a == "--pack" && i+1 < len(os.Args):
 			packArg = os.Args[i+1]
 			i++
@@ -35,6 +41,10 @@ func main() {
 		default:
 			rawFiles = append(rawFiles, a)
 		}
+	}
+	setUILang(resolveLang(langArg))
+	if langArg != "" {
+		saveLang(langArg)
 	}
 
 	var files []string
@@ -52,22 +62,22 @@ func main() {
 	}
 	if harvestOnly {
 		if len(files) == 0 {
-			say("--harvest 뒤에 파일 경로를 붙여 주세요. 모델은 안 받습니다.")
+			say(T("harvest.need"))
 			os.Exit(2)
 		}
 		out, err := runHarvestOnly(files)
 		if err != nil {
-			say("실패: " + err.Error())
+			say(T("job.fail", err.Error()))
 			reportFailure(p, "", files, err)
 			os.Exit(1)
 		}
-		say("수확만 했습니다. 모델은 안 올렸습니다.")
+		say(T("harvest.ok"))
 		say("  " + out)
 		return
 	}
 
 	if err := setup(p); err != nil {
-		say("오류: " + err.Error())
+		say(T("err.prefix", err.Error()))
 		reportFailure(p, "", files, err)
 		pause()
 		os.Exit(1)
@@ -75,20 +85,20 @@ func main() {
 
 	model, label, err := pickChatGGUF(p)
 	if err != nil {
-		say("오류: " + err.Error())
+		say(T("err.prefix", err.Error()))
 		reportFailure(p, "", files, err)
 		pause()
 		os.Exit(1)
 	}
-	say("지금 쓰는 모델: " + label)
+	say(T("using.model", label))
 	if availGB() < 4 {
-		say("메모리가 빠듯합니다. Chrome·엣지를 닫으면 속도와 워드 저장이 안정됩니다.")
+		say(T("mem.low"))
 	}
 
 	if packArg != "" {
 		pk, err := pickPack(packArg)
 		if err != nil {
-			say("오류: " + err.Error())
+			say(T("err.prefix", err.Error()))
 			reportFailure(p, packArg, files, err)
 			pause()
 			os.Exit(1)
@@ -107,7 +117,7 @@ func runLoop(pending []string, p profile, model string) {
 	for {
 		packs, err := catalogPacks()
 		if err != nil {
-			say("오류: " + err.Error())
+			say(T("err.prefix", err.Error()))
 			reportFailure(p, "", pending, err)
 			pause()
 			return
@@ -115,7 +125,7 @@ func runLoop(pending []string, p profile, model string) {
 		sayCanDo(packs)
 		line := strings.TrimSpace(promptLine("> "))
 		if isQuit(line) || (skipPause && line == "") {
-			say("종료합니다.")
+			say(T("bye"))
 			return
 		}
 		if line == "" {
@@ -123,12 +133,12 @@ func runLoop(pending []string, p profile, model string) {
 		}
 		pk, ok := matchPack(packs, line)
 		if !ok {
-			say("지금은 목록에 있는 것만 할 수 있습니다.")
+			say(T("cando.only"))
 			continue
 		}
 		pk, err = ensurePackLoaded(pk)
 		if err != nil {
-			say("오류: " + err.Error())
+			say(T("err.prefix", err.Error()))
 			reportFailure(p, pk.ID, pending, err)
 			continue
 		}
@@ -141,12 +151,12 @@ func runLoop(pending []string, p profile, model string) {
 }
 
 func runOneJob(files []string, p profile, model string, pk pack, failHard bool) error {
-	say("용도: " + pk.Label)
+	say(T("job.pack", packLabel(pk)))
 	if len(files) == 0 {
 		files = pickFiles()
 	}
 	if len(files) == 0 {
-		raw := strings.TrimSpace(promptLine("파일 경로 > "))
+		raw := strings.TrimSpace(promptLine(T("prompt.file")))
 		if raw != "" {
 			if abs, err := filepath.Abs(raw); err == nil {
 				if st, err := os.Stat(abs); err == nil && st.Mode().IsRegular() {
@@ -156,10 +166,10 @@ func runOneJob(files []string, p profile, model string, pk pack, failHard bool) 
 		}
 	}
 	if len(files) == 0 {
-		say("파일을 고르지 않았습니다.")
+		say(T("job.nofile"))
 		if failHard {
-			say("  · 시작.bat을 다시 눌러 창에서 고르거나")
-			say("  · 로컬LLM 아이콘 위에 파일을 끌어다 놓으세요.")
+			say(T("job.nofile.bat"))
+			say(T("job.nofile.drop"))
 			pause()
 		}
 		return fmt.Errorf("no files")
@@ -168,8 +178,8 @@ func runOneJob(files []string, p profile, model string, pk pack, failHard bool) 
 	out, err := runFiles(files, p, model, pk)
 	llamaStop()
 	if err != nil {
-		say("실패: " + err.Error())
-		say("원본 파일은 그대로 있습니다.")
+		say(T("job.fail", err.Error()))
+		say(T("job.orig"))
 		reportFailure(p, pk.ID, files, err)
 		if failHard {
 			pause()
@@ -177,9 +187,9 @@ func runOneJob(files []string, p profile, model string, pk pack, failHard bool) 
 		return err
 	}
 	say("")
-	say("끝났습니다. 원본은 그대로 두었습니다.")
+	say(T("job.done"))
 	say("  " + out)
-	say(fmt.Sprintf("걸린 시간 %s · 모델은 내려서 메모리를 비웠습니다.", time.Since(t0).Round(time.Second)))
+	say(T("job.time", time.Since(t0).Round(time.Second)))
 	reveal(out)
 	return nil
 }
@@ -188,7 +198,7 @@ func pause() {
 	if skipPause {
 		return
 	}
-	_ = promptLine("\n창을 닫으려면 Enter > ")
+	_ = promptLine(T("prompt.quit"))
 }
 
 func mkdirAll(p string) error {

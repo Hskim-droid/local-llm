@@ -18,9 +18,10 @@ func TestScrubErrHidesPaths(t *testing.T) {
 }
 
 func TestFormatErrorNote(t *testing.T) {
+	setUILang("en")
 	p := profile{ID: "gram16", Label: "그램 16GB"}
 	s := formatErrorNote(time.Date(2026, 8, 29, 12, 0, 0, 0, time.UTC), p, "보고서", "꺼낼 글이 없습니다", []string{`C:\work\a.xlsx`, `C:\work\b.hwpx`})
-	if !strings.Contains(s, reportIssuesURL) || !strings.Contains(s, "버전: "+appVersion) {
+	if !strings.Contains(s, reportIssuesURL) || !strings.Contains(s, appVersion) {
 		t.Fatalf("%s", s)
 	}
 	if !strings.Contains(s, ".xlsx") || !strings.Contains(s, ".hwpx") {
@@ -29,7 +30,7 @@ func TestFormatErrorNote(t *testing.T) {
 	if strings.Contains(s, `C:\work`) || strings.Contains(s, "a.xlsx") {
 		t.Fatalf("path leaked %s", s)
 	}
-	if !strings.Contains(s, "팩: 보고서") {
+	if !strings.Contains(s, "보고서") {
 		t.Fatalf("%s", s)
 	}
 }

@@ -76,10 +76,10 @@ func pickChatGGUF(p profile) (path, label string, err error) {
 	specs := chatSpecs(p)
 	for i := len(specs) - 1; i >= 0; i-- {
 		if ggufReady(specs[i]) {
-			return ggufPath(specs[i]), specs[i].Label, nil
+			return ggufPath(specs[i]), modelLabel(specs[i]), nil
 		}
 	}
-	return "", "", fmt.Errorf("모델 파일이 없습니다. 시작.bat을 다시 눌러 받아 주세요")
+	return "", "", fmt.Errorf("%s", T("err.no.model"))
 }
 
 func chatSpecs(p profile) []ggufSpec {
@@ -121,9 +121,9 @@ func ensureLlamaBin() error {
 	}
 	url, name := llamaArchiveForOS()
 	if url == "" {
-		return fmt.Errorf("이 OS용 llama.cpp를 자동으로 못 받습니다")
+		return fmt.Errorf("%s", T("err.llama.os"))
 	}
-	say("  llama.cpp 엔진을 받습니다. 창을 닫지 마세요.")
+	say(T("err.llama.get"))
 	arch := filepath.Join(toolsDir(), name)
 	if err := downloadFile(url, arch); err != nil {
 		return err
@@ -139,7 +139,7 @@ func ensureLlamaBin() error {
 		}
 	}
 	if _, err := findLlama("llama-server", "llama-server.exe"); err != nil {
-		return fmt.Errorf("llama-server를 못 찾았습니다")
+		return fmt.Errorf("%s", T("err.llama.bin"))
 	}
 	return nil
 }
@@ -190,12 +190,12 @@ func ensureGGUF(g ggufSpec) error {
 	if ggufReady(g) {
 		return nil
 	}
-	say("  " + g.Label + " 를 받습니다. 창을 닫지 마세요.")
+	say(T("model.get", modelLabel(g)))
 	if err := downloadFile(g.URL, ggufPath(g)); err != nil {
 		return err
 	}
 	if !ggufReady(g) {
-		return fmt.Errorf("%s 가 덜 받았습니다. 다시 눌러 주세요", g.File)
+		return fmt.Errorf("%s", T("err.gguf.short", g.File))
 	}
 	return nil
 }
@@ -231,15 +231,15 @@ func llamaStart(gguf string, p profile) error {
 	cmd.Stdout = osStdout()
 	cmd.Stderr = osStderr()
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("엔진을 못 켰습니다: %v", err)
+		return fmt.Errorf("%s", T("err.engine", err))
 	}
 	llamaMu.Lock()
 	llamaCmd = cmd
 	llamaMu.Unlock()
-	say("  모델을 올리는 중… (이 창을 닫지 마세요)")
+	say(T("model.up"))
 	if !waitLlama(90) {
 		llamaStop()
-		return fmt.Errorf("모델이 안 켜졌습니다. Chrome을 닫고 다시 눌러 주세요")
+		return fmt.Errorf("%s", T("err.model.up"))
 	}
 	return nil
 }

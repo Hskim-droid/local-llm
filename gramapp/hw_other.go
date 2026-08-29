@@ -3,6 +3,7 @@
 package main
 
 import (
+	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -25,3 +26,18 @@ func availGB() float64 {
 }
 
 func setUTF8Console() {}
+
+func osUILang() string {
+	for _, k := range []string{"LC_ALL", "LANG"} {
+		if normalizeLang(os.Getenv(k)) == "ko" {
+			return "ko"
+		}
+	}
+	if runtime.GOOS == "darwin" {
+		out, err := exec.Command("defaults", "read", "-g", "AppleLocale").Output()
+		if err == nil && normalizeLang(string(out)) == "ko" {
+			return "ko"
+		}
+	}
+	return "en"
+}

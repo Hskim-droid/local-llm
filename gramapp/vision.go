@@ -198,17 +198,17 @@ func fillVision(segs []segment, imgs []imgPart) []segment {
 	if len(imgs) == 0 {
 		return segs
 	}
-	say(fmt.Sprintf("글이 얇은 차트·스캔 %d장. 보고서 모델을 내리고 그림 모델을 올립니다. 동시에 안 올립니다.", len(imgs)))
+	say(T("vision.thin", len(imgs)))
 	llamaStop()
 	if err := ensureVL(); err != nil {
-		say("  그림 모델 없음: " + err.Error() + "  — 글만 있는 대로 진행합니다.")
+		say(T("vision.miss", err.Error()))
 		return segs
 	}
 	for i, im := range imgs {
-		say(fmt.Sprintf("  그림 %d/%d (%s)", i+1, len(imgs), im.Location))
+		say(T("vision.one", i+1, len(imgs), im.Location))
 		obj, err := llamaChatVision(sysVL, "보이는 숫자와 글만 JSON.", im.Bytes, im.Ext)
 		if err != nil {
-			say("    건너뜀: " + err.Error())
+			say(T("vision.skip", err.Error()))
 			continue
 		}
 		var parts []string
@@ -224,7 +224,7 @@ func fillVision(segs []segment, imgs []imgPart) []segment {
 		}
 		segs = append(segs, segment{Text: t, Source: "vision", Location: im.Location})
 	}
-	say("그림 모델을 내렸습니다. 이제 보고서 모델만 씁니다.")
+	say(T("vision.down"))
 	return segs
 }
 
@@ -232,7 +232,7 @@ func ensureVL() error {
 	if err := ensureLlamaBin(); err != nil {
 		return err
 	}
-	say("  스캔·차트용 그림 모델입니다. 보고서 모델과 같이 올리지 않습니다.")
+	say(T("vision.dl"))
 	if err := ensureGGUF(vlGGUF); err != nil {
 		return err
 	}

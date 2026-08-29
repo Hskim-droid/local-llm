@@ -181,11 +181,11 @@ func runHarvestOnly(files []string) (string, error) {
 	for _, f := range files {
 		ss, err := extractPath(f)
 		if _, ok := err.(needWhisperError); ok {
-			say("  건너뜀 " + filepath.Base(f) + " — 영상은 옆 .txt가 있을 때만 수확합니다")
+			say(T("harvest.skip.vid", filepath.Base(f)))
 			continue
 		}
 		if err != nil {
-			say("  건너뜀 " + filepath.Base(f) + " — " + err.Error())
+			say(T("harvest.skip", filepath.Base(f), err.Error()))
 			continue
 		}
 		base := filepath.Base(f)
@@ -195,7 +195,7 @@ func runHarvestOnly(files []string) (string, error) {
 		}
 	}
 	if len(segs) == 0 {
-		return "", fmt.Errorf("꺼낼 글이 없습니다")
+		return "", fmt.Errorf("%s", T("harvest.empty"))
 	}
 	hv := harvestSegments(segs)
 	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+"_수확")
@@ -211,7 +211,7 @@ func runHarvestOnly(files []string) (string, error) {
 		"count":   len(hv.Raw),
 		"numbers": hv.Raw,
 	})
-	say(fmt.Sprintf("세그먼트 %d · 수확 수치 %d", len(segs), len(hv.Raw)))
+	say(T("harvest.stats", len(segs), len(hv.Raw)))
 	for _, n := range hv.Raw {
 		say("  · " + n)
 	}
