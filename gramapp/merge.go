@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 )
@@ -27,8 +26,6 @@ type mergeBundle struct {
 	Conflict []mergeItem
 	Files    int
 }
-
-const foldSys = `너는 로컬 문서 정리기다. 사실 문장만 남긴다. 중복은 하나로 합친다. 숫자는 원문 표기 그대로. 없는 숫자를 만들지 말 것. JSON만 반환. {"facts":["명사형"]}`
 
 func flattenChunkFacts(objs []map[string]any) []rawFact {
 	var out []rawFact
@@ -315,22 +312,22 @@ func writeFactLines(b *strings.Builder, title string, items []mergeItem) {
 
 func formatMergePayload(bundle mergeBundle, uniqueSidecar bool) string {
 	var b strings.Builder
-	b.WriteString("코드가 묶은 사실. 공유는 여러 출처에서 같음. 고유는 한 출처만. 충돌은 고르지 말고 둘 다 유지.\n")
+	b.WriteString(T("merge.intro"))
 	if uniqueSidecar {
-		b.WriteString("고유 사실은 엔진이 '한쪽에만 있음'에 붙이니 본문에 반복하지 말 것. 충돌도 엔진이 '출처가 갈림'에 붙인다.\n\n")
+		b.WriteString(T("merge.side.unique"))
 	} else {
-		b.WriteString("고유 사실은 본문에 넣을 것. 충돌은 엔진이 '출처가 갈림'에 붙인다.\n\n")
+		b.WriteString(T("merge.side.body"))
 	}
-	writeFactLines(&b, "[공유]", bundle.Shared)
+	writeFactLines(&b, T("merge.shared"), bundle.Shared)
 	if uniqueSidecar {
 		if len(bundle.Unique) > 0 {
-			b.WriteString("[고유] 본문 반복 금지. 엔진이 따로 붙임.\n\n")
+			b.WriteString(T("merge.unique.skip"))
 		}
 	} else {
-		writeFactLines(&b, "[고유]", bundle.Unique)
+		writeFactLines(&b, T("merge.unique"), bundle.Unique)
 	}
 	if len(bundle.Conflict) > 0 {
-		b.WriteString("[충돌] 한쪽으로 고르지 말 것. 엔진이 따로 붙임.\n")
+		b.WriteString(T("merge.conflict"))
 		for _, it := range bundle.Conflict {
 			b.WriteString("- ")
 			b.WriteString(itemLine(it))
@@ -359,8 +356,8 @@ func compactFactLines(lines []string, p profile, model, allow string) []string {
 		if len(buf) == 0 {
 			return
 		}
-		user := fmt.Sprintf("%s\n사실 목록을 중복 없이 JSON.\n{\"facts\":[\"명사형\"]}\n\n%s", allow, strings.Join(buf, "\n"))
-		obj, err := ollamaChatJSON(model, foldSys, user, p.Ctx, p.Predict)
+		user := T("llm.fold.user", allow, strings.Join(buf, "\n"))
+		obj, err := ollamaChatJSON(model, withLang(T("llm.fold")), user, p.Ctx, p.Predict)
 		if err != nil {
 			out = append(out, buf...)
 			buf, n = nil, 0
@@ -432,7 +429,7 @@ func appendMergeSections(sections []map[string]any, bundle mergeBundle, uniqueSi
 		}
 		if len(bullets) > 0 {
 			sections = append(sections, map[string]any{
-				"heading": "한쪽에만 있음",
+				"heading": T("out.unique"),
 				"blocks":  []map[string]any{{"bullets": bullets}},
 			})
 		}
@@ -446,7 +443,7 @@ func appendMergeSections(sections []map[string]any, bundle mergeBundle, uniqueSi
 		}
 		if len(bullets) > 0 {
 			sections = append(sections, map[string]any{
-				"heading": "출처가 갈림",
+				"heading": T("out.conflict"),
 				"blocks":  []map[string]any{{"bullets": bullets}},
 			})
 		}

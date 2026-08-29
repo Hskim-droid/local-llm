@@ -51,8 +51,9 @@ func TestFlattenAndPayload(t *testing.T) {
 		t.Fatalf("flat %d", len(flat))
 	}
 	b := mergeFacts(flat, 2)
+	setUILang("en")
 	p := formatMergePayload(b, true)
-	if !strings.Contains(p, "[공유]") || !strings.Contains(p, "본문에 반복하지 말 것") {
+	if !strings.Contains(p, "[shared]") || !strings.Contains(p, "do not repeat") {
 		t.Fatalf("payload %s", p)
 	}
 	secs := appendMergeSections(nil, b, true)
@@ -61,7 +62,7 @@ func TestFlattenAndPayload(t *testing.T) {
 		heads = append(heads, str(s["heading"]))
 	}
 	joined := strings.Join(heads, ",")
-	if !strings.Contains(joined, "한쪽에만 있음") {
+	if !strings.Contains(joined, "Only in one source") {
 		t.Fatalf("sections %v", heads)
 	}
 }

@@ -12,7 +12,7 @@ type verifyReport struct {
 	Invented  []string `json:"invented"`
 }
 
-const unverifiedMark = "〔원문 확인〕"
+func unverifiedMark() string { return T("out.check") }
 
 func verifyMeta(meta map[string]any, h harvest) (map[string]any, verifyReport) {
 	rep := verifyReport{Harvested: len(h.Raw)}
@@ -73,7 +73,7 @@ func patchNumbers(s string, h harvest) (string, []string, int) {
 		if c.ok {
 			continue
 		}
-		s = s[:c.start] + unverifiedMark + s[c.end:]
+		s = s[:c.start] + unverifiedMark() + s[c.end:]
 	}
 	return s, invented, kept
 }
@@ -146,7 +146,7 @@ func dropEmptyFacts(meta map[string]any) map[string]any {
 		var out []any
 		for _, s := range ss {
 			t := strings.TrimSpace(s)
-			if t == "" || t == unverifiedMark {
+			if t == "" || t == unverifiedMark() {
 				continue
 			}
 			out = append(out, s)

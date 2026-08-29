@@ -25,7 +25,7 @@ You can also drop files onto the exe, then pick the job.
 
 16 GB RAM: 8B only (~5 GB download). 32 GB: 8B then 14B. Numbers come from source text; anything else becomes 〔원문 확인〕.
 
-UI language is **English by default**. Korean Windows UI → Korean. Pin with `--lang ko` or `--lang en` (saved for next runs). Word output language is the pack’s job, not the UI language.
+UI **and Word output** are English by default. Korean Windows UI → Korean UI and Korean Word. Pin both with `--lang ko` or `--lang en` (saved). The translation pack still follows an explicit target language if you state one.
 
 Files never leave the PC. [PRIVACY.md](PRIVACY.md)
 
@@ -55,11 +55,11 @@ Canonical source: `gramapp/packs/`. Embedded in the exe. A `packs/` folder next 
 
 Do not put customer tone in this repo. Put it beside the exe.
 
-| Pack | Output |
-|---|---|
-| 보고서 | `이름_보고서\보고서.docx` |
-| 회의록 | `이름_회의록\회의록.docx` |
-| 번역 | `이름_번역\번역.docx` |
+| Pack | Output (English UI) | Output (Korean UI) |
+|---|---|---|
+| Report / 보고서 | `name_report\report.docx` | `이름_보고서\보고서.docx` |
+| Minutes / 회의록 | `name_minutes\minutes.docx` | `이름_회의록\회의록.docx` |
+| Translation / 번역 | `name_translation\translation.docx` | `이름_번역\번역.docx` |
 
 Hardware notes: [docs/GRAM.ko.md](docs/GRAM.ko.md)
 

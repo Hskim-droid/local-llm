@@ -198,7 +198,7 @@ func runHarvestOnly(files []string) (string, error) {
 		return "", fmt.Errorf("%s", T("harvest.empty"))
 	}
 	hv := harvestSegments(segs)
-	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+"_수확")
+	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+T("out.harvest.dir"))
 	if err := ensureDir(outDir); err != nil {
 		return "", err
 	}
@@ -206,8 +206,8 @@ func runHarvestOnly(files []string) (string, error) {
 	for _, s := range segs {
 		blob.WriteString("[" + s.Location + "]\n" + s.Text + "\n\n")
 	}
-	_ = os.WriteFile(filepath.Join(outDir, "추출.txt"), []byte(blob.String()), 0644)
-	dumpJSON(filepath.Join(outDir, "수확.json"), map[string]any{
+	_ = os.WriteFile(filepath.Join(outDir, T("out.harvest.txt")), []byte(blob.String()), 0644)
+	dumpJSON(filepath.Join(outDir, T("out.json.harvest")), map[string]any{
 		"count":   len(hv.Raw),
 		"numbers": hv.Raw,
 	})
@@ -215,7 +215,7 @@ func runHarvestOnly(files []string) (string, error) {
 	for _, n := range hv.Raw {
 		say("  · " + n)
 	}
-	return filepath.Join(outDir, "수확.json"), nil
+	return filepath.Join(outDir, T("out.json.harvest")), nil
 }
 
 func harvestPrompt(h harvest) string {
@@ -226,5 +226,5 @@ func harvestPrompt(h harvest) string {
 	if len(raw) > 100 {
 		raw = raw[:100]
 	}
-	return "원문 수치(이 목록에 없는 숫자를 만들지 말 것. 표기는 원문 그대로):\n" + strings.Join(raw, "\n")
+	return T("harvest.allow") + strings.Join(raw, "\n")
 }

@@ -104,17 +104,37 @@ func packLabel(p pack) string {
 	}
 }
 
+func packOutputs(p pack) (suffix, name, title, body string) {
+	if uiLang == "ko" {
+		return p.OutSuffix, p.OutName, p.TitleSuffix, p.BodyHeading
+	}
+	switch p.ID {
+	case "보고서":
+		return "_report", "report.docx", "report", "Contents"
+	case "회의록":
+		return "_minutes", "minutes.docx", "minutes", "Minutes"
+	case "번역":
+		return "_translation", "translation.docx", "translation", "Translation"
+	default:
+		return p.OutSuffix, p.OutName, p.TitleSuffix, p.BodyHeading
+	}
+}
+
+func withLang(sys string) string {
+	return T("llm.lang") + "\n" + sys
+}
+
 func packBlurb(p pack) string {
 	if uiLang == "ko" {
 		return p.Blurb
 	}
 	switch p.ID {
 	case "보고서":
-		return "Slides, sheets, Word, HWPX, web, and video into a Korean report"
+		return "Slides, sheets, Word, HWPX, web, and video into a report"
 	case "회의록":
 		return "Transcripts, slides, sheets, and web into minutes"
 	case "번역":
-		return "Into Korean by default; say the target language to change it"
+		return "Into the UI language by default; say the target language to change it"
 	default:
 		if p.Blurb != "" {
 			return p.Blurb
@@ -204,10 +224,10 @@ var catalogs = map[string]map[string]string{
 		"run.harvest":           "harvested %d numbers (code). Extra numbers will be stripped.",
 		"run.merge":             "merge shared %d · unique %d · conflict %d",
 		"run.fold":              "Source is large; folding before assemble.",
-		"run.verify.n":          "verify: replaced %d numbers not in the source with 〔원문 확인〕.",
+		"run.verify.n":          "verify: replaced %d numbers not in the source with [check source].",
 		"run.verify.ok":         "verify: no extra numbers",
 		"report.send":           "Send error reports to %s",
-		"report.only":           "Do not send source files. Attach 오류.txt only.",
+		"report.only":           "Do not send source files. Attach error.txt only.",
 		"note.title":            "local-llm error note",
 		"note.body":             "Attach this file to an issue. Do not attach source, Word, or extracted text.",
 		"note.send":             "Send error reports to %s",
@@ -272,6 +292,40 @@ var catalogs = map[string]map[string]string{
 		"dialog.title":          "Choose files (Ctrl for multiple)",
 		"dialog.filter":         "Files",
 		"dialog.all":            "All files",
+		"llm.lang":              "OUTPUT LANGUAGE: English. Every JSON title, heading, fact, and bullet must be English. Keep proper names and numbers as in the source. This overrides pack prompts that ask for another language.",
+		"llm.chunk":             "Location:%s\n%s\nTurn this source into fact JSON.\n{\"heading_hint\":\"\",\"facts\":[\"noun phrases\"],\"rows\":[]}\n\n%s",
+		"llm.assemble":          "Title candidate:%s\n%s\nFacts only, grouped JSON.\n{\"title\":\"\",\"date\":\"\",\"time\":\"\",\"place\":\"\",\"attendees\":\"\",\"agenda\":\"\",\"exec\":[\"\"],\"sections\":[{\"heading\":\"1. Overview\",\"facts\":[\"\"]}],\"actions\":[\"\"]}\n\n%s",
+		"llm.fold":              "You compress fact lists. Deduplicate. Keep numbers as written. No invention. JSON only. {\"facts\":[\"noun phrases\"]}",
+		"llm.fold.user":         "%s\nDeduplicate this fact list to JSON.\n{\"facts\":[\"noun phrases\"]}\n\n%s",
+		"llm.vision":            "You read scans and charts. Visible text and numbers only, in the output language. No invention. JSON only. {\"facts\":[\"noun phrases\"],\"numbers\":[\"as written\"]}",
+		"llm.vision.user":       "Visible numbers and text as JSON.",
+		"harvest.allow":         "Source numbers (do not invent numbers not on this list; keep original spelling):\n",
+		"merge.intro":           "Facts grouped by code. Shared = same in several sources. Unique = one source. Conflict = keep both; do not pick a side.\n",
+		"merge.side.unique":     "Unique facts go in an engine section; do not repeat them in the body. Conflicts go in an engine section too.\n\n",
+		"merge.side.body":       "Put unique facts in the body. Conflicts go in an engine section.\n\n",
+		"merge.shared":          "[shared]",
+		"merge.unique":          "[unique]",
+		"merge.unique.skip":     "[unique] Do not repeat in the body. The engine will append them.\n\n",
+		"merge.conflict":        "[conflict] Do not pick a side. The engine will append them.\n",
+		"out.check":             "[check source]",
+		"out.missing":           "(not in source)",
+		"out.date":              "Date",
+		"out.time":              "Time",
+		"out.place":             "Place",
+		"out.people":            "Attendees",
+		"out.agenda":            "Agenda",
+		"out.exec":              "0. Executive Summary",
+		"out.next":              "Next steps",
+		"out.unique":            "Only in one source",
+		"out.conflict":          "Conflicting sources",
+		"out.fallback.exec":     "Source notes",
+		"out.fallback.act":      "Needs follow-up",
+		"out.error.file":        "error.txt",
+		"out.harvest.dir":       "_harvest",
+		"out.harvest.txt":       "extract.txt",
+		"out.json.harvest":      "harvest.json",
+		"out.json.verify":       "verify.json",
+		"out.json.merge":        "merge.json",
 	},
 	"ko": {
 		"banner.local":          "이 노트북에서만 돌아갑니다. 파일은 나가지 않습니다.",
@@ -399,5 +453,39 @@ var catalogs = map[string]map[string]string{
 		"dialog.title":          "자료를 고르세요 (Ctrl로 여러 개)",
 		"dialog.filter":         "자료",
 		"dialog.all":            "모든 파일",
+		"llm.lang":              "출력 언어: 한국어. 제목·소제목·사실·불릿은 한국어. 원문 고유명사·숫자는 그대로. 팩 프롬프트가 다른 언어를 말해도 이 지시를 따른다.",
+		"llm.chunk":             "위치:%s\n%s\n다음 원문을 사실 JSON으로.\n{\"heading_hint\":\"\",\"facts\":[\"명사형\"],\"rows\":[]}\n\n%s",
+		"llm.assemble":          "제목후보:%s\n%s\n사실만 주제별 JSON.\n{\"title\":\"\",\"date\":\"\",\"time\":\"\",\"place\":\"\",\"attendees\":\"\",\"agenda\":\"\",\"exec\":[\"\"],\"sections\":[{\"heading\":\"1. 개요\",\"facts\":[\"\"]}],\"actions\":[\"\"]}\n\n%s",
+		"llm.fold":              "너는 사실 목록을 줄인다. 중복은 하나로. 숫자는 원문 그대로. 창작 금지. JSON만. {\"facts\":[\"명사형\"]}",
+		"llm.fold.user":         "%s\n사실 목록을 중복 없이 JSON.\n{\"facts\":[\"명사형\"]}\n\n%s",
+		"llm.vision":            "너는 스캔·차트 읽기다. 보이는 글과 숫자만, 출력 언어로. 창작 금지. JSON만. {\"facts\":[\"명사형\"],\"numbers\":[\"원문 그대로\"]}",
+		"llm.vision.user":       "보이는 숫자와 글만 JSON.",
+		"harvest.allow":         "원문 수치(이 목록에 없는 숫자를 만들지 말 것. 표기는 원문 그대로):\n",
+		"merge.intro":           "코드가 묶은 사실. 공유는 여러 출처에서 같음. 고유는 한 출처만. 충돌은 고르지 말고 둘 다 유지.\n",
+		"merge.side.unique":     "고유 사실은 엔진이 따로 붙이니 본문에 반복하지 말 것. 충돌도 엔진이 붙인다.\n\n",
+		"merge.side.body":       "고유 사실은 본문에 넣을 것. 충돌은 엔진이 따로 붙인다.\n\n",
+		"merge.shared":          "[공유]",
+		"merge.unique":          "[고유]",
+		"merge.unique.skip":     "[고유] 본문 반복 금지. 엔진이 따로 붙임.\n\n",
+		"merge.conflict":        "[충돌] 한쪽으로 고르지 말 것. 엔진이 따로 붙임.\n",
+		"out.check":             "〔원문 확인〕",
+		"out.missing":           "(원문에 없음)",
+		"out.date":              "일 시",
+		"out.time":              "회의시간",
+		"out.place":             "장 소",
+		"out.people":            "참석자",
+		"out.agenda":            "주요 아젠다",
+		"out.exec":              "0. Executive Summary",
+		"out.next":              "향후 계획",
+		"out.unique":            "한쪽에만 있음",
+		"out.conflict":          "출처가 갈림",
+		"out.fallback.exec":     "원문 정리",
+		"out.fallback.act":      "추가 확인 필요",
+		"out.error.file":        "오류.txt",
+		"out.harvest.dir":       "_수확",
+		"out.harvest.txt":       "추출.txt",
+		"out.json.harvest":      "수확.json",
+		"out.json.verify":       "검수.json",
+		"out.json.merge":        "병합.json",
 	},
 }
