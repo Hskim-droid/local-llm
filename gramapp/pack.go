@@ -211,28 +211,17 @@ func pickPack(arg string) (pack, error) {
 	return ensurePackLoaded(packs[0])
 }
 
+var allInputs = []string{"pptx", "pdf", "txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"}
+
 func tightenPack(p *pack) {
-	if len(p.Inputs) > 0 {
-		return
-	}
-	switch p.ID {
-	case "보고서":
-		p.Inputs = []string{"pptx", "pdf", "txt", "md"}
-		p.Vision = true
-	case "회의록":
-		p.Inputs = []string{"txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"}
-		p.Whisper = true
-	case "번역":
-		p.Inputs = []string{"pptx", "pdf", "txt", "md"}
-		p.Vision = true
-	default:
-		p.Inputs = []string{"txt", "md"}
-	}
+	p.Inputs = append([]string{}, allInputs...)
+	p.Vision = true
+	p.Whisper = true
 }
 
-func packAccepts(pk pack, path string) bool {
+func packAccepts(_ pack, path string) bool {
 	ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(path)), ".")
-	for _, a := range pk.Inputs {
+	for _, a := range allInputs {
 		if a == ext {
 			return true
 		}
