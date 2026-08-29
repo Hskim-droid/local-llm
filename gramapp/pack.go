@@ -39,13 +39,34 @@ func exeDir() string {
 }
 
 func loadPacks() ([]pack, error) {
-	if packs, err := loadPacksFromDir(filepath.Join(exeDir(), "packs")); err == nil && len(packs) > 0 {
-		return packs, nil
+	var merged []pack
+	seen := map[string]bool{}
+	add := func(ps []pack) {
+		for _, p := range ps {
+			if seen[p.ID] {
+				continue
+			}
+			seen[p.ID] = true
+			merged = append(merged, p)
+		}
 	}
-	if packs, err := loadPacksFromDir("packs"); err == nil && len(packs) > 0 {
-		return packs, nil
+	if ps, err := loadPacksFromDir(filepath.Join(exeDir(), "packs")); err == nil {
+		add(ps)
 	}
-	return loadPacksFromFS(embeddedPacks, "packs")
+	if ps, err := loadPacksFromDir(filepath.Join(toolsDir(), "packs")); err == nil {
+		add(ps)
+	}
+	if ps, err := loadPacksFromDir("packs"); err == nil {
+		add(ps)
+	}
+	if ps, err := loadPacksFromFS(embeddedPacks, "packs"); err == nil {
+		add(ps)
+	}
+	sortPacks(merged)
+	if len(merged) == 0 {
+		return nil, fmt.Errorf("양식 팩을 못 찾았습니다")
+	}
+	return merged, nil
 }
 
 func loadPacksFromDir(root string) ([]pack, error) {
@@ -161,31 +182,51 @@ func sortPacks(ps []pack) {
 }
 
 func pickPack(arg string) (pack, error) {
-	packs, err := loadPacks()
+	packs, err := catalogPacks()
 	if err != nil || len(packs) == 0 {
 		return pack{}, fmt.Errorf("양식 팩을 못 찾았습니다")
 	}
 	if arg != "" {
 		if p, ok := matchPack(packs, arg); ok {
-			return p, nil
+			return ensurePackLoaded(p)
 		}
-		say("알 수 없는 용도: " + arg + "  → 목록에서 고르세요.")
+		return pack{}, fmt.Errorf("알 수 없는 용도: " + arg)
 	}
-	say("")
-	say("무엇을 만들까요?")
-	for i, p := range packs {
-		say(fmt.Sprintf("  %d) %s  — %s", i+1, p.Label, p.Blurb))
+	sayCanDo(packs)
+	choice := strings.TrimSpace(promptLine("> "))
+	if isQuit(choice) {
+		return pack{}, fmt.Errorf("종료")
 	}
-	say("  (Enter 는 1번)")
-	choice := strings.TrimSpace(promptLine("번호 > "))
 	if choice == "" {
 		choice = "1"
 	}
 	if p, ok := matchPack(packs, choice); ok {
-		return p, nil
+		return ensurePackLoaded(p)
 	}
-	say("번호를 못 알아들었습니다. 1번으로 진행합니다.")
-	return packs[0], nil
+	say("지금은 목록에 있는 것만 할 수 있습니다.")
+	return ensurePackLoaded(packs[0])
+}
+
+func isQuit(s string) bool {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "끝", "종료", "q", "quit", "exit":
+		return true
+	default:
+		return false
+	}
+}
+
+func sayCanDo(packs []pack) {
+	var names []string
+	for _, p := range packs {
+		names = append(names, p.Label)
+	}
+	say("")
+	say("지금은 " + strings.Join(names, ", ") + "을 할 수 있습니다.")
+	for i, p := range packs {
+		say(fmt.Sprintf("  %d) %s  — %s", i+1, p.Label, p.Blurb))
+	}
+	say("  끝 이라고 쓰면 종료합니다.")
 }
 
 func matchPack(packs []pack, s string) (pack, bool) {
