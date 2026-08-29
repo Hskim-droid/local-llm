@@ -1,12 +1,12 @@
 {
   "id": "회의록",
   "label": "회의록",
-  "blurb": "영상·전사·장표·PDF를 회의록으로",
+  "blurb": "영상·전사·장표·엑셀·워드·HWPX·웹을 회의록으로",
   "title_suffix": "회의록",
   "out_suffix": "_회의록",
   "out_name": "회의록.docx",
   "body_heading": "회의 내용",
-  "inputs": ["pptx", "pdf", "txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
+  "inputs": ["pptx", "pdf", "txt", "md", "csv", "tsv", "json", "html", "htm", "xml", "docx", "xlsx", "hwpx", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
   "vision": true,
   "whisper": true
 }

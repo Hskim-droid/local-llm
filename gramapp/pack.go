@@ -211,7 +211,11 @@ func pickPack(arg string) (pack, error) {
 	return ensurePackLoaded(packs[0])
 }
 
-var allInputs = []string{"pptx", "pdf", "txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"}
+var allInputs = []string{
+	"pptx", "pdf", "txt", "md", "csv", "tsv", "json", "html", "htm", "xml",
+	"docx", "xlsx", "hwpx",
+	"mp4", "m4a", "mov", "wav", "mp3", "webm",
+}
 
 func tightenPack(p *pack) {
 	p.Inputs = append([]string{}, allInputs...)

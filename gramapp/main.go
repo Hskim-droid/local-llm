@@ -52,7 +52,7 @@ func main() {
 	}
 	if harvestOnly {
 		if len(files) == 0 {
-			say("--harvest 뒤에 PPTX·PDF·TXT를 붙여 주세요. 모델은 안 받습니다.")
+			say("--harvest 뒤에 파일 경로를 붙여 주세요. 모델은 안 받습니다.")
 			os.Exit(2)
 		}
 		out, err := runHarvestOnly(files)

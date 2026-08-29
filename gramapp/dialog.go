@@ -15,8 +15,8 @@ func pickFiles() []string {
 Add-Type -AssemblyName System.Windows.Forms
 $d = New-Object System.Windows.Forms.OpenFileDialog
 $d.Multiselect = $true
-$d.Title = '영상, PPT, PDF를 고르세요 (Ctrl로 여러 개)'
-$d.Filter = '자료|*.mp4;*.m4a;*.mov;*.wav;*.mp3;*.webm;*.pptx;*.pdf;*.txt;*.md|모든 파일|*.*'
+$d.Title = '자료를 고르세요 (Ctrl로 여러 개)'
+$d.Filter = '자료|*.pptx;*.pdf;*.docx;*.xlsx;*.hwpx;*.html;*.htm;*.xml;*.csv;*.tsv;*.json;*.txt;*.md;*.mp4;*.m4a;*.mov;*.wav;*.mp3;*.webm|모든 파일|*.*'
 if ($d.ShowDialog() -eq 'OK') { $d.FileNames -join '|' }
 `
 	cmd := exec.Command("powershell", "-NoProfile", "-STA", "-Command", ps)

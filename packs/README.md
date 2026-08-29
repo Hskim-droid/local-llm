@@ -4,7 +4,7 @@
 
 오케스트레이터는 상주 모델이 아닙니다. “지금은 ~ 할 수 있습니다”만 말하고, 고른 팩을 올렸다 내립니다.
 
-GitHub에서 받는 팩은 **이 `index.json`에 적힌 ID만**입니다. 파일 종류는 엔진이 읽는 것(PPTX·PDF·txt·영상)을 팩마다 가리지 않습니다. 글이 없으면 비전, 영상이면 전사를 **순차**로 올립니다. GGUF는 Hugging Face입니다.
+GitHub에서 받는 팩은 **이 `index.json`에 적힌 ID만**입니다. 파일 종류는 엔진이 읽는 것(PPTX·PDF·DOCX·XLSX·HWPX·HTML·XML·CSV·MD·TXT·영상)을 팩마다 가리지 않습니다. 글이 없으면 비전, 영상이면 전사를 **순차**로 올립니다. 구형 PPT·XLS·HWP는 PPTX·XLSX·HWPX로 저장하세요. GGUF는 Hugging Face입니다.
 
 ```
 추출·수확·검수(엔진, 코드) → 팩 프롬프트로 JSON → 워드

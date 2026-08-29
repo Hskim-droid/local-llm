@@ -25,7 +25,8 @@ func setup(p profile) error {
 	say("  · Chrome·엣지 탭이 많으면 먼저 닫아 주세요. (메모리)")
 	say("  · 원본 파일은 건드리지 않습니다. 옆에 폴더가 생깁니다.")
 	say("  · 영상은 옆 .txt가 있으면 그걸 씁니다. 없으면 그때 음성 모델을 받습니다.")
-	say("  · PPT는 PPTX로 저장한 것만 됩니다.")
+	say("  · PPTX·PDF·DOCX·XLSX·HWPX·HTML·XML·CSV·MD·TXT·영상.")
+	say("  · 구형 PPT·XLS·HWP는 각각 PPTX·XLSX·HWPX로 저장한 것만 됩니다.")
 	say("  · 스캔·차트는 그때 그림 모델을 받습니다. 채팅 모델과 동시에 안 올립니다.")
 	say("")
 
