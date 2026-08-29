@@ -25,6 +25,8 @@
 
 파일은 회사 밖·인터넷으로 올라가지 않습니다. [PRIVACY.md](PRIVACY.md)
 
+오류 신고는 [GitHub Issues](https://github.com/Hskim-droid/local-llm/issues) 로 주세요. 원문은 보내지 말고, 실패 때 생기는 `오류.txt`만 주세요.
+
 스캔 PDF·차트만 있는 슬라이드는 글을 못 뽑을 때만 Qwen2.5-VL 3B GGUF를 **잠깐** 올립니다. 채팅 모델은 그 전에 내립니다.
 
 영상은 같은 이름 `.txt`가 있으면 그걸 씁니다. 없으면 `whisper.cpp` + `ggml-small`(약 470MB)로 전사한 뒤 음성 모델을 내리고 8B를 올립니다. 윈도우·맥 모두 필요할 때 도구를 받습니다. 원본 영상은 그대로, 전사문만 옆에 `.txt`로 저장합니다.

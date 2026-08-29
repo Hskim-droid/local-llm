@@ -58,6 +58,7 @@ func main() {
 		out, err := runHarvestOnly(files)
 		if err != nil {
 			say("실패: " + err.Error())
+			reportFailure(p, "", files, err)
 			os.Exit(1)
 		}
 		say("수확만 했습니다. 모델은 안 올렸습니다.")
@@ -67,6 +68,7 @@ func main() {
 
 	if err := setup(p); err != nil {
 		say("오류: " + err.Error())
+		reportFailure(p, "", files, err)
 		pause()
 		os.Exit(1)
 	}
@@ -74,6 +76,7 @@ func main() {
 	model, label, err := pickChatGGUF(p)
 	if err != nil {
 		say("오류: " + err.Error())
+		reportFailure(p, "", files, err)
 		pause()
 		os.Exit(1)
 	}
@@ -86,6 +89,7 @@ func main() {
 		pk, err := pickPack(packArg)
 		if err != nil {
 			say("오류: " + err.Error())
+			reportFailure(p, packArg, files, err)
 			pause()
 			os.Exit(1)
 		}
@@ -104,6 +108,7 @@ func runLoop(pending []string, p profile, model string) {
 		packs, err := catalogPacks()
 		if err != nil {
 			say("오류: " + err.Error())
+			reportFailure(p, "", pending, err)
 			pause()
 			return
 		}
@@ -124,6 +129,7 @@ func runLoop(pending []string, p profile, model string) {
 		pk, err = ensurePackLoaded(pk)
 		if err != nil {
 			say("오류: " + err.Error())
+			reportFailure(p, pk.ID, pending, err)
 			continue
 		}
 		files := pending
@@ -164,6 +170,7 @@ func runOneJob(files []string, p profile, model string, pk pack, failHard bool) 
 	if err != nil {
 		say("실패: " + err.Error())
 		say("원본 파일은 그대로 있습니다.")
+		reportFailure(p, pk.ID, files, err)
 		if failHard {
 			pause()
 		}
