@@ -25,7 +25,7 @@ func catalogPacks() ([]pack, error) {
 	remote, rerr := fetchPackIndex()
 	if rerr != nil || len(remote) == 0 {
 		if len(local) == 0 {
-			return nil, fmt.Errorf("양식 팩을 못 찾았습니다")
+			return nil, fmt.Errorf("%s", T("err.pack.none"))
 		}
 		return local, nil
 	}
@@ -93,7 +93,7 @@ func pinnedIDs() map[string]bool {
 
 func fetchPack(id string) error {
 	if !pinnedIDs()[id] {
-		return fmt.Errorf("허용 목록에 없는 팩")
+		return fmt.Errorf("%s", T("err.pack.fetch"))
 	}
 	dest := filepath.Join(toolsDir(), "packs", id)
 	if err := os.MkdirAll(dest, 0755); err != nil {
@@ -111,9 +111,9 @@ func ensurePackLoaded(p pack) (pack, error) {
 	if p.ChunkSys != "" && p.AssembleSys != "" {
 		return p, nil
 	}
-	say("  팩을 공개 저장소에서 받습니다: " + p.ID)
+	say(T("pack.fetch", p.ID))
 	if err := fetchPack(p.ID); err != nil {
-		return p, fmt.Errorf("팩 받기 실패: %v", err)
+		return p, fmt.Errorf("%s", T("err.pack.get", err))
 	}
 	all, err := loadPacks()
 	if err != nil {
@@ -122,5 +122,5 @@ func ensurePackLoaded(p pack) (pack, error) {
 	if g, ok := matchPack(all, p.ID); ok && g.ChunkSys != "" {
 		return g, nil
 	}
-	return p, fmt.Errorf("받은 팩을 못 읽었습니다: %s", p.ID)
+	return p, fmt.Errorf("%s", T("err.pack.read", p.ID))
 }

@@ -48,3 +48,12 @@ func setUTF8Console() {
 	k.NewProc("SetConsoleOutputCP").Call(65001)
 	k.NewProc("SetConsoleCP").Call(65001)
 }
+
+func osUILang() string {
+	k := syscall.NewLazyDLL("kernel32.dll")
+	r, _, _ := k.NewProc("GetUserDefaultUILanguage").Call()
+	if uint32(r)&0x3FF == 0x12 {
+		return "ko"
+	}
+	return "en"
+}

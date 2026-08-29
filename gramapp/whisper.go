@@ -55,22 +55,22 @@ func transcribePending(paths []string, chatModel string) {
 		return
 	}
 	_ = chatModel
-	say(fmt.Sprintf("영상 %d개에 전사문이 없습니다. 음성 모델을 씁니다. 보고서 모델은 잠시 내립니다.", len(paths)))
+	say(T("whisper.need", len(paths)))
 	llamaStop()
 	if err := ensureWhisper(); err != nil {
-		say("  음성 도구 준비 실패: " + err.Error())
-		say("  영상 옆에 같은 이름 .txt를 두면 됩니다.")
+		say(T("whisper.tools", err.Error()))
+		say(T("whisper.side"))
 		return
 	}
 	for i, p := range paths {
-		say(fmt.Sprintf("  전사 %d/%d %s", i+1, len(paths), filepath.Base(p)))
+		say(T("whisper.one", i+1, len(paths), filepath.Base(p)))
 		if err := transcribeToSidecar(p); err != nil {
-			say("    실패: " + err.Error())
+			say(T("whisper.fail", err.Error()))
 			continue
 		}
-		say("    저장 " + filepath.Base(sidecarTxt(p)) + " (원본 영상은 그대로)")
+		say(T("whisper.save", filepath.Base(sidecarTxt(p))))
 	}
-	say("음성 모델을 내렸습니다. 이제 보고서 모델만 씁니다.")
+	say(T("whisper.down"))
 }
 
 func ensureWhisper() error {
@@ -80,9 +80,9 @@ func ensureWhisper() error {
 	if _, err := whisperCLI(); err != nil {
 		url, zipName := whisperZipForOS()
 		if url == "" {
-			return fmt.Errorf("이 OS용 whisper.cpp를 자동으로 못 받습니다. 영상 옆에 같은 이름 .txt를 두세요")
+			return fmt.Errorf("%s", T("whisper.os"))
 		}
-		say("  whisper.cpp를 받습니다. 창을 닫지 마세요.")
+		say(T("whisper.get"))
 		zipPath := filepath.Join(toolsDir(), zipName)
 		if err := downloadFile(url, zipPath); err != nil {
 			return err
@@ -97,12 +97,12 @@ func ensureWhisper() error {
 	}
 	model := whisperModelPath()
 	if st, err := os.Stat(model); err != nil || st.Size() < 100<<20 {
-		say("  음성 모델 ggml-small (약 470MB)를 받습니다. 창을 닫지 마세요.")
+		say(T("whisper.model"))
 		if err := downloadFile(whisperModelURL, model); err != nil {
 			return err
 		}
 		if st, err := os.Stat(model); err != nil || st.Size() < 100<<20 {
-			return fmt.Errorf("음성 모델이 덜 받았습니다. 다시 눌러 주세요")
+			return fmt.Errorf("%s", T("whisper.short"))
 		}
 	}
 	return nil
@@ -119,9 +119,9 @@ func ensureFFmpeg() error {
 	}
 	url := ffmpegURLForOS()
 	if url == "" {
-		return fmt.Errorf("ffmpeg가 없습니다. 영상에서 소리를 뽑을 때 필요합니다")
+		return fmt.Errorf("%s", T("ffmpeg.miss"))
 	}
-	say("  ffmpeg (영상 소리 뽑기)를 받습니다. 창을 닫지 마세요.")
+	say(T("ffmpeg.get"))
 	if err := downloadFile(url, local); err != nil {
 		return err
 	}
@@ -273,7 +273,7 @@ func downloadFile(url, dest string) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
-		return fmt.Errorf("다운로드 실패 %s", resp.Status)
+		return fmt.Errorf("%s", T("dl.fail", resp.Status))
 	}
 	f, err := os.Create(tmp)
 	if err != nil {
@@ -290,7 +290,7 @@ func downloadFile(url, dest string) error {
 	if err := os.Rename(tmp, dest); err != nil {
 		return err
 	}
-	say(fmt.Sprintf("      완료 %s", filepath.Base(dest)))
+	say(T("dl.done", filepath.Base(dest)))
 	return nil
 }
 
@@ -308,9 +308,9 @@ func (p *progressWriter) Write(b []byte) (int, error) {
 	}
 	p.last = p.n
 	if p.total > 0 {
-		say(fmt.Sprintf("      %d / %d MB", p.n>>20, p.total>>20))
+		say(T("dl.mb", p.n>>20, p.total>>20))
 	} else {
-		say(fmt.Sprintf("      %d MB", p.n>>20))
+		say(T("dl.mb2", p.n>>20))
 	}
 	return len(b), nil
 }

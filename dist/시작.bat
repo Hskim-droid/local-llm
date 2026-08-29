@@ -1,11 +1,11 @@
 @echo off
 chcp 65001 >nul
-title 로컬LLM
+title local-llm
 cd /d "%~dp0"
 echo.
-echo  로컬LLM
-echo  이 창을 닫지 마세요. 안내는 프로그램이 한글로 합니다.
-echo  파일은 이 노트북 밖으로 나가지 않습니다.
+echo  local-llm
+echo  Do not close this window.  이 창을 닫지 마세요.
+echo  Files stay on this PC.  파일은 이 노트북 밖으로 나가지 않습니다.
 echo.
 if exist "%~dp0로컬LLM.exe" (
   "%~dp0로컬LLM.exe" %*

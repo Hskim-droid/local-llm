@@ -25,6 +25,8 @@ You can also drop files onto the exe, then pick the job.
 
 16 GB RAM: 8B only (~5 GB download). 32 GB: 8B then 14B. Numbers come from source text; anything else becomes 〔원문 확인〕.
 
+UI language is **English by default**. Korean Windows UI → Korean. Pin with `--lang ko` or `--lang en` (saved for next runs). Word output language is the pack’s job, not the UI language.
+
 Files never leave the PC. [PRIVACY.md](PRIVACY.md)
 
 Send errors to [GitHub Issues](https://github.com/Hskim-droid/local-llm/issues). Attach only `오류.txt`, never the source documents.

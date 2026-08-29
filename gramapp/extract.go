@@ -27,7 +27,7 @@ func extractPath(p string) ([]segment, error) {
 	case ".pptx":
 		return extractPPTX(p)
 	case ".ppt":
-		return nil, fmt.Errorf("구형 .ppt는 안 됩니다. PPTX로 저장하세요")
+		return nil, fmt.Errorf("%s", T("err.old.ppt"))
 	case ".pdf":
 		return extractPDF(p)
 	case ".txt", ".md", ".csv", ".tsv", ".json":
@@ -41,15 +41,15 @@ func extractPath(p string) ([]segment, error) {
 	case ".xlsx":
 		return extractXLSX(p)
 	case ".xls":
-		return nil, fmt.Errorf("구형 .xls는 XLSX로 저장하세요")
+		return nil, fmt.Errorf("%s", T("err.old.xls"))
 	case ".hwpx":
 		return extractHWPX(p)
 	case ".hwp":
-		return nil, fmt.Errorf("구형 .hwp는 HWPX로 저장하세요")
+		return nil, fmt.Errorf("%s", T("err.old.hwp"))
 	case ".mp4", ".m4a", ".mov", ".wav", ".mp3", ".webm":
 		return extractVideo(p)
 	default:
-		return nil, fmt.Errorf("지원하지 않는 형식: %s", ext)
+		return nil, fmt.Errorf("%s", T("err.kind", ext))
 	}
 }
 

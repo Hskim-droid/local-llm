@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -10,7 +9,7 @@ import (
 )
 
 const (
-	appVersion      = "0.8.7"
+	appVersion      = "0.8.8"
 	reportIssuesURL = "https://github.com/Hskim-droid/local-llm/issues"
 )
 
@@ -67,34 +66,34 @@ func scrubErr(msg string, files []string) string {
 
 func formatErrorNote(when time.Time, p profile, packID, msg string, files []string) string {
 	var b strings.Builder
-	b.WriteString("로컬LLM 오류 쪽지\n")
-	b.WriteString("이 파일을 이슈에 붙이세요. 원문·워드·추출문은 붙이지 마세요.\n")
-	b.WriteString("오류 신고는 " + reportIssuesURL + " 로 주세요.\n\n")
-	b.WriteString("시각: " + when.Format(time.RFC3339) + "\n")
-	b.WriteString("버전: " + appVersion + "\n")
-	b.WriteString(fmt.Sprintf("OS: %s/%s\n", runtime.GOOS, runtime.GOARCH))
+	b.WriteString(T("note.title") + "\n")
+	b.WriteString(T("note.body") + "\n")
+	b.WriteString(T("note.send", reportIssuesURL) + "\n\n")
+	b.WriteString(T("note.time", when.Format(time.RFC3339)) + "\n")
+	b.WriteString(T("note.ver", appVersion) + "\n")
+	b.WriteString(T("note.os", runtime.GOOS, runtime.GOARCH) + "\n")
 	if p.ID != "" {
-		b.WriteString("프로필: " + p.ID + " (" + p.Label + ")\n")
+		b.WriteString(T("note.profile", p.ID, profileLabel(p)) + "\n")
 	}
-	b.WriteString(fmt.Sprintf("RAM: %.0f GB (빈 자리 %.1f GB)\n", ramGB(), availGB()))
+	b.WriteString(T("note.ram", ramGB(), availGB()) + "\n")
 	if packID != "" {
-		b.WriteString("팩: " + packID + "\n")
+		b.WriteString(T("note.pack", packID) + "\n")
 	} else {
-		b.WriteString("팩: (없음)\n")
+		b.WriteString(T("note.pack.none") + "\n")
 	}
 	exts := inputExts(files)
 	if len(exts) > 0 {
-		b.WriteString("입력 확장자: " + strings.Join(exts, " ") + "\n")
+		b.WriteString(T("note.ext", strings.Join(exts, " ")) + "\n")
 	} else {
-		b.WriteString("입력 확장자: (없음)\n")
+		b.WriteString(T("note.ext.none") + "\n")
 	}
-	b.WriteString("오류: " + scrubErr(msg, files) + "\n")
+	b.WriteString(T("note.err", scrubErr(msg, files)) + "\n")
 	return b.String()
 }
 
 func sayReportTo(notePath string) {
-	say("오류 신고는 " + reportIssuesURL + " 로 주세요.")
-	say("원문 파일은 보내지 마세요. 오류.txt 만 주세요.")
+	say(T("report.send", reportIssuesURL))
+	say(T("report.only"))
 	if notePath != "" {
 		say("  " + notePath)
 	}
