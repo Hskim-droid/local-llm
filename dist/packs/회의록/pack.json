@@ -1,12 +1,12 @@
 {
   "id": "회의록",
   "label": "회의록",
-  "blurb": "전사 txt·영상만. 장표 차트 없음",
+  "blurb": "영상·전사·장표·PDF를 회의록으로",
   "title_suffix": "회의록",
   "out_suffix": "_회의록",
   "out_name": "회의록.docx",
   "body_heading": "회의 내용",
-  "inputs": ["txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
-  "vision": false,
+  "inputs": ["pptx", "pdf", "txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
+  "vision": true,
   "whisper": true
 }

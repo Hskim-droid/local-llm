@@ -48,15 +48,15 @@ func TestPackAccepts(t *testing.T) {
 		t.Fatal(err)
 	}
 	rep, _ := matchPack(packs, "보고서")
-	if !packAccepts(rep, "a.pptx") || packAccepts(rep, "a.mp4") {
-		t.Fatalf("보고서 inputs %+v", rep.Inputs)
-	}
 	min, _ := matchPack(packs, "회의록")
-	if !packAccepts(min, "a.mp4") || packAccepts(min, "a.pptx") {
-		t.Fatalf("회의록 inputs %+v", min.Inputs)
+	if !packAccepts(rep, "a.pptx") || !packAccepts(rep, "a.mp4") {
+		t.Fatalf("보고서 should take pptx and mp4 %+v", rep.Inputs)
 	}
-	if !rep.Vision || rep.Whisper || min.Vision || !min.Whisper {
-		t.Fatalf("flags report vis=%v wh=%v minutes vis=%v wh=%v", rep.Vision, rep.Whisper, min.Vision, min.Whisper)
+	if !packAccepts(min, "a.mp4") || !packAccepts(min, "a.pptx") {
+		t.Fatalf("회의록 should take mp4 and pptx %+v", min.Inputs)
+	}
+	if !rep.Vision || !rep.Whisper || !min.Vision || !min.Whisper {
+		t.Fatalf("all packs get vision+whisper")
 	}
 }
 

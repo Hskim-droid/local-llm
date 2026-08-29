@@ -1,12 +1,12 @@
 {
   "id": "번역",
   "label": "번역",
-  "blurb": "자료를 한국어로. 목표 언어를 말하면 그쪽으로. 영상 없음",
+  "blurb": "자료를 한국어로. 목표 언어를 말하면 그쪽으로",
   "title_suffix": "번역",
   "out_suffix": "_번역",
   "out_name": "번역.docx",
   "body_heading": "번역문",
-  "inputs": ["pptx", "pdf", "txt", "md"],
+  "inputs": ["pptx", "pdf", "txt", "md", "mp4", "m4a", "mov", "wav", "mp3", "webm"],
   "vision": true,
-  "whisper": false
+  "whisper": true
 }
