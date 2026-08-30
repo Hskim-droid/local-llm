@@ -29,6 +29,14 @@ func TestLoadEmbeddedPacks(t *testing.T) {
 	}
 }
 
+func TestOneFileJobs(t *testing.T) {
+	in := []string{"a.pptx", "b.pdf", "c.mp4"}
+	got := oneFileJobs(in)
+	if len(got) != 3 || len(got[0]) != 1 || got[1][0] != "b.pdf" {
+		t.Fatalf("%v", got)
+	}
+}
+
 func TestIsQuit(t *testing.T) {
 	if !isQuit("끝") || !isQuit("QUIT") || isQuit("보고서") {
 		t.Fatal("quit parse")

@@ -177,28 +177,53 @@ func foldNum(s string) string {
 }
 
 func runHarvestOnly(files []string) (string, error) {
-	var segs []segment
-	for _, f := range files {
-		ss, err := extractPath(f)
-		if _, ok := err.(needWhisperError); ok {
-			say(T("harvest.skip.vid", filepath.Base(f)))
-			continue
+	var last string
+	var firstErr error
+	n := 0
+	for i, f := range files {
+		if len(files) > 1 {
+			say(T("job.file", i+1, len(files), filepath.Base(f)))
 		}
+		out, err := harvestOneFile(f)
 		if err != nil {
-			say(T("harvest.skip", filepath.Base(f), err.Error()))
+			if firstErr == nil {
+				firstErr = err
+			}
 			continue
 		}
-		base := filepath.Base(f)
-		for _, s := range ss {
-			s.Location = base + "/" + s.Location
-			segs = append(segs, s)
+		last = out
+		n++
+	}
+	if n == 0 {
+		if firstErr != nil {
+			return "", firstErr
 		}
+		return "", fmt.Errorf("%s", T("harvest.empty"))
+	}
+	return last, nil
+}
+
+func harvestOneFile(f string) (string, error) {
+	ss, err := extractPath(f)
+	if _, ok := err.(needWhisperError); ok {
+		say(T("harvest.skip.vid", filepath.Base(f)))
+		return "", err
+	}
+	if err != nil {
+		say(T("harvest.skip", filepath.Base(f), err.Error()))
+		return "", err
+	}
+	base := filepath.Base(f)
+	var segs []segment
+	for _, s := range ss {
+		s.Location = base + "/" + s.Location
+		segs = append(segs, s)
 	}
 	if len(segs) == 0 {
 		return "", fmt.Errorf("%s", T("harvest.empty"))
 	}
 	hv := harvestSegments(segs)
-	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+T("out.harvest.dir"))
+	outDir := filepath.Join(filepath.Dir(f), stemName(f)+T("out.harvest.dir"))
 	if err := ensureDir(outDir); err != nil {
 		return "", err
 	}
