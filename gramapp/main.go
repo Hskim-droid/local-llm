@@ -174,24 +174,36 @@ func runOneJob(files []string, p profile, model string, pk pack, failHard bool) 
 		}
 		return fmt.Errorf("no files")
 	}
-	t0 := time.Now()
-	out, err := runFiles(files, p, model, pk)
-	llamaStop()
-	if err != nil {
-		say(T("job.fail", err.Error()))
-		say(T("job.orig"))
-		reportFailure(p, pk.ID, files, err)
-		if failHard {
-			pause()
-		}
-		return err
+	if len(files) > 1 {
+		say(T("job.onebyone", len(files)))
 	}
-	say("")
-	say(T("job.done"))
-	say("  " + out)
-	say(T("job.time", time.Since(t0).Round(time.Second)))
-	reveal(out)
-	return nil
+	var firstErr error
+	for i, f := range files {
+		if len(files) > 1 {
+			say(T("job.file", i+1, len(files), filepath.Base(f)))
+		}
+		t0 := time.Now()
+		out, err := runFiles([]string{f}, p, model, pk)
+		llamaStop()
+		if err != nil {
+			say(T("job.fail", err.Error()))
+			say(T("job.orig"))
+			reportFailure(p, pk.ID, []string{f}, err)
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
+		}
+		say("")
+		say(T("job.done"))
+		say("  " + out)
+		say(T("job.time", time.Since(t0).Round(time.Second)))
+		reveal(out)
+	}
+	if failHard && firstErr != nil {
+		pause()
+	}
+	return firstErr
 }
 
 func pause() {

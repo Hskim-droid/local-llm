@@ -22,7 +22,7 @@ If GitHub Pages is not on yet, zip: https://github.com/Hskim-droid/local-llm/rel
 
 First run downloads the model. Leave the window open. Then pick Report / Minutes / Translation (1 / 2 / 3).
 
-You can also drop files onto the exe, then pick the job.
+You can also drop files onto the exe, then pick the job. Several files are always run **one at a time** — each file gets its own output folder. Nothing is merged across files.
 
 16 GB RAM: 8B only (~5 GB download). 32 GB: 8B then 14B. Numbers come from source text; anything else becomes 〔원문 확인〕.
 

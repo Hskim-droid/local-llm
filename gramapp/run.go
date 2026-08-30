@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+func oneFileJobs(files []string) [][]string {
+	out := make([][]string, 0, len(files))
+	for _, f := range files {
+		out = append(out, []string{f})
+	}
+	return out
+}
+
 func runFiles(files []string, p profile, model string, pk pack) (string, error) {
 	var segs []segment
 	var imgs []imgPart
