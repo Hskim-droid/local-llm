@@ -1,0 +1,73 @@
+{
+  "version": 2,
+  "llama_rel": "b10670",
+  "quant": "Q4_K_M",
+  "gguf_host": "huggingface",
+  "engine_host": "github",
+  "ngl": {
+    "windows": 0,
+    "darwin": 99
+  },
+  "profiles": [
+    {
+      "id": "mac24",
+      "label": "맥 24GB",
+      "os": "darwin",
+      "ram_min": 20,
+      "ram_max": 28,
+      "avail_min": 8,
+      "pull": ["qwen3-14b"],
+      "ctx": 8192,
+      "chunk": 1600,
+      "predict": 1400,
+      "threads_cap": 8
+    },
+    {
+      "id": "gram32",
+      "label": "그램 32GB",
+      "ram_min": 20,
+      "avail_min": 8,
+      "pull": ["qwen3-8b", "qwen3-14b"],
+      "ctx": 6144,
+      "chunk": 1400,
+      "predict": 1100,
+      "threads_cap": 8
+    },
+    {
+      "id": "gram16",
+      "label": "그램 16GB",
+      "ram_min": 0,
+      "pull": ["qwen3-8b"],
+      "ctx": 4096,
+      "chunk": 1000,
+      "predict": 800,
+      "threads_cap": 4
+    }
+  ],
+  "derate": [
+    {
+      "avail_lt": 4,
+      "force_8b": true,
+      "ctx_cap": 2048,
+      "chunk_cap": 700,
+      "predict_cap": 512,
+      "threads_cap": 2
+    },
+    {
+      "avail_lt": 6,
+      "force_8b": true,
+      "ctx_cap": 4096,
+      "chunk_cap": 1000,
+      "predict_cap": 800,
+      "threads_cap": 4
+    },
+    {
+      "avail_lt": 10,
+      "force_8b": true,
+      "ctx_cap": 4096,
+      "chunk_cap": 1000,
+      "predict_cap": 900,
+      "threads_cap": 4
+    }
+  ]
+}

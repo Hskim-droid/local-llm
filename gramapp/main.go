@@ -56,10 +56,9 @@ func main() {
 		}
 	}
 
-	p := pickProfile(ramGB())
-	if force8b {
-		p.Pull = []string{"qwen3-8b"}
-	}
+	loadMachineCatalog()
+	pin8B = force8b
+	p := liveProfile()
 	if harvestOnly {
 		if len(files) == 0 {
 			say(T("harvest.need"))
@@ -91,7 +90,8 @@ func main() {
 		os.Exit(1)
 	}
 	say(T("using.model", label))
-	if availGB() < 4 {
+	h := snapshotHost()
+	if h.Avail < 4 {
 		say(T("mem.low"))
 	}
 
@@ -176,6 +176,18 @@ func runOneJob(files []string, p profile, model string, pk pack, failHard bool) 
 	}
 	if len(files) > 1 {
 		say(T("job.onebyone", len(files)))
+	}
+	p = liveProfile()
+	if len(p.Pull) == 1 && p.Pull[0] == "qwen3-8b" && !ggufReady(gguf8b) {
+		say(T("step.hw.derate"))
+		_ = ensureGGUF(gguf8b)
+	}
+	if m, lab, err := pickChatGGUF(p); err == nil {
+		model = m
+		say(T("using.model", lab))
+		h := snapshotHost()
+		say(T("step.hw.ram2", h.Total, h.Avail, h.Load, gpuName()))
+		say(T("step.hw.tune", p.Ctx, p.Chunk, p.Predict))
 	}
 	var firstErr error
 	for i, f := range files {

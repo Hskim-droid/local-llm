@@ -28,10 +28,12 @@ func setup(p profile) error {
 	say("")
 
 	if first {
-		gb := ramGB()
+		h := snapshotHost()
 		say(T("step.hw"))
-		say(T("step.hw.ram", gb, gpuName()))
+		say(T("step.hw.ram2", h.Total, h.Avail, h.Load, gpuName()))
 		say(T("step.hw.profile", profileLabel(p)))
+		say(T("step.hw.tune", p.Ctx, p.Chunk, p.Predict))
+		say(T("step.hw.where"))
 		if p.ID == "gram16" {
 			say(T("step.hw.16"))
 		}

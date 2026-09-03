@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	appVersion      = "0.9.0"
+	appVersion      = "0.9.3"
 	reportIssuesURL = "https://github.com/Hskim-droid/local-llm/issues"
 )
 
