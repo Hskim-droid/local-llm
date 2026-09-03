@@ -8,7 +8,7 @@ func TestMatchMachineProfileByRAM(t *testing.T) {
 		t.Fatalf("profiles %d", len(m.Profiles))
 	}
 	g16 := matchMachineProfile(16, "windows", m.Profiles)
-	if g16.ID != "gram16" || g16.Predict != 800 || g16.Ctx != 4096 {
+	if g16.ID != "gram16" || g16.Predict != 1200 || g16.Ctx != 4096 {
 		t.Fatalf("16GB win %#v", g16)
 	}
 	g32 := matchMachineProfile(32, "windows", m.Profiles)

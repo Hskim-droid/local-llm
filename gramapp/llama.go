@@ -281,11 +281,15 @@ func llamaStop() {
 }
 
 func llamaChatJSON(model, system, user string, ctx, predict int) (map[string]any, error) {
+	return llamaChatJSONSchema(model, system, user, ctx, predict, nil)
+}
+
+func llamaChatJSONSchema(model, system, user string, ctx, predict int, schema map[string]any) (map[string]any, error) {
 	_ = ctx
 	if strings.Contains(strings.ToLower(model), "qwen3") && !strings.Contains(user, "/no_think") {
 		user = "/no_think\n" + user
 	}
-	body, _ := json.Marshal(map[string]any{
+	req := map[string]any{
 		"messages": []map[string]string{
 			{"role": "system", "content": system},
 			{"role": "user", "content": user},
@@ -293,7 +297,19 @@ func llamaChatJSON(model, system, user string, ctx, predict int) (map[string]any
 		"temperature": 0.1,
 		"max_tokens":  predict,
 		"stream":      false,
-	})
+	}
+	if schema != nil {
+		req["json_schema"] = schema
+		req["response_format"] = map[string]any{
+			"type": "json_schema",
+			"json_schema": map[string]any{
+				"name":   "out",
+				"schema": schema,
+				"strict": true,
+			},
+		}
+	}
+	body, _ := json.Marshal(req)
 	cli := &http.Client{Timeout: 240 * time.Second}
 	resp, err := cli.Post(llamaAddr+"/v1/chat/completions", "application/json", bytes.NewReader(body))
 	if err != nil {

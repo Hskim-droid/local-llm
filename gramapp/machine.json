@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "llama_rel": "b10670",
   "quant": "Q4_K_M",
   "gguf_host": "huggingface",
@@ -40,7 +40,7 @@
       "pull": ["qwen3-8b"],
       "ctx": 4096,
       "chunk": 1000,
-      "predict": 800,
+      "predict": 1200,
       "threads_cap": 4
     }
   ],
