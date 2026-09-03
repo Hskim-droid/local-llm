@@ -136,7 +136,11 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	packUser := T("llm.assemble", title, allow, payload)
 	meta, err := ollamaChatJSON(model, withLang(pk.AssembleSys), packUser, p.Ctx, p.Predict)
 	if err != nil {
-		meta = map[string]any{"title": title, "exec": []any{T("out.fallback.exec")}, "actions": []any{T("out.fallback.act")}}
+		meta = map[string]any{"title": title}
+	}
+	if assembleThin(meta) {
+		say(T("run.skel"))
+		meta = fillThinAssemble(meta, title, engineBundle, hv)
 	}
 	var rep verifyReport
 	meta, rep = verifyMeta(meta, hv)

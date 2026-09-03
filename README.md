@@ -62,7 +62,7 @@ Do not put customer tone in this repo. Put it beside the exe.
 | Minutes / 회의록 | `name_minutes\minutes.docx` | `이름_회의록\회의록.docx` |
 | Translation / 번역 | `name_translation\translation.docx` | `이름_번역\번역.docx` |
 
-Hardware notes: [docs/GRAM.ko.md](docs/GRAM.ko.md)
+Hardware notes: [docs/GRAM.ko.md](docs/GRAM.ko.md). RAM/OS knobs: [docs/MACHINE.md](docs/MACHINE.md) (`gramapp/machine.json`). First run is a local wizard: it reads RAM, picks a profile, pulls **packs + this JSON from GitHub**, **GGUF from Hugging Face**. Weights are not stored in this repo.
 
 ## Legacy
 

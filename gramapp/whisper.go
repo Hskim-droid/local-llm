@@ -29,25 +29,117 @@ func (e needWhisperError) Error() string {
 	return "영상 전사가 필요합니다: " + filepath.Base(e.Path)
 }
 
+const (
+	toolsVendorASCII     = "LocalLLM"
+	toolsVendorHangul    = "로컬LLM"
+	toolsVendorHangulOld = "로컬LLM보고서"
+)
+
 func toolsDir() string {
-	home, _ := os.UserHomeDir()
-	var cands []string
-	if d := os.Getenv("LOCALAPPDATA"); d != "" && runtime.GOOS == "windows" {
-		cands = []string{filepath.Join(d, "로컬LLM", "tools"), filepath.Join(d, "로컬LLM보고서", "tools")}
-	} else if runtime.GOOS == "darwin" {
-		cands = []string{
-			filepath.Join(home, "Library", "Application Support", "로컬LLM", "tools"),
-			filepath.Join(home, "Library", "Application Support", "로컬LLM보고서", "tools"),
-		}
-	} else {
-		cands = []string{filepath.Join(home, ".local-llm", "tools"), filepath.Join(home, ".local-llm-report", "tools")}
-	}
+	cands := toolsDirCandidatesAt(runtime.GOOS, os.Getenv("LOCALAPPDATA"), homeDir())
+	migrateToolsDir(cands)
+	cands = toolsDirCandidatesAt(runtime.GOOS, os.Getenv("LOCALAPPDATA"), homeDir())
 	for _, p := range cands {
 		if st, err := os.Stat(p); err == nil && st.IsDir() {
 			return p
 		}
 	}
 	return cands[0]
+}
+
+func homeDir() string {
+	home, _ := os.UserHomeDir()
+	return home
+}
+
+func toolsDirCandidatesAt(goos, localApp, home string) []string {
+	if goos == "windows" && localApp != "" {
+		return []string{
+			filepath.Join(localApp, toolsVendorASCII, "tools"),
+			filepath.Join(localApp, toolsVendorHangul, "tools"),
+			filepath.Join(localApp, toolsVendorHangulOld, "tools"),
+		}
+	}
+	if goos == "darwin" {
+		base := filepath.Join(home, "Library", "Application Support")
+		return []string{
+			filepath.Join(base, toolsVendorASCII, "tools"),
+			filepath.Join(base, toolsVendorHangul, "tools"),
+			filepath.Join(base, toolsVendorHangulOld, "tools"),
+		}
+	}
+	return []string{filepath.Join(home, ".local-llm", "tools"), filepath.Join(home, ".local-llm-report", "tools")}
+}
+
+// whisper-cli on Windows drops Hangul -m paths. Prefer ASCII LocalLLM; move old folders once.
+func migrateToolsDir(cands []string) {
+	if len(cands) < 2 {
+		return
+	}
+	dest := cands[0]
+	if st, err := os.Stat(dest); err == nil && st.IsDir() {
+		return
+	}
+	for _, src := range cands[1:] {
+		st, err := os.Stat(src)
+		if err != nil || !st.IsDir() {
+			continue
+		}
+		destParent := filepath.Dir(dest)
+		srcParent := filepath.Dir(src)
+		if err := os.MkdirAll(filepath.Dir(destParent), 0755); err != nil {
+			return
+		}
+		if err := os.Rename(srcParent, destParent); err == nil {
+			return
+		}
+		if err := os.MkdirAll(destParent, 0755); err != nil {
+			return
+		}
+		_ = os.Rename(src, dest)
+		return
+	}
+}
+
+func hasNonASCII(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] > 127 {
+			return true
+		}
+	}
+	return false
+}
+
+func copyFile(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+		return err
+	}
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(out, in)
+	cerr := out.Close()
+	if err != nil {
+		return err
+	}
+	return cerr
+}
+
+func asciiArgPath(src string) (string, func(), error) {
+	if src == "" || !hasNonASCII(src) {
+		return src, func() {}, nil
+	}
+	dst := filepath.Join(os.TempDir(), "localllm-"+filepath.Base(src))
+	if err := copyFile(src, dst); err != nil {
+		return src, func() {}, err
+	}
+	return dst, func() { _ = os.Remove(dst) }, nil
 }
 
 func transcribePending(paths []string, chatModel string) {
@@ -235,7 +327,13 @@ func transcribeToSidecar(media string) error {
 	if threads > 4 {
 		threads = 4
 	}
-	wcmd := exec.Command(cli, "-m", whisperModelPath(), "-f", wav, "-l", "auto", "-otxt", "-of", prefix, "-t", fmt.Sprintf("%d", threads))
+	model := whisperModelPath()
+	modelArg, cleanup, err := asciiArgPath(model)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
+	wcmd := exec.Command(cli, "-m", modelArg, "-f", wav, "-l", "auto", "-otxt", "-of", prefix, "-t", fmt.Sprintf("%d", threads))
 	wcmd.Dir = filepath.Dir(cli)
 	wcmd.Stdout = osStdout()
 	wcmd.Stderr = osStderr()

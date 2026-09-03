@@ -18,15 +18,13 @@ import (
 )
 
 const (
-	llamaRel       = "b10670"
-	llamaZipWin    = "https://github.com/ggml-org/llama.cpp/releases/download/b10670/llama-b10670-bin-win-cpu-x64.zip"
-	llamaTarMacARM = "https://github.com/ggml-org/llama.cpp/releases/download/b10670/llama-b10670-bin-macos-arm64.tar.gz"
-	llamaTarMacX64 = "https://github.com/ggml-org/llama.cpp/releases/download/b10670/llama-b10670-bin-macos-x64.tar.gz"
-	gguf8bURL      = "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf?download=true"
-	gguf14bURL     = "https://huggingface.co/unsloth/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf?download=true"
-	vlGGUFURL      = "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/Qwen2.5-VL-3B-Instruct-Q4_K_M.gguf?download=true"
-	vlMMProjURL    = "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/mmproj-Qwen2.5-VL-3B-Instruct-Q8_0.gguf?download=true"
-	llamaPort      = 18765
+	llamaRel      = "b10670"
+	llamaGH       = "https://github.com/ggml-org/llama.cpp/releases/download/"
+	gguf8bURL     = "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf?download=true"
+	gguf14bURL    = "https://huggingface.co/unsloth/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf?download=true"
+	vlGGUFURL     = "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/Qwen2.5-VL-3B-Instruct-Q4_K_M.gguf?download=true"
+	vlMMProjURL   = "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/mmproj-Qwen2.5-VL-3B-Instruct-Q8_0.gguf?download=true"
+	llamaPort     = 18765
 )
 
 type ggufSpec struct {
@@ -145,16 +143,18 @@ func ensureLlamaBin() error {
 }
 
 func llamaArchiveForOS() (url, name string) {
+	rel := llamaRelease()
 	switch {
 	case runtime.GOOS == "windows":
-		return llamaZipWin, "llama-" + llamaRel + "-bin-win-cpu-x64.zip"
+		name = "llama-" + rel + "-bin-win-cpu-x64.zip"
 	case runtime.GOOS == "darwin" && runtime.GOARCH == "arm64":
-		return llamaTarMacARM, "llama-" + llamaRel + "-bin-macos-arm64.tar.gz"
+		name = "llama-" + rel + "-bin-macos-arm64.tar.gz"
 	case runtime.GOOS == "darwin":
-		return llamaTarMacX64, "llama-" + llamaRel + "-bin-macos-x64.tar.gz"
+		name = "llama-" + rel + "-bin-macos-x64.tar.gz"
 	default:
 		return "", ""
 	}
+	return llamaGH + rel + "/" + name, name
 }
 
 func findLlama(names ...string) (string, error) {
@@ -206,16 +206,18 @@ func llamaStart(gguf string, p profile) error {
 	if err != nil {
 		return err
 	}
-	ngl := 0
-	if runtime.GOOS == "darwin" {
-		ngl = 99
-	}
+	ngl := nglForOS()
 	th := runtime.NumCPU()
-	if p.ID == "gram16" && th > 4 {
-		th = 4
+	capN := p.ThreadsCap
+	if capN <= 0 {
+		if p.ID == "gram16" {
+			capN = 4
+		} else {
+			capN = 8
+		}
 	}
-	if th > 8 {
-		th = 8
+	if th > capN {
+		th = capN
 	}
 	args := []string{
 		"-m", gguf,
