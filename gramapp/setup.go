@@ -48,6 +48,9 @@ func setup(p profile) error {
 		say("")
 		say(T("step.engine"))
 	}
+	if err := ensureVCRedist(); err != nil {
+		return err
+	}
 	if err := ensureLlamaBin(); err != nil {
 		return err
 	}

@@ -66,13 +66,27 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 	if len(segs) == 0 {
 		return "", fmt.Errorf("%s", T("run.empty"))
 	}
+	before := len(segs)
+	segs = splitLongSegments(segs, p.Chunk)
+	if len(segs) > before {
+		say(T("run.split", before, len(segs)))
+	}
+
+	outSuf, outName, titleSuf, bodyHead := packOutputs(pk)
+	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+outSuf)
+	if err := ensureDir(outDir); err != nil {
+		return "", err
+	}
+
+	say(T("run.extract", len(files), len(segs), pk.ID))
+	hv := harvestSegments(segs)
+	say(T("run.harvest", len(hv.Raw)))
+	writeExtractDump(outDir, segs, hv)
+	say(T("run.dump", outDir))
 	if err := llamaStart(model, p); err != nil {
 		return "", err
 	}
 	defer llamaStop()
-	say(T("run.extract", len(files), len(segs), pk.ID))
-	hv := harvestSegments(segs)
-	say(T("run.harvest", len(hv.Raw)))
 	allow := harvestPrompt(hv)
 
 	var facts []map[string]any
@@ -83,7 +97,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 			return
 		}
 		user := T("llm.chunk", loc, allow, buf)
-		obj, err := ollamaChatJSON(model, withLang(pk.ChunkSys), user, p.Ctx, p.Predict)
+		obj, err := llamaChatJSONSchema(model, withLang(pk.ChunkSys), user, p.Ctx, p.Predict, chunkJSONSchema())
 		if err != nil {
 			obj = map[string]any{"heading_hint": loc, "facts": []any{buf}}
 		}
@@ -134,7 +148,7 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		payload = fmt.Sprintf("%v", facts)
 	}
 	packUser := T("llm.assemble", title, allow, payload)
-	meta, err := ollamaChatJSON(model, withLang(pk.AssembleSys), packUser, p.Ctx, p.Predict)
+	meta, err := llamaChatJSONSchema(model, withLang(pk.AssembleSys), packUser, p.Ctx, p.Predict, assembleJSONSchema())
 	if err != nil {
 		meta = map[string]any{"title": title}
 	}
@@ -150,11 +164,6 @@ func runFiles(files []string, p profile, model string, pk pack) (string, error) 
 		say(T("run.verify.ok"))
 	}
 
-	outSuf, outName, titleSuf, bodyHead := packOutputs(pk)
-	outDir := filepath.Join(filepath.Dir(files[0]), stemName(files[0])+outSuf)
-	if err := ensureDir(outDir); err != nil {
-		return "", err
-	}
 	docx := filepath.Join(outDir, outName)
 	titleOut, _ := meta["title"].(string)
 	if titleOut == "" {

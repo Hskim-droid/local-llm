@@ -21,7 +21,7 @@ First matching row wins. Numbers are **as shipped** (Gram 16 GB / Mac 24 GB meas
 |---|---|---|---|---|---|---|
 | mac24 | macOS, 20–28 GB **and** ≥ 8 GB free | 14B Q4 | 8192 | 1600 | 1400 | ≤8 |
 | gram32 | ≥ 20 GB **and** ≥ 8 GB free | 8B then 14B | 6144 | 1400 | 1100 | ≤8 |
-| gram16 | default | 8B only | 4096 | 1000 | 800 | ≤4 |
+| gram16 | default | 8B only | 4096 | 1000 | 1200 | ≤4 |
 
 **Load (`derate`)** — first rule whose `avail_lt` is above current free RAM wins.
 
