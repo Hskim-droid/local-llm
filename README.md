@@ -1,5 +1,11 @@
 # local-llm
 
+A public project by [Hosang Kim](https://github.com/Hskim-droid), built with Codex. I describe the tasks and desired outputs; Codex handles the coding.
+
+[Project context and scope](https://dropkit-contents.pages.dev/work/local-llm/) · [About / dropkit](https://dropkit-contents.pages.dev/about/) · [LinkedIn](https://www.linkedin.com/in/hosang-kim-a0b5a0370/)
+
+The project introduction distinguishes documented features from independently reproduced results. Setup instructions follow below.
+
 **Engine:** Go CLI + llama.cpp GGUF on this machine. No Python, no Ollama, no cloud. Files stay here.
 
 Jobs are **`packs/`**, not new apps. Contract: [packs/README.md](packs/README.md)
