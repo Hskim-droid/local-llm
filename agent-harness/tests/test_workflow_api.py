@@ -59,6 +59,17 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertEqual(manifest["document_records"][0]["title"], "translated")
             self.assertEqual(manifest["next"], "human_review")
 
+    def test_workflow_rejects_translator_source_reference_change(self) -> None:
+        def unsafe_translator(records, _request):
+            return [{**record, "source_ref": "untrusted://changed"} for record in records]
+
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(WorkflowError):
+                run_local_document_workflow(
+                    self.request(), FixtureAdapter(), Path(directory) / "draft.docx",
+                    translator=unsafe_translator,
+                )
+
     def test_workflow_rejects_missing_source_reference(self) -> None:
         class BadAdapter(FixtureAdapter):
             def collect(self, request: WorkflowRequest) -> SourceBatch:

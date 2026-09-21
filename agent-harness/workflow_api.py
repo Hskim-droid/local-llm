@@ -157,10 +157,13 @@ def run_local_document_workflow(
         document_records = _validate_records(batch.columns, translated)
         if [row["record_id"] for row in document_records] != [row["record_id"] for row in original_records]:
             raise WorkflowError("translator changed record identity or ordering")
-        checks.append({"name": "translation_preserves_source_refs", "passed": all(
+        translation_check = {"name": "translation_preserves_source_refs", "passed": all(
             row["source_ref"] == original["source_ref"]
             for row, original in zip(document_records, original_records)
-        )})
+        )}
+        checks.append(translation_check)
+        if not translation_check["passed"]:
+            raise WorkflowError("translator changed source references")
     output = Path(output_path).expanduser()
     if output.suffix.lower() != f".{request.output_format}":
         raise WorkflowError(f"output path must use .{request.output_format}")
