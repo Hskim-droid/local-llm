@@ -6,6 +6,13 @@ A public project by [Hosang Kim](https://github.com/Hskim-droid), built with Cod
 
 The project introduction distinguishes documented features from independently reproduced results. Setup instructions follow below.
 
+> **Positioning:** local-first, draft-first UI-to-document automation framework.
+> Inputs stay behind explicit local adapters; outputs are one evidence-linked
+> DOCX, XLSX, or PPTX draft.
+
+The complete input/output contract is documented in
+[`docs/WORKFLOW_CONTRACT.md`](docs/WORKFLOW_CONTRACT.md).
+
 **Engine:** The Go CLI uses llama.cpp GGUF on this machine. That engine lane uses no Python, no Ollama, and no cloud service; files stay here. The repository also contains a separate experimental Python UI-to-document harness under `agent-harness/`.
 
 Jobs are **`packs/`**, not new apps. Contract: [packs/README.md](packs/README.md)
