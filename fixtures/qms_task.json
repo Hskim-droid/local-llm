@@ -1,0 +1,42 @@
+{
+  "task_id": "qms-open-issues-generic",
+  "goal": "미처리 품질 이슈를 조회한다",
+  "navigation_terms": ["navigation", "메뉴", "menu"],
+  "target_terms": [
+    "quality",
+    "품질",
+    "inspection",
+    "검사",
+    "issue",
+    "이슈",
+    "outstanding",
+    "미처리",
+    "open"
+  ],
+  "table_terms": [
+    "open issues",
+    "미처리 이슈",
+    "미처리 품질",
+    "outstanding inspection"
+  ],
+  "forbidden_terms": [
+    "delete",
+    "remove",
+    "save",
+    "submit",
+    "approve",
+    "삭제",
+    "제거",
+    "저장",
+    "제출",
+    "승인"
+  ],
+  "identity_field": "issue_id",
+  "fields": {
+    "issue_id": ["issue id", "record id", "id", "이슈번호", "이슈 번호"],
+    "title": ["title", "issue", "제목", "이슈명"],
+    "status": ["status", "state", "current state", "상태"],
+    "owner": ["owner", "responsible", "담당", "담당자"],
+    "updated_at": ["updated", "last update", "갱신", "갱신일"]
+  }
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><title>Plant workspace</title></head>
+  <body>
+    <header><button aria-label="Open navigation" onclick="toggleNav()">☰</button><h1>Plant workspace</h1></header>
+    <nav id="nav" role="menu" hidden>
+      <button role="menuitem" aria-haspopup="menu" aria-expanded="false" onclick="openSub('inspection-menu', this)">Operations</button>
+      <div id="inspection-menu" role="menu" hidden>
+        <button role="menuitem" aria-haspopup="menu" aria-expanded="false" onclick="openSub('outstanding-menu', this)">Inspection</button>
+        <div id="outstanding-menu" role="menu" hidden>
+          <button role="menuitem" onclick="showIssues()">Outstanding queue</button>
+        </div>
+      </div>
+    </nav>
+    <main id="issues" hidden>
+      <h2>Outstanding inspection queue</h2>
+      <table aria-label="Outstanding inspection queue">
+        <thead><tr><th>ID</th><th>Issue</th><th>Current state</th><th>Responsible</th><th>Last update</th></tr></thead>
+        <tbody>
+          <tr><td>QMS-1001</td><td>Incoming inspection hold</td><td>Open</td><td>J. Kim</td><td>2026-09-20T17:30:00+00:00</td></tr>
+          <tr><td>QMS-1002</td><td>Calibration evidence missing</td><td>Investigating</td><td>S. Lee</td><td>2026-09-21T08:10:00+00:00</td></tr>
+          <tr><td>QMS-1003</td><td>Supplier corrective action overdue</td><td>Open</td><td>M. Park</td><td>2026-09-21T08:45:00+00:00</td></tr>
+        </tbody>
+      </table>
+    </main>
+    <script>
+      function toggleNav() { document.getElementById('nav').hidden = !document.getElementById('nav').hidden; }
+      function openSub(id, source) { source.setAttribute('aria-expanded', 'true'); document.getElementById(id).hidden = false; }
+      function showIssues() { document.getElementById('issues').hidden = false; }
+    </script>
+  </body>
+</html>

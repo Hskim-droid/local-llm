@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><title>Operations portal</title></head>
+  <body>
+    <header><button aria-label="Open navigation" onclick="toggleNav()">☰</button><h1>Operations portal</h1></header>
+    <nav id="nav" role="menu" hidden>
+      <button role="menuitem" onclick="showIssues()">Quality open issues</button>
+    </nav>
+    <main id="issues" hidden>
+      <h2>Quality issues</h2>
+      <table aria-label="Quality open issues">
+        <thead><tr><th>Issue ID</th><th>Title</th><th>Status</th><th>Owner</th><th>Updated</th></tr></thead>
+        <tbody>
+          <tr><td>QMS-1001</td><td>Incoming inspection hold</td><td>Open</td><td>J. Kim</td><td>2026-09-20T17:30:00+00:00</td></tr>
+          <tr><td>QMS-1002</td><td>Calibration evidence missing</td><td>Investigating</td><td>S. Lee</td><td>2026-09-21T08:10:00+00:00</td></tr>
+          <tr><td>QMS-1003</td><td>Supplier corrective action overdue</td><td>Open</td><td>M. Park</td><td>2026-09-21T08:45:00+00:00</td></tr>
+        </tbody>
+      </table>
+    </main>
+    <script>
+      function toggleNav() { document.getElementById('nav').hidden = !document.getElementById('nav').hidden; }
+      function showIssues() { document.getElementById('issues').hidden = false; }
+    </script>
+  </body>
+</html>
