@@ -6,7 +6,7 @@ A public project by [Hosang Kim](https://github.com/Hskim-droid), built with Cod
 
 The project introduction distinguishes documented features from independently reproduced results. Setup instructions follow below.
 
-**Engine:** Go CLI + llama.cpp GGUF on this machine. No Python, no Ollama, no cloud. Files stay here.
+**Engine:** The Go CLI uses llama.cpp GGUF on this machine. That engine lane uses no Python, no Ollama, and no cloud service; files stay here. The repository also contains a separate experimental Python UI-to-document harness under `agent-harness/`.
 
 Jobs are **`packs/`**, not new apps. Contract: [packs/README.md](packs/README.md)
 
@@ -82,6 +82,7 @@ Run its fixture checks from the repository root:
 
 ```bash
 python3 -m pip install -r agent-harness/requirements-fixture.txt
+python3 -m playwright install chromium
 python3 -m unittest discover -s agent-harness/tests -p 'test_*.py'
 ```
 

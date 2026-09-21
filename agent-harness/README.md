@@ -311,12 +311,12 @@ MacBook or Windows host validation pass.
 
 `bootstrap.py` is a bounded capability mapper, not a general-purpose installer:
 model weights, ERP connectors, mail credentials, and OS accessibility grants
-remain explicit operator decisions. The local-llm sibling project can supply a
+remain explicit operator decisions. The Go engine in the parent repository can supply a
 hardware-selected engine/model, but the public harness does not silently pull
 large model files or assume that Ollama is installed.
 
 The design lineage is recorded in
-[`RPA_REFERENCE_LINEAGE.md`](RPA_REFERENCE_LINEAGE.md). It maps the RPA reviews,
+[`RPA_REFERENCE_LINEAGE.md`](../docs/RPA_REFERENCE_LINEAGE.md). It maps the RPA reviews,
 Robot Framework/RPA Framework, TagUI, Playwright, macOS AX, Windows UIA,
 BrowserGym, and OSWorld references to the code decisions and lists the gaps
 that must be closed before enabling real ERP or mail permissions.
