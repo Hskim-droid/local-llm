@@ -21,6 +21,7 @@ jobs:
         with:
           go-version-file: gramapp/go.mod
           cache: true
+          cache-dependency-path: gramapp/go.mod
       - name: Run Go tests
         run: go test ./...
 
