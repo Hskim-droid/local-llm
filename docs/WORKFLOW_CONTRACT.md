@@ -77,9 +77,11 @@ the original records, derived document records, checks, and request together:
 The manifest records each source reference and check. A translation or summary
 does not replace the original value.
 
-`source_ref` is required for extracted facts. A translation or summary does not
-replace the original value. Values that cannot be tied to an input are marked
-`NEEDS_CHECK` and remain visible for review; they are not silently invented.
+`source_ref` is required for extracted facts. The SDK rejects records without a
+source reference, and a translation or summary does not replace the original
+value. An adapter or policy layer may mark a known-but-unverified fact
+`NEEDS_CHECK`; that status is outside this core function and is never invented
+silently.
 The SDK does not infer confidentiality from a screen or file. A local adapter or
 policy layer must classify sensitive records before they enter a manifest; the
 public core never uploads runtime state, but it cannot decide business
@@ -117,22 +119,24 @@ allowlist, and human approval gate are explicitly configured.
    translation preservation, and artifact integrity.
 6. **Render one artifact** — choose exactly one of `docx`, `xlsx`, or `pptx`, then
    reopen it and verify its headers and record cells.
-7. **Draft and hand off** — store the artifact hash and manifest in the local
-   queue. The default next step is human review; external delivery is separate.
+7. **Draft and hand off** — write the artifact, hash, and manifest locally.
+   The existing queue CLI separately handles idempotency and scheduling. The
+   default next step is human review; external delivery is separate.
 
-The current implementation covers the queue, idempotency key, UI observation
-contracts, fixture browser extraction, loopback translation, DOCX/XLSX/PPTX
-renderers, artifact reopen checks, manifest hash validation, and the thin SDK
-function described above.
+The current implementation covers queue and idempotency primitives in the
+harness CLI, UI observation contracts, fixture browser extraction, loopback
+translation, DOCX/XLSX/PPTX renderers, artifact reopen checks, manifest hash
+validation, and the thin SDK function described above. The SDK itself returns a
+local artifact and manifest; it does not enqueue or deliver them.
 The missing production pieces are deliberately adapters: real host permissions,
 ERP/QMS connectors, transcription selection, mail providers, and unattended
 scheduling.
 
 ## Coding-tool attachment
 
-A coding tool can call the queue through the existing CLI or the thin SDK;
-it should pass structured input references and an explicit output format rather
-than asking the harness to guess a screen or file. The local launcher initializes
+A coding tool can call the existing queue CLI or the thin SDK as separate
+attachment paths; it should pass structured input references and an explicit
+output format rather than asking the harness to guess a screen or file. The local launcher initializes
 state, but cloning the repository does not authorize code execution, browser
 access, remote writes, or mail delivery.
 

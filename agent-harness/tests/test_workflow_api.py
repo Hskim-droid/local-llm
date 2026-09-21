@@ -108,6 +108,11 @@ class WorkflowContractTests(unittest.TestCase):
                     {"record_id": "A-1", "title": "원문", "source_ref": None},
                 ), batch.checks)
 
+        request = WorkflowRequest(
+            task="정리",
+            inputs=(InputRef("file", "/tmp/source.txt", media_type="text/plain"),),
+            output_format="docx",
+        )
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(WorkflowError):
-                run_local_document_workflow(self.request(), BadAdapter(), Path(directory) / "draft.docx")
+            with self.assertRaisesRegex(WorkflowError, "missing source_ref"):
+                run_local_document_workflow(request, BadAdapter(), Path(directory) / "draft.docx")
