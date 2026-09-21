@@ -24,6 +24,12 @@ each MacBook or LG Gram. The same Python queue works on macOS and Windows.
 
 Run the commands below from this directory (`cd agent-harness`).
 
+The thin SDK is the coding-tool attachment point. Build a `WorkflowRequest`
+from structured JSON, implement `SourceAdapter.collect()` for the local source,
+and call `run_local_document_workflow()` to receive one verified draft artifact
+and its manifest. The adapter may observe a file, media source, browser, native
+app, or local business system; the core never guesses a selector or sends data.
+
 ## Start a Codex session
 
 macOS:

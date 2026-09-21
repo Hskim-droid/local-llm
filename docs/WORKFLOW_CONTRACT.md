@@ -11,7 +11,9 @@ production ERP or mail connector.
 
 ## Canonical function shape
 
-The intended public contract is equivalent to:
+The implemented thin SDK exposes this contract through
+`agent-harness/workflow_contract.py` and `agent-harness/workflow_api.py`. Its
+public function is equivalent to:
 
 ```text
 run_local_document_workflow(
@@ -103,9 +105,10 @@ allowlist, and human approval gate are explicitly configured.
 7. **Draft and hand off** — store the artifact hash and manifest in the local
    queue. The default next step is human review; external delivery is separate.
 
-The current implementation already covers the queue, idempotency key, UI
-observation contracts, fixture browser extraction, loopback translation,
-DOCX/XLSX/PPTX renderers, artifact reopen checks, and manifest hash validation.
+The current implementation covers the queue, idempotency key, UI observation
+contracts, fixture browser extraction, loopback translation, DOCX/XLSX/PPTX
+renderers, artifact reopen checks, manifest hash validation, and the thin SDK
+function described above.
 The missing production pieces are deliberately adapters: real host permissions,
 ERP/QMS connectors, transcription selection, mail providers, and unattended
 scheduling.

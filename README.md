@@ -84,6 +84,9 @@ harness at [`agent-harness/`](agent-harness/README.md). It is the shared control
 plane for local browser or native UI observation, queueing, optional loopback
 translation, and exactly one DOCX/XLSX/PPTX draft. It does not ship a production
 ERP/QMS connector, mail sender, browser profile, credential, or customer data.
+The thin SDK in `agent-harness/workflow_api.py` accepts a `WorkflowRequest` and a
+local `SourceAdapter`, then returns a verified `DraftArtifact`; adapters keep
+source-specific access outside the core.
 
 Run its fixture checks from the repository root:
 
