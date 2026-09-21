@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+  <head><meta charset="utf-8"><title>품질 포털</title></head>
+  <body>
+    <header><button aria-label="Menu" onclick="toggleNav()">☰</button><h1>품질 포털</h1></header>
+    <nav id="nav" role="menu" hidden>
+      <button role="menuitem" onclick="showIssues()">품질관리 · 미처리 이슈</button>
+    </nav>
+    <main id="issues" hidden>
+      <h2>미처리 이슈</h2>
+      <table aria-label="미처리 품질 이슈">
+        <thead><tr><th>상태</th><th>이슈번호</th><th>담당</th><th>제목</th><th>갱신일</th></tr></thead>
+        <tbody>
+          <tr><td>Open</td><td>QMS-1001</td><td>J. Kim</td><td>Incoming inspection hold</td><td>2026-09-20T17:30:00+00:00</td></tr>
+          <tr><td>Investigating</td><td>QMS-1002</td><td>S. Lee</td><td>Calibration evidence missing</td><td>2026-09-21T08:10:00+00:00</td></tr>
+          <tr><td>Open</td><td>QMS-1003</td><td>M. Park</td><td>Supplier corrective action overdue</td><td>2026-09-21T08:45:00+00:00</td></tr>
+        </tbody>
+      </table>
+    </main>
+    <script>
+      function toggleNav() { document.getElementById('nav').hidden = !document.getElementById('nav').hidden; }
+      function showIssues() { document.getElementById('issues').hidden = false; }
+    </script>
+  </body>
+</html>

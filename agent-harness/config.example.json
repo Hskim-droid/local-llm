@@ -1,0 +1,14 @@
+{
+  "persona_id": "han-gyeol",
+  "persona_name": "한결",
+  "mode": "draft_only",
+  "state_dir": "runtime",
+  "artifact_dir": "runtime/artifacts",
+  "default_output_format": "docx",
+  "recipient_allowlist": [],
+  "executor": {
+    "extract": null,
+    "render": null,
+    "send": null
+  }
+}
