@@ -111,12 +111,16 @@ def _validate_records(columns: Sequence[str], records: Sequence[Mapping[str, Any
     record_ids: set[str] = set()
     for index, record in enumerate(records, 1):
         item = dict(record)
-        record_id = str(item.get("record_id", "")).strip()
-        source_ref = str(item.get("source_ref", "")).strip()
-        if not record_id:
+        raw_record_id = item.get("record_id")
+        raw_source_ref = item.get("source_ref")
+        if not isinstance(raw_record_id, str) or not raw_record_id.strip():
             raise WorkflowError(f"record {index} is missing record_id")
-        if not source_ref:
-            raise WorkflowError(f"record {record_id} is missing source_ref")
+        if not isinstance(raw_source_ref, str) or not raw_source_ref.strip():
+            raise WorkflowError(f"record {raw_record_id} is missing source_ref")
+        record_id = raw_record_id.strip()
+        source_ref = raw_source_ref.strip()
+        item["record_id"] = record_id
+        item["source_ref"] = source_ref
         if record_id in record_ids:
             raise WorkflowError(f"duplicate record_id: {record_id}")
         missing = [column for column in columns if column not in item]
@@ -153,7 +157,7 @@ def run_local_document_workflow(
     original_records = _validate_records(batch.columns, batch.records)
     document_records = deepcopy(original_records)
     if translator is not None:
-        translated = translator(original_records, request)
+        translated = translator(deepcopy(original_records), request)
         document_records = _validate_records(batch.columns, translated)
         if [row["record_id"] for row in document_records] != [row["record_id"] for row in original_records]:
             raise WorkflowError("translator changed record identity or ordering")

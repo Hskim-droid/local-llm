@@ -59,6 +59,19 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertEqual(manifest["document_records"][0]["title"], "translated")
             self.assertEqual(manifest["next"], "human_review")
 
+    def test_workflow_protects_original_from_in_place_translator(self) -> None:
+        def mutating_translator(records, _request):
+            records[0]["source_ref"] = "untrusted://changed"
+            records[0]["title"] = "changed"
+            return records
+
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(WorkflowError):
+                run_local_document_workflow(
+                    self.request(), FixtureAdapter(), Path(directory) / "draft.docx",
+                    translator=mutating_translator,
+                )
+
     def test_workflow_rejects_translator_source_reference_change(self) -> None:
         def unsafe_translator(records, _request):
             return [{**record, "source_ref": "untrusted://changed"} for record in records]
@@ -75,7 +88,7 @@ class WorkflowContractTests(unittest.TestCase):
             def collect(self, request: WorkflowRequest) -> SourceBatch:
                 batch = super().collect(request)
                 return SourceBatch(batch.source_system, batch.captured_at, batch.columns, (
-                    {"record_id": "A-1", "title": "원문", "source_ref": ""},
+                    {"record_id": "A-1", "title": "원문", "source_ref": None},
                 ), batch.checks)
 
         with tempfile.TemporaryDirectory() as directory:
