@@ -12,19 +12,30 @@ production ERP or mail connector.
 ## Canonical function shape
 
 The implemented thin SDK exposes this contract through
-`agent-harness/workflow_contract.py` and `agent-harness/workflow_api.py`. Its
-public function is equivalent to:
+`agent-harness/workflow_contract.py` and `agent-harness/workflow_api.py`. A
+coding tool builds a request from JSON, supplies a source adapter, and chooses a
+local output path:
+
+```python
+request = WorkflowRequest.from_mapping(payload)
+result = run_local_document_workflow(
+    request, adapter, output_path="runtime/artifacts/draft.docx", translator=translator
+)
+```
+
+The public function has this signature:
 
 ```text
 run_local_document_workflow(
-    inputs,
-    task,
-    output_format,
-    source_language="auto",
-    target_language=None,
-    policy={"mode": "draft_only", "approval": "required"},
+    request: WorkflowRequest,
+    adapter: SourceAdapter,
+    output_path: str | Path,
+    translator: RecordTranslator | None = None,
 ) -> DraftArtifact
 ```
+
+When `target_language` is set, a translator is required. The SDK never guesses
+a translator or silently returns an untranslated success.
 
 A request is represented by data rather than by an unrestricted natural-language
 instruction:
@@ -51,19 +62,20 @@ instruction:
 }
 ```
 
-The result keeps the document and its evidence together:
+The function returns the verified artifact handle; its adjacent manifest keeps
+the original records, derived document records, checks, and request together:
 
 ```json
 {
   "artifact": {"format": "docx", "path": "runtime/artifacts/draft.docx", "sha256": "..."},
-  "facts": [
-    {"value": "Q-123", "status": "confirmed", "source_ref": "qms://issue/Q-123"},
-    {"value": "번역 결과", "status": "translated", "source_ref": "qms://issue/Q-123#title"}
-  ],
-  "checks": [{"name": "source_freshness", "passed": true}],
+  "manifest_path": "runtime/artifacts/draft.manifest.json",
+  "record_count": 1,
   "next": "human_review"
 }
 ```
+
+The manifest records each source reference and check. A translation or summary
+does not replace the original value.
 
 `source_ref` is required for extracted facts. A translation or summary does not
 replace the original value. Values that cannot be tied to an input are marked
@@ -77,7 +89,7 @@ confidentiality on its own.
 
 | Input family | Adapter boundary | Current public status |
 | --- | --- | --- |
-| Local text, PDF, Office files, and images | File extractor returns records and source references | The Go document engine supports local document jobs; unified contract wiring is the next integration step |
+| Local text, PDF, Office files, and images | File extractor returns records and source references | The Go document engine supports local document jobs; a file adapter must be supplied to the SDK |
 | Foreign-language documents | Extract → preserve original → local translation → render | Loopback translation and field-level evidence are implemented in the harness fixture |
 | Audio and video recordings | Local transcription adapter returns timestamped text and media references | Local engine paths exist; a single cross-input adapter contract is not yet validated |
 | Browser web app | Playwright accessibility observation, bounded aliases, allowlisted origin | Synthetic browser fixture validated; real ERP/QMS hosts remain adapter work |
@@ -100,8 +112,9 @@ allowlist, and human approval gate are explicitly configured.
 4. **Translate or transcribe locally** — keep the original and derived text
    side-by-side. The Ollama-compatible path is loopback-only and does not provide
    a cloud fallback.
-5. **Verify provenance** — run freshness, duplicate, completeness, language, and
-   artifact checks. Unverified facts carry an explicit status.
+5. **Verify provenance** — the adapter supplies source freshness and language
+   checks; the SDK enforces declared checks, record identity, source references,
+   translation preservation, and artifact integrity.
 6. **Render one artifact** — choose exactly one of `docx`, `xlsx`, or `pptx`, then
    reopen it and verify its headers and record cells.
 7. **Draft and hand off** — store the artifact hash and manifest in the local
@@ -117,7 +130,7 @@ scheduling.
 
 ## Coding-tool attachment
 
-A coding tool can call the queue through the existing CLI or a future thin SDK;
+A coding tool can call the queue through the existing CLI or the thin SDK;
 it should pass structured input references and an explicit output format rather
 than asking the harness to guess a screen or file. The local launcher initializes
 state, but cloning the repository does not authorize code execution, browser

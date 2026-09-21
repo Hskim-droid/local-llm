@@ -147,6 +147,8 @@ def run_local_document_workflow(
 
     if not isinstance(request, WorkflowRequest):
         raise TypeError("request must be a WorkflowRequest")
+    if request.target_language is not None and translator is None:
+        raise WorkflowError("translator is required when target_language is set")
     batch = adapter.collect(request)
     if not isinstance(batch, SourceBatch):
         raise WorkflowError("source adapter must return SourceBatch")

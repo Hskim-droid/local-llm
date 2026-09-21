@@ -33,6 +33,16 @@ class WorkflowContractTests(unittest.TestCase):
             target_language="en",
         )
 
+    def test_json_nulls_are_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            InputRef.from_mapping({"kind": "file", "locator": None})
+        with self.assertRaises(ValueError):
+            WorkflowRequest.from_mapping({
+                "task": None,
+                "inputs": [{"kind": "file", "locator": "/tmp/source.txt"}],
+                "output": {"format": "docx"},
+            })
+
     def test_browser_input_requires_allowlist(self) -> None:
         with self.assertRaises(ValueError):
             InputRef("browser", "private-handle")
@@ -44,6 +54,13 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertEqual(payload["policy"]["mode"], "draft_only")
         restored = WorkflowRequest.from_mapping(payload)
         self.assertEqual(restored, self.request("xlsx"))
+
+    def test_translation_request_requires_translator(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(WorkflowError):
+                run_local_document_workflow(
+                    self.request(), FixtureAdapter(), Path(directory) / "draft.docx"
+                )
 
     def test_workflow_renders_and_writes_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -48,8 +48,8 @@ class InputRef:
         if not isinstance(value, Mapping):
             raise ValueError("input must be an object")
         return cls(
-            kind=str(value.get("kind", "")),
-            locator=str(value.get("locator", "")),
+            kind=value.get("kind", ""),
+            locator=value.get("locator", ""),
             media_type=value.get("media_type"),
             source_language=value.get("source_language"),
             scope=value.get("scope", {}),
@@ -81,10 +81,10 @@ class WorkflowPolicy:
         if not isinstance(value, Mapping):
             raise ValueError("policy must be an object")
         return cls(
-            mode=str(value.get("mode", "draft_only")),
-            approval=str(value.get("approval", "required")),
-            allow_remote_write=bool(value.get("allow_remote_write", False)),
-            allow_external_send=bool(value.get("allow_external_send", False)),
+            mode=value.get("mode", "draft_only"),
+            approval=value.get("approval", "required"),
+            allow_remote_write=value.get("allow_remote_write", False),
+            allow_external_send=value.get("allow_external_send", False),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -131,10 +131,10 @@ class WorkflowRequest:
         if not isinstance(raw_inputs, (list, tuple)):
             raise ValueError("inputs must be an array")
         return cls(
-            task=str(value.get("task", "")),
+            task=value.get("task", ""),
             inputs=tuple(InputRef.from_mapping(item) for item in raw_inputs),
-            output_format=str(output.get("format", "")),
-            source_language=str(value.get("source_language", "auto")),
+            output_format=output.get("format", ""),
+            source_language=value.get("source_language", "auto"),
             target_language=value.get("target_language"),
             policy=WorkflowPolicy.from_mapping(value.get("policy", {})),
         )
