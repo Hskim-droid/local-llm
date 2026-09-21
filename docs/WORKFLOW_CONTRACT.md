@@ -68,8 +68,10 @@ The result keeps the document and its evidence together:
 `source_ref` is required for extracted facts. A translation or summary does not
 replace the original value. Values that cannot be tied to an input are marked
 `NEEDS_CHECK` and remain visible for review; they are not silently invented.
-Confidential values are omitted from the artifact and runtime logs according to
-the local policy.
+The SDK does not infer confidentiality from a screen or file. A local adapter or
+policy layer must classify sensitive records before they enter a manifest; the
+public core never uploads runtime state, but it cannot decide business
+confidentiality on its own.
 
 ## Input families
 
