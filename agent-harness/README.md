@@ -1,7 +1,7 @@
-# dropkit-agent-harness
+# Integrated UI-to-document harness
 
-> **Status: experimental proof.** This repository is a standalone software
-> project, not a production RPA distribution. The
+> **Status: experimental proof.** This directory is an integrated software
+> lane inside `local-llm`, not a production RPA distribution. The
 > reproducible public path is synthetic UI → optional loopback translation → one
 > DOCX/XLSX/PPTX artifact. Real ERP/QMS, mail, scheduler, unattended writes, and
 > host-specific permissions are outside the verified boundary.
@@ -18,9 +18,11 @@ scheduled run or request email
   → event, cost, and outcome log
 ```
 
-The public repository intentionally contains no ERP/QMS URL, browser cookie,
+The public code intentionally contains no ERP/QMS URL, browser cookie,
 mail credential, screenshot, or sender token. A local adapter is configured on
 each MacBook or LG Gram. The same Python queue works on macOS and Windows.
+
+Run the commands below from this directory (`cd agent-harness`).
 
 ## Start a Codex session
 

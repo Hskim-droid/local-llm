@@ -1,12 +1,12 @@
 # RPA reference lineage and development specification
 
-이 문서는 `agent-harness`가 어떤 RPA·접근성 자동화·컴퓨터 사용 에이전트
+이 문서는 `local-llm/agent-harness`가 어떤 RPA·접근성 자동화·컴퓨터 사용 에이전트
 프로젝트와 논문을 참고했는지, 참고한 원칙을 어느 파일에 반영했는지, 아직
 반영하지 않은 영역이 무엇인지 기록한다. 구현을 특정 제품의 복제품으로
 설명하지 않고, 확인한 근거와 우리 설계의 선택을 분리하는 것이 목적이다.
 
 - 검토 기준일: 2026-09-21
-- 저장소: `Hskim-droid/dropkit-agent-harness`
+- 저장소: `Hskim-droid/local-llm` (`agent-harness/`)
 - 현재 기준 커밋: generic surface 구현 위에 이 문서와 관찰 세대 고정이 추가되는 변경
 - 공개 코드에 ERP 주소, 쿠키, 메일 자격 증명, 실제 업무 자료를 넣지 않는다.
 

@@ -12,3 +12,9 @@ venv/
 *_번역/
 examples/output/
 .setup-ok.json
+
+# Integrated UI-to-document harness local state
+agent-harness/config.json
+agent-harness/runtime/
+agent-harness/__pycache__/
+agent-harness/.venv/

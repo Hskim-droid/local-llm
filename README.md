@@ -70,6 +70,26 @@ Do not put customer tone in this repo. Put it beside the exe.
 
 Hardware notes: [docs/GRAM.ko.md](docs/GRAM.ko.md). RAM/OS knobs: [docs/MACHINE.md](docs/MACHINE.md) (`gramapp/machine.json`). First run is a local wizard: it reads RAM, picks a profile, pulls **packs + this JSON from GitHub**, **GGUF from Hugging Face**. Weights are not stored in this repo.
 
+## Integrated UI-to-document harness
+
+The same code repository also contains the experimental, draft-first UI-to-document
+harness at [`agent-harness/`](agent-harness/README.md). It is the shared control
+plane for local browser or native UI observation, queueing, optional loopback
+translation, and exactly one DOCX/XLSX/PPTX draft. It does not ship a production
+ERP/QMS connector, mail sender, browser profile, credential, or customer data.
+
+Run its fixture checks from the repository root:
+
+```bash
+python3 -m pip install -r agent-harness/requirements-fixture.txt
+python3 -m unittest discover -s agent-harness/tests -p 'test_*.py'
+```
+
+The publication and project notes remain in the separate
+[`dropkit.contents`](https://github.com/Hskim-droid/dropkit.contents) repository.
+The harness design references are collected in
+[`docs/RPA_REFERENCE_LINEAGE.md`](docs/RPA_REFERENCE_LINEAGE.md).
+
 ## Legacy
 
 `report.ps1` / `./report` still talk to Ollama. That is not the gram product. Do not send that path to users.
