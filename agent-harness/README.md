@@ -220,7 +220,7 @@ adapters, not bundled dependencies:
 | Durable scheduling | [Temporal](https://github.com/temporalio/temporal) (MIT) or [Trigger.dev](https://github.com/triggerdotdev/trigger.dev) | Do not replace SQLite until crash recovery, concurrency, or multi-machine scheduling is demonstrated as a need. |
 | Office artifacts | [python-docx](https://github.com/python-openxml/python-docx), [openpyxl](https://github.com/ericgazoni/openpyxl), [python-pptx](https://github.com/scanny/python-pptx) | Use one renderer contract for DOCX/XLSX/PPTX and reopen each artifact before the manifest is accepted. |
 | Agent traces | [Langfuse](https://github.com/langfuse/langfuse) (self-hostable, MIT core) | Add only after the local evidence manifest and redaction rules are stable. |
-| Local model translation | [`Hskim-droid/local-llm`](https://github.com/Hskim-droid/local-llm) | Use its hardware/profile and local-engine ideas as a sibling integration; keep this harness's loopback translator and artifact contract independent. |
+| Local model translation | [`Hskim-droid/local-llm`](https://github.com/Hskim-droid/local-llm) | Use the parent repository's hardware/profile and local-engine code as an integrated engine lane; keep this harness's loopback translator and artifact contract independent. |
 
 The synthetic proof exercises the same QMS records through DOCX, XLSX, and PPTX
 one at a time. It measures record accuracy, evidence coverage, artifact
