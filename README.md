@@ -33,6 +33,10 @@ The page is one screen. Copy the PowerShell, paste, then double-click `시작.ba
 
 If GitHub Pages is not on yet, zip: https://github.com/Hskim-droid/local-llm/releases/latest → Assets → **`local-llm-windows.zip`** (not Source code). Extract to the desktop. Do not run from inside the zip. Double-click **`시작.bat`**. If Windows blocks it: **More info → Run anyway**.
 
+The Windows ZIP is the engine release lane. The experimental `agent-harness/`
+and thin SDK are source-level framework work and are not included in that ZIP
+or implied by the latest engine release.
+
 First run downloads the model. Leave the window open. Then pick Report / Minutes / Translation (1 / 2 / 3).
 
 You can also drop files onto the exe, then pick the job. Several files are always run **one at a time** — each file gets its own output folder. Nothing is merged across files.

@@ -1,0 +1,37 @@
+{
+  "publication_id": "local-llm-source-tracking-20260922-r2",
+  "language": "en",
+  "status": "planning",
+  "sources": [
+    {
+      "id": "source-tracking-plan",
+      "title": "Source tracking publication plan",
+      "kind": "internal design",
+      "coverage": "Allowlisted source detection, value mapping, private execution, and publication gates"
+    },
+    {
+      "id": "source-tracking-capture",
+      "title": "Source tracking reference capture",
+      "kind": "external reference capture",
+      "coverage": "YouTube API and terms, source retrieval, privacy, and deployment controls"
+    },
+    {
+      "id": "publication-strategy",
+      "title": "Publication strategy for local-first document automation",
+      "kind": "internal strategy",
+      "coverage": "Evidence packets, releases, case pages, and social pointers"
+    }
+  ],
+  "decisions": [
+    "Use official source APIs or feeds rather than page scraping.",
+    "Treat source titles and descriptions as discovery signals, not proof of video-body claims.",
+    "Keep raw source data, work context, credentials, and local paths outside the public packet.",
+    "Run research in a synthetic-only isolated workspace and require approval before every public operation.",
+    "Publish only an original English case page linked to code, evidence, limitations, and a source reference whose provenance and retention basis are recorded."
+  ],
+  "limitations": [
+    "The exact official channel ID for the user-provided YouTube candidate is not verified.",
+    "The private research execution and publication-preparation process is planned and not runtime-tested.",
+    "This projection contains no raw API response, transcript, audio, video, private path, or credential."
+  ]
+}

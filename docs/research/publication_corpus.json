@@ -1,0 +1,7 @@
+{
+  "sources": {
+    "GITHUB_RELEASES": "Releases are deployable software iterations you can package and make available for a wider audience to download and use.",
+    "OSWORLD_V2": "Avoid floating references such as main or latest in comparable runs. Keep release manifests compact enough to review in normal pull requests.",
+    "LOCAL_WORKFLOW": "The SDK itself returns a local artifact and manifest; it does not enqueue or deliver them. The manifest records each source reference and check."
+  }
+}

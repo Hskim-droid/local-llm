@@ -18,3 +18,7 @@ agent-harness/config.json
 agent-harness/runtime/
 agent-harness/__pycache__/
 agent-harness/.venv/
+
+# Marco research packs contain absolute local source paths; keep them in the
+# private Marco registry and publish only a sanitized projection.
+/docs/research/marco-*.json

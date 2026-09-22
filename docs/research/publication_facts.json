@@ -1,0 +1,16 @@
+{
+  "claims": [
+    {
+      "src": "GITHUB_RELEASES",
+      "value": "Releases are deployable software iterations."
+    },
+    {
+      "src": "OSWORLD_V2",
+      "value": "Avoid floating references such as main or latest in comparable runs."
+    },
+    {
+      "src": "LOCAL_WORKFLOW",
+      "value": "The SDK returns a local artifact and manifest."
+    }
+  ]
+}
