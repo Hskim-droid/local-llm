@@ -1,6 +1,7 @@
 # local-llm
 
-A public project by [Hosang Kim](https://github.com/Hskim-droid), built with Codex. I describe the tasks and desired outputs; Codex handles the coding.
+A public project by [Hosang Kim](https://github.com/Hskim-droid). I define the
+tasks and desired outputs, inspect the results, and decide what is published.
 
 [Project context and scope](https://dropkit-contents.pages.dev/work/local-llm/) · [About / dropkit](https://dropkit-contents.pages.dev/about/) · [LinkedIn](https://www.linkedin.com/in/hosang-kim-a0b5a0370/)
 
