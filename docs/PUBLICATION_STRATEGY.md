@@ -75,10 +75,11 @@ Every item gets exactly one primary class.
 
 An experiment without a reproducible input and verification record is a
 `research_note` or `draft`, not an `evidence_packet`. A screenshot alone is
-never a release or a benchmark. The existing scan-recovery page is a useful
-predecessor, not yet a complete packet under this contract: its record has an
-engine hash and output hash, but not every input hash, a source revision, or an
-exact rerun command, and its checklist is still a template.
+never a release or a benchmark. A local scan-recovery draft is a useful
+predecessor. It is not yet a published hub page, and it is not yet a complete
+packet under this contract: its record has an engine hash and output hash, but
+not every input hash, a source revision, or an exact rerun command, and its
+checklist is still a template.
 
 ## 4. Evidence status vocabulary
 
@@ -106,10 +107,11 @@ recorded. A failed or partial execution can be published as a failure note if
 the failure itself is the bounded result; it must not be rewritten as a pass.
 
 The current public harness should normally use `documented` or
-`fixture_verified`. The scan-recovery case is a useful predecessor because it
-exposes synthetic inputs, output, verification JSON, a checklist template,
-an exact mismatch, and untested limits; it is not yet a complete
-`fixture_verified` packet under the contract below.
+`fixture_verified`. The local scan-recovery draft is a useful predecessor
+because it records synthetic inputs, an output, verification JSON, a checklist
+template, an exact mismatch, and untested limits. It is not on the published
+hub yet, and it is not yet a complete `fixture_verified` packet under the
+contract below.
 
 ## 5. Evidence packet contract
 
@@ -265,10 +267,10 @@ separate gates, not implied by a synthetic pass.
   manifest integrity, and human review as the next step.
 - `docs/RPA_REFERENCE_LINEAGE.md` records reference-to-design decisions and
   explicitly lists unimplemented real-host, mail, and scheduler paths.
-- The existing `scan-recovery` public case already exposes a synthetic input,
-  preview, output, verification JSON, review checklist template, and
-  limitations. It is a useful predecessor, but does not yet satisfy the full
-  packet contract above.
+- The local scan-recovery draft records a synthetic input, preview, output,
+  verification JSON, review checklist template, and limitations. It is not yet
+  a published hub page, and it does not yet satisfy the full packet contract
+  above.
 
 ### Missing or inconsistent
 
